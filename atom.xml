@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://microtears.github.io</id>
     <title>德卡先生的信箱</title>
-    <updated>2019-07-17T10:32:19.681Z</updated>
+    <updated>2019-07-17T10:50:35.401Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://microtears.github.io"/>
     <link rel="self" href="https://microtears.github.io/atom.xml"/>
@@ -16,8 +16,7 @@
         <link href="https://microtears.github.io/post/hide-desktop-iconautohotkey">
         </link>
         <updated>2019-02-12T10:43:37.000Z</updated>
-        <summary type="html"><![CDATA[<p><strong>Update</strong></p>
-<pre><code class="language-autohotkey">/* Library:
+        <summary type="html"><![CDATA[<pre><code class="language-autohotkey">/* Library:
  *      Hide Desktop Icon
  * Description:
  *      Hide the desktop icon by double clicking the right mouse button
@@ -29,8 +28,7 @@
  *      泠音
  */</code></pre>
 ]]></summary>
-        <content type="html"><![CDATA[<p><strong>Update</strong></p>
-<pre><code class="language-autohotkey">/* Library:
+        <content type="html"><![CDATA[<pre><code class="language-autohotkey">/* Library:
  *      Hide Desktop Icon
  * Description:
  *      Hide the desktop icon by double clicking the right mouse button
