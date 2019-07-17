@@ -758,4 +758,9 @@ a {
 .site-description {
     font-size: 15px;
 }
+.my-face {
+    animation: my-face 5s infinite ease-in-out;
+    display: inline-block;
+    margin: 0 5px;
+}
     
