@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>Google Translate的API调用 | 德卡先生的信箱</title>
+<meta name="description" content="日子和我，都有点难过。">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://microtears.github.io/favicon.ico?v=1563355098838">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://microtears.github.io/styles/main.css">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+
+
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://microtears.github.io">
+        <img src="https://microtears.github.io/images/avatar.png?v=1563355098838" class="site-logo">
+        <h1 class="site-title">德卡先生的信箱</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="site-nav">
+            标签
+          </a>
+        
+      
+        
+          <a href="/post/about" class="site-nav">
+            关于
+          </a>
+        
+      
+        
+          <a href="/notes" class="site-nav">
+            笔记
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+          <a class="social-link" href="https://github.com/microtears" target="_blank">
+            <i class="fab fa-github"></i>
+          </a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      日子和我，都有点难过。
+    </div>
+    <div class="site-footer">
+      <span id="timeX"></span>
+    <script type="text/javascript">
+        function updateTime() {
+            var date1 = '2019/07/17 00:00:00';
+            var date2 = new Date();
+            var date3 = date2.getTime() - new Date(date1).getTime();
+            var days = Math.floor(date3 / (24 * 3600 * 1000));
+            var leave1 = date3 % (24 * 3600 * 1000);
+            var hours = Math.floor(leave1 / (3600 * 1000));
+            var leave2 = leave1 % (3600 * 1000);
+            var minutes = Math.floor(leave2 / (60 * 1000));
+            var leave3 = leave2 % (60 * 1000);
+            var seconds = Math.round(leave3 / 1000);
+            // alert(" 相差 " + days + "天 " + hours + "小时 " + minutes + " 分钟" + seconds + " 秒")
+            var timeX = document.getElementById('timeX');
+            timeX.innerHTML = "已运行" + days + "天" + hours + "小时" + minutes + "分钟" + seconds + "秒";
+        }
+        setInterval(updateTime, 1000);
+    </script>
+<br/>
+<br/>    
+Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://microtears.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">Google Translate的API调用</h2>
+            <div class="post-date">2019-02-04</div>
+            
+            <div class="post-content">
+              <p>由于经常用到谷歌翻译，而每次切换到网页又觉得耗费时间，所以决定自己写一个小工具来用，于是就去查询了一番谷歌翻译的API，但是看到都说是API已经开始收费了，但还是有人通过网页爬出了网页翻译的API但是利用起来比较繁琐。之后又找到了一个简单的API，如下：</p>
+<!-- more -->
+<pre><code class="language-kotlin">fun translate(text: String, source: String = &quot;auto&quot;, target: String = &quot;zh-CN&quot;): Pair&lt;String, String&gt; {
+    val textChecked = if (text.isBlank()) &quot;null&quot; else URLEncoder.encode(text, &quot;utf8&quot;)
+    val userAgent = &quot;Mozilla/5.0&quot;
+    val url = &quot;https://translate.googleapis.com/translate_a/single?client=gtx&amp;sl=$source&amp;tl=$target&amp;dt=t&amp;q=$textChecked&quot;
+    val connection = URL(url).openConnection().apply { setRequestProperty(&quot;User-Agent&quot;, userAgent) }
+    val raw = connection.getInputStream().use { it.readBytes() }.toString(Charset.forName(&quot;utf8&quot;))
+    val p1 = raw.indexOf(&quot;\&quot;,\&quot;&quot;)
+    val p2 = raw.indexOf(&quot;\&quot;,&quot;, p1 + 1)
+    val result = raw.substring(4, p1)
+    val query = raw.substring(p1 + 3, p2)
+    return Pair(result, query)
+}
+</code></pre>
+<p>测试函数如下：</p>
+<pre><code class="language-kotlin">fun main() {
+    println(translate(&quot;别让这么应景的天空放晴啊&quot;))
+    println(translate(&quot;空気を読んだ空晴れないでよ&quot;))
+
+    println(translate(&quot;别降下这么看场合的雨啊&quot;))
+    println(translate(&quot;空気を読んだ雨降らないでよ&quot;))
+
+    println(translate(&quot;He sits no sure that sits too high&quot;))
+    println(translate(&quot;高处不胜寒&quot;, target = &quot;en-US&quot;))
+}
+</code></pre>
+<p>调用结果如下：</p>
+<pre><code class="language-kotlin">(别让这么应景的天空放晴啊, 别让这么应景的天空放晴啊)
+(我看空中的天空请不要晴天, 空気を読んだ空晴れないでよ)
+
+(别降下这么看场合的雨啊, 别降下这么看场合的雨啊)
+(看风雨时不要下雨, 空気を読んだ雨降らないでよ)
+
+(他不确定是不是太高了, He sits no sure that sits too high)
+(High altitude, 高处不胜寒)
+</code></pre>
+<p>translate函数参数分别是：需要翻译的字符串，原始语言（默认为auto，即自动检测），目标语言（默认zh-CN，即简体中文）。<br>
+translate函数返回结果为：翻译后的字符串，需要翻译的字符串（原始字符串）。</p>
+
+            </div>
+            
+              <div class="tag-container">
+                
+                  <a href="https://microtears.github.io/tag/DsjWB-WTw" class="tag">
+                    迁移
+                  </a>
+                
+              </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://microtears.github.io/post/idea-cha-jian-shi-yong">
+                  <h3 class="post-title">
+                    Idea插件使用
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+
+<script type="application/javascript">
+
+AOS.init();
+
+hljs.initHighlightingOnLoad()
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+
+  </body>
+</html>

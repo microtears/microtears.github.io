@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>Tensorflow分类器项目自定义数据读入(v1) | 德卡先生的信箱</title>
+<meta name="description" content="日子和我，都有点难过。">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://microtears.github.io/favicon.ico?v=1563355098838">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://microtears.github.io/styles/main.css">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+
+
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://microtears.github.io">
+        <img src="https://microtears.github.io/images/avatar.png?v=1563355098838" class="site-logo">
+        <h1 class="site-title">德卡先生的信箱</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="site-nav">
+            标签
+          </a>
+        
+      
+        
+          <a href="/post/about" class="site-nav">
+            关于
+          </a>
+        
+      
+        
+          <a href="/notes" class="site-nav">
+            笔记
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+          <a class="social-link" href="https://github.com/microtears" target="_blank">
+            <i class="fab fa-github"></i>
+          </a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      日子和我，都有点难过。
+    </div>
+    <div class="site-footer">
+      <span id="timeX"></span>
+    <script type="text/javascript">
+        function updateTime() {
+            var date1 = '2019/07/17 00:00:00';
+            var date2 = new Date();
+            var date3 = date2.getTime() - new Date(date1).getTime();
+            var days = Math.floor(date3 / (24 * 3600 * 1000));
+            var leave1 = date3 % (24 * 3600 * 1000);
+            var hours = Math.floor(leave1 / (3600 * 1000));
+            var leave2 = leave1 % (3600 * 1000);
+            var minutes = Math.floor(leave2 / (60 * 1000));
+            var leave3 = leave2 % (60 * 1000);
+            var seconds = Math.round(leave3 / 1000);
+            // alert(" 相差 " + days + "天 " + hours + "小时 " + minutes + " 分钟" + seconds + " 秒")
+            var timeX = document.getElementById('timeX');
+            timeX.innerHTML = "已运行" + days + "天" + hours + "小时" + minutes + "分钟" + seconds + "秒";
+        }
+        setInterval(updateTime, 1000);
+    </script>
+<br/>
+<br/>    
+Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://microtears.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">Tensorflow分类器项目自定义数据读入(v1)</h2>
+            <div class="post-date">2019-02-04</div>
+            
+            <div class="post-content">
+              <p>在照着Tensorflow官网的demo敲了一遍分类器项目的代码后，运行倒是成功了，结果也不错。但是最终还是要训练自己的数据，所以尝试准备加载自定义的数据，然而demo中只是出现了<code>fashion_mnist.load_data()</code>并没有详细的读取过程，随后我又找了些资料，把读取的过程记录在这里。<br>
+首先提一下需要用到的模块：</p>
+<!-- more -->
+<pre><code class="language-python">import os
+
+import keras
+import matplotlib.pyplot as plt
+from PIL import Image
+from keras.preprocessing.image import ImageDataGenerator
+from sklearn.model_selection import train_test_split
+</code></pre>
+<p>图片分类器项目，首先确定你要处理的图片分辨率将是多少，这里的例子为30像素：</p>
+<pre><code class="language-python">IMG_SIZE_X = 30
+IMG_SIZE_Y = 30
+</code></pre>
+<p>其次确定你图片的方式目录：</p>
+<pre><code class="language-python">image_path = r'D:\Projects\ImageClassifier\data\set'
+path = &quot;.\data&quot;
+# 你也可以使用相对路径的方式
+# image_path =os.path.join(path, &quot;set&quot;)
+</code></pre>
+<p>目录下的结构如下：</p>
+<p><img src="https://s2.ax1x.com/2019/02/04/kJpuDK.png" alt="folder"></p>
+<p>相应的label.txt如下：</p>
+<pre><code class="language-TEXT">动漫
+风景
+美女
+物语
+樱花
+</code></pre>
+<p>接下来是接在labels.txt，如下：</p>
+<pre><code class="language-python">label_name = &quot;labels.txt&quot;
+label_path = os.path.join(path, label_name)
+class_names = np.loadtxt(label_path, type(&quot;&quot;))
+</code></pre>
+<p>这里简便起见，直接利用了numpy的loadtxt函数直接加载。</p>
+<p>之后便是正式处理图片数据了，注释就写在里面了：</p>
+<pre><code class="language-python">re_load = False
+re_build = False
+# re_load = True
+re_build = True
+
+data_name = &quot;data.npz&quot;
+data_path = os.path.join(path, data_name)
+model_name = &quot;model.h5&quot;
+model_path = os.path.join(path, model_name)
+
+count = 0
+
+# 这里判断是否存在序列化之后的数据，re_load是一个开关，是否强制重新处理，测试用，可以去除。
+if not os.path.exists(data_path) or re_load:
+    labels = []
+    images = []
+    print('Handle images')
+    # 由于label.txt是和图片防止目录的分类目录一一对应的，即每个子目录的目录名就是labels.txt里的一个label，所以这里可以通过读取class_names的每一项去拼接path后读取
+    for index, name in enumerate(class_names):
+        # 这里是拼接后的子目录path
+        classpath = os.path.join(image_path, name)
+        # 先判断一下是否是目录
+        if not os.path.isdir(classpath):
+            continue
+        # limit是测试时候用的这里可以去除
+        limit = 0
+        for image_name in os.listdir(classpath):
+            if limit &gt;= max_size:
+                break
+            # 这里是拼接后的待处理的图片path
+            imagepath = os.path.join(classpath, image_name)
+            count = count + 1
+            limit = limit + 1
+            # 利用Image打开图片
+            img = Image.open(imagepath)
+            # 缩放到你最初确定要处理的图片分辨率大小
+            img = img.resize((IMG_SIZE_X, IMG_SIZE_Y))
+            # 转为灰度图片，这里彩色通道会干扰结果，并且会加大计算量
+            img = img.convert(&quot;L&quot;)
+            # 转为numpy数组
+            img = np.array(img)
+            # 由（30，30）转为（1，30，30）（即`channels_first`），当然你也可以转换为（30，30，1）（即`channels_last`）但为了之后预览处理后的图片方便这里采用了（1，30，30）的格式存放
+            img = np.reshape(img, (1, IMG_SIZE_X, IMG_SIZE_Y))
+            # 这里利用循环生成labels数据，其中存放的实际是class_names中对应元素的索引
+            labels.append([index])
+            # 添加到images中，最后统一处理
+            images.append(img)
+            # 循环中一些状态的输出，可以去除
+            print(&quot;{} class: {} {} limit: {} {}&quot;
+                  .format(count, index + 1, class_names[index], limit, imagepath))
+    # 最后一次性将images和labels都转换成numpy数组
+    npy_data = np.array(images)
+    npy_labels = np.array(labels)
+    # 处理数据只需要一次，所以我们选择在这里利用numpy自带的方法将处理之后的数据序列化存储
+    np.savez(data_path, x=npy_data, y=npy_labels)
+    print(&quot;Save images by npz&quot;)
+else:
+    # 如果存在序列化号的数据，便直接读取，提高速度
+    npy_data = np.load(data_path)[&quot;x&quot;]
+    npy_labels = np.load(data_path)[&quot;y&quot;]
+    print(&quot;Load images by npz&quot;)
+image_data = npy_data
+labels_data = npy_labels
+</code></pre>
+<p>到了这里原始数据的加工预处理便已经完成，只需要最后一步，就和demo中<code>fashion_mnist.load_data()</code>返回的结果一样了。代码如下：</p>
+<pre><code class="language-python"># 最后一步就是将原始数据分成训练数据和测试数据
+train_images, test_images, train_labels, test_labels = \
+    train_test_split(image_data, labels_data, test_size=0.2, random_state=6)
+</code></pre>
+<p>这里将相关信息打印的方法也附上：</p>
+<pre><code class="language-python">print(&quot;_________________________________________________________________&quot;)
+print(&quot;%-28s %-s&quot; % (&quot;Name&quot;, &quot;Shape&quot;))
+print(&quot;=================================================================&quot;)
+print(&quot;%-28s %-s&quot; % (&quot;Image Data&quot;, image_data.shape))
+print(&quot;%-28s %-s&quot; % (&quot;Labels Data&quot;, labels_data.shape))
+print(&quot;=================================================================&quot;)
+
+print('Split train and test data,p=%')
+print(&quot;_________________________________________________________________&quot;)
+print(&quot;%-28s %-s&quot; % (&quot;Name&quot;, &quot;Shape&quot;))
+print(&quot;=================================================================&quot;)
+print(&quot;%-28s %-s&quot; % (&quot;Train Images&quot;, train_images.shape))
+print(&quot;%-28s %-s&quot; % (&quot;Test Images&quot;, test_images.shape))
+print(&quot;%-28s %-s&quot; % (&quot;Train Labels&quot;, train_labels.shape))
+print(&quot;%-28s %-s&quot; % (&quot;Test Labels&quot;, test_labels.shape))
+print(&quot;=================================================================&quot;)
+
+</code></pre>
+<p>之后别忘了归一化哟：</p>
+<pre><code class="language-python">print(&quot;Normalize images&quot;)
+train_images = train_images / 255.0
+test_images = test_images / 255.0
+</code></pre>
+<p>最后附上读取自定义数据的完整代码：</p>
+<pre><code class="language-python">import os
+
+import keras
+import matplotlib.pyplot as plt
+from PIL import Image
+from keras.layers import *
+from keras.models import *
+from keras.optimizers import Adam
+from keras.preprocessing.image import ImageDataGenerator
+from sklearn.model_selection import train_test_split
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+# 支持中文
+plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
+plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+re_load = False
+re_build = False
+# re_load = True
+re_build = True
+epochs = 50
+batch_size = 5
+count = 0
+max_size = 2000000000
+IMG_SIZE_X = 30
+IMG_SIZE_Y = 30
+np.random.seed(9277)
+image_path = r'D:\Projects\ImageClassifier\data\set'
+path = &quot;.\data&quot;
+data_name = &quot;data.npz&quot;
+data_path = os.path.join(path, data_name)
+model_name = &quot;model.h5&quot;
+model_path = os.path.join(path, model_name)
+label_name = &quot;labels.txt&quot;
+label_path = os.path.join(path, label_name)
+class_names = np.loadtxt(label_path, type(&quot;&quot;))
+print('Load class names')
+if not os.path.exists(data_path) or re_load:
+    labels = []
+    images = []
+    print('Handle images')
+    for index, name in enumerate(class_names):
+        classpath = os.path.join(image_path, name)
+        if not os.path.isdir(classpath):
+            continue
+        limit = 0
+        for image_name in os.listdir(classpath):
+            if limit &gt;= max_size:
+                break
+            imagepath = os.path.join(classpath, image_name)
+            count = count + 1
+            limit = limit + 1
+            img = Image.open(imagepath)
+            img = img.resize((30, 30))
+            img = img.convert(&quot;L&quot;)
+            img = np.array(img)
+            img = np.reshape(img, (1, 30, 30))
+            # img = skimage.io.imread(imagepath, as_grey=True)
+            # if img.shape[2] != 3:
+            #     print(&quot;{} shape is {}&quot;.format(image_name, img.shape))
+            #     continue
+            # data = transform.resize(img, (IMG_SIZE_X, IMG_SIZE_Y))
+            labels.append([index])
+            images.append(img)
+            print(&quot;{} class: {} {} limit: {} {}&quot;
+                  .format(count, index + 1, class_names[index], limit, imagepath))
+    npy_data = np.array(images)
+    npy_labels = np.array(labels)
+    np.savez(data_path, x=npy_data, y=npy_labels)
+    print(&quot;Save images by npz&quot;)
+else:
+    npy_data = np.load(data_path)[&quot;x&quot;]
+    npy_labels = np.load(data_path)[&quot;y&quot;]
+    print(&quot;Load images by npz&quot;)
+image_data = npy_data
+labels_data = npy_labels
+print(&quot;_________________________________________________________________&quot;)
+print(&quot;%-28s %-s&quot; % (&quot;Name&quot;, &quot;Shape&quot;))
+print(&quot;=================================================================&quot;)
+print(&quot;%-28s %-s&quot; % (&quot;Image Data&quot;, image_data.shape))
+print(&quot;%-28s %-s&quot; % (&quot;Labels Data&quot;, labels_data.shape))
+print(&quot;=================================================================&quot;)
+train_images, test_images, train_labels, test_labels = \
+    train_test_split(image_data, labels_data, test_size=0.2, random_state=6)
+print('Split train and test data,p=%')
+print(&quot;_________________________________________________________________&quot;)
+print(&quot;%-28s %-s&quot; % (&quot;Name&quot;, &quot;Shape&quot;))
+print(&quot;=================================================================&quot;)
+print(&quot;%-28s %-s&quot; % (&quot;Train Images&quot;, train_images.shape))
+print(&quot;%-28s %-s&quot; % (&quot;Test Images&quot;, test_images.shape))
+print(&quot;%-28s %-s&quot; % (&quot;Train Labels&quot;, train_labels.shape))
+print(&quot;%-28s %-s&quot; % (&quot;Test Labels&quot;, test_labels.shape))
+print(&quot;=================================================================&quot;)
+
+# 归一化
+# 我们将这些值缩小到 0 到 1 之间，然后将其馈送到神经网络模型。为此，将图像组件的数据类型从整数转换为浮点数，然后除以 255。以下是预处理图像的函数：
+# 务必要以相同的方式对训练集和测试集进行预处理：
+print(&quot;Normalize images&quot;)
+train_images = train_images / 255.0
+test_images = test_images / 255.0
+</code></pre>
+
+            </div>
+            
+              <div class="tag-container">
+                
+                  <a href="https://microtears.github.io/tag/ctnwufwYj" class="tag">
+                    python
+                  </a>
+                
+                  <a href="https://microtears.github.io/tag/DsjWB-WTw" class="tag">
+                    迁移
+                  </a>
+                
+              </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://microtears.github.io/post/google-translate-de-api-diao-yong">
+                  <h3 class="post-title">
+                    Google Translate的API调用
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+
+<script type="application/javascript">
+
+AOS.init();
+
+hljs.initHighlightingOnLoad()
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+
+  </body>
+</html>
