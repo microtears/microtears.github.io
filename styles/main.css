@@ -755,4 +755,7 @@ a {
       .sidebar {
     background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(../media/images/sidebar-bg.jpg) !important;
 }
+.site-description {
+    font-size: 15px;
+}
     

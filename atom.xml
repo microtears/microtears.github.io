@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://microtears.github.io</id>
-    <title>德卡先生的信箱</title>
-    <updated>2019-07-17T10:54:59.514Z</updated>
+    <title>YU-NO</title>
+    <updated>2019-07-17T11:24:31.421Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://microtears.github.io"/>
     <link rel="self" href="https://microtears.github.io/atom.xml"/>
-    <subtitle>日子和我，都有点难过。</subtitle>
+    <subtitle>感谢有幸认清自己，让其沉淀，少些许浮躁，少些烦恼。无论小苦恼多少，但被解决后，更为我们添加一份快乐，岁月总是历久弥新，学着细细品尝。</subtitle>
     <logo>https://microtears.github.io/images/avatar.png</logo>
     <icon>https://microtears.github.io/favicon.ico</icon>
-    <rights>All rights reserved 2019, 德卡先生的信箱</rights>
+    <rights>All rights reserved 2019, YU-NO</rights>
     <entry>
         <title type="html"><![CDATA[Hide Desktop Icon[AutoHotKey]]]></title>
         <id>https://microtears.github.io/post/hide-desktop-iconautohotkey</id>
