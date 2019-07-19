@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>在VSCode中编写Kotlin/Java | YU-NO</title>
+<title>Bitmap 笔记 | YU-NO</title>
 <meta name="description" content="岁月总是历久弥新，需要细细品尝。">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -126,46 +126,41 @@ Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea<
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
           <div class="post-detail">
-            <h2 class="post-title">在VSCode中编写Kotlin/Java</h2>
-            <div class="post-date">2018-11-28</div>
-            
-              <div class="feature-container" style="background-image: url('https://s1.ax1x.com/2018/05/12/CBhUSJ.png')">
-              </div>
+            <h2 class="post-title">Bitmap 笔记</h2>
+            <div class="post-date">2018-12-24</div>
             
             <div class="post-content">
-              <p>不希望每次运行一下代码就要去启动Android Studio这个庞然大物，正好vscode可以做一个轻量级的IDE，所以配置了vscode用来编写Kotlin程序</p>
-<!-- more -->
-<h2 id="前言">前言</h2>
-<p>不希望每次运行一下代码就要去启动Android Studio这个庞然大物，正好vscode可以做一个轻量级的IDE，所以配置了vscode用来编写Kotlin程序</p>
-<h2 id="环境配置">环境配置</h2>
-<p>首先可以在Android Studio的安装目录下找到Kotlin Compiler：<br>
-<img src="https://s1.ax1x.com/2018/05/12/CBWw9J.png" alt="1"><br>
-<img src="https://s1.ax1x.com/2018/05/12/CBW039.png" alt="1"><br>
-在环境变量中添加以下项：<br>
-值为：Kotlin Compiler Path\bin<br>
-例如：D:\Program Files\Android\Android Studio\plugins\Kotlin\kotlinc\bin<br>
-<img src="https://s1.ax1x.com/2018/05/12/CBW4gA.png" alt="1"><br>
-然后再控制台输入命令<code>kotlinc -version</code>检测环境是否配置妥当<br>
-如果正常，则如下图所示<br>
-<img src="https://s1.ax1x.com/2018/05/12/CBhUSJ.png" alt="1"><br>
-如果出现这种情况<br>
-<img src="https://s1.ax1x.com/2018/05/12/CBhtW4.png" alt="1"><br>
-则是jdk版本配置不正确或者JAVA环境配置错误所致，重新配置即可（推荐使用jdk1.8）</p>
-<h2 id="配置vscode">配置VSCODE</h2>
-<p>在vscode扩展中安装Kotlin Language和Code Runner这两个扩展包<br>
-<img src="https://s1.ax1x.com/2018/05/12/CB4bE6.png" alt="1"><br>
-<img src="https://s1.ax1x.com/2018/05/12/CB4qUK.md.png" alt="1"><br>
-安装后重启加载扩展，就可以编写Kotlin代码并编译运行了,右键<code>Run Code</code>或者<code>Ctrl</code>+<code>Alt</code>+<code>N</code>运行程序，,OK，像这样<br>
-<img src="https://s1.ax1x.com/2018/05/12/CB7My4.png" alt="1"><br>
-但是我们发现，输出面板中文出现了乱码，可行的解决办法是在用户设置中添加一句<code>&quot;code-runner.runInTerminal&quot;: true,</code>，表示让Kotlin程序通过Terminal运行，就不会出现中文乱码了<br>
-效果如下：<br>
-<img src="https://s1.ax1x.com/2018/05/12/CB7alD.png" alt="1"><br>
-而且在程序目录下还会生成相应的jar包，如：<br>
-<img src="https://s1.ax1x.com/2018/05/12/CB7USO.png" alt="1"></p>
-<h2 id="总结">总结</h2>
-<p>至此，vscode关于Kotlin的配置就已经完成了.</p>
-<p><em>Enjoy Your Code！</em><br>
-<em>2018/08/31</em></p>
+              <h2 id="捕获outofmemoryerror">捕获OutOfMemoryError</h2>
+<blockquote>
+<p>因为Bitmap非常耗内存，了避免应用在分配Bitmap内存的时候出现OutOfMemory异常以后Crash掉，需要特别注意实例化Bitmap部分的代码。通常，在实例化Bitmap的代码中，一定要对OutOfMemory异常进行捕获。很多开发者会习惯性的在代码中直接捕获Exception。但是对于OutOfMemoryError来说，这样做是捕获不到的。因为OutOfMemoryError是一种Error，而不是Exception。</p>
+</blockquote>
+<pre><code class="language-java">Bitmap bitmap = null;
+    try {
+        // 实例化Bitmap
+        bitmap = BitmapFactory.decodeFile(path);
+    } catch (OutOfMemoryError e) {
+
+    }
+    if (bitmap == null) {
+        return defaultBitmapMap; // 如果实例化失败 返回默认的Bitmap对象
+    }
+</code></pre>
+<p>作者：李李哈哈哈<br>
+链接：https://www.jianshu.com/p/c77158b6e07e</p>
+<h2 id="android-bitmap默认的色彩模式是argb_8888">Android Bitmap默认的色彩模式是ARGB_8888</h2>
+<h2 id="options类的inpreferredconfig">Options类的inPreferredConfig</h2>
+<ol>
+<li>ALPHA_8：每个像素占用1byte内存。</li>
+<li>ARGB_4444:每个像素占用2byte内存</li>
+<li>ARGB_8888:每个像素占用4byte内存</li>
+<li>RGB_565:每个像素占用2byte内存</li>
+</ol>
+<h2 id="options类的insamplesize采样率">Options类的inSampleSize采样率</h2>
+<blockquote>
+<p>当inSampleSize=1时，采样后的图片为图片的原始大小。<br>
+除了1以外，inSampleSize的取值应该总为2的整数倍，否则会【向下取整】，取一个最接近2的整数倍，比如inSampleSize=3时，系统会取inSampleSize=2<br>
+当inSampleSize=2时，采样后的图片的宽高均为原始图片宽高的1/2</p>
+</blockquote>
 
             </div>
             
@@ -180,9 +175,9 @@ Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea<
             
               <div class="next-post">
                 <div class="next">下一篇</div>
-                <a href="https://microtears.github.io/post/kotlin-val-de-yi-ci-cuo-wu-yun-yong">
+                <a href="https://microtears.github.io/post/zai-vscode-zhong-bian-xie-kotlinjava">
                   <h3 class="post-title">
-                     kotlin val的一次错误运用
+                    在VSCode中编写Kotlin/Java
                   </h3>
                 </a>
               </div>

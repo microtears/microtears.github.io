@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>每个程序员都应该知道的基础数论  | YU-NO</title>
+<meta name="description" content="岁月总是历久弥新，需要细细品尝。">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://microtears.github.io/favicon.ico?v=1563541231925">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://microtears.github.io/styles/main.css">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144016944-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144016944-1');
+</script>
+
+
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://microtears.github.io">
+        <img src="https://microtears.github.io/images/avatar.png?v=1563541231925" class="site-logo">
+        <h1 class="site-title">YU-NO</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="site-nav">
+            标签
+          </a>
+        
+      
+        
+          <a href="/post/about" class="site-nav">
+            关于
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+          <a class="social-link" href="https://github.com/microtears" target="_blank">
+            <i class="fab fa-github"></i>
+          </a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      岁月总是历久弥新，需要细细品尝。
+    </div>
+    <div class="site-footer">
+      <span id="timeX"></span>
+<span class="my-face">❤</span>
+<script type="text/javascript">
+    function updateTime() {
+        var date1 = '2019/07/17 00:00:00';
+        var date2 = new Date();
+        var date3 = date2.getTime() - new Date(date1).getTime();
+        var days = Math.floor(date3 / (24 * 3600 * 1000));
+        var leave1 = date3 % (24 * 3600 * 1000);
+        var hours = Math.floor(leave1 / (3600 * 1000));
+        var leave2 = leave1 % (3600 * 1000);
+        var minutes = Math.floor(leave2 / (60 * 1000));
+        var leave3 = leave2 % (60 * 1000);
+        var seconds = Math.round(leave3 / 1000);
+        var timeX = document.getElementById('timeX');
+        timeX.innerHTML = "已运行" + days + "天" + hours + "小时" + minutes + "分钟" + seconds + "秒";
+    }
+    setInterval(updateTime, 1000);
+</script>
+<br/>
+<br/>    
+Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://microtears.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">每个程序员都应该知道的基础数论 </h2>
+            <div class="post-date">2017-10-18</div>
+            
+            <div class="post-content">
+              <p><em>2017-10-18</em> <a href="https://mp.weixin.qq.com/s?__biz=MzI2NjA3NTc4Ng==&amp;mid=2652079702&amp;idx=1&amp;sn=3004722ab0e7f3d05ab5407a5eeebd77&amp;chksm=f1748db3c60304a5c7d82bb91229e4930fd03d4d4cc55e02af5bdd5856320c3793340aafbce7&amp;scene=0&amp;key=304caf69ae97dec95f50cef07cdf166031e23159d43e994c73af172a88ce2de1a2412e3ecaec4cd6add432cd2f8f79551f14be063245132631c8d9c936dad115e4d3fff9ae76d530a5a33987e1ca11e5&amp;ascene=14&amp;uin=MjY0NDYxMzQyMg%3D%3D&amp;devicetype=Windows+10&amp;version=62060038&amp;lang=zh_CN&amp;pass_ticket=ZrHrWQ%2BIYn%2B1oQVWftObY3Awlf5t9a53NJbPB%2BZ%2F19VffcVFBJIMcWbNRlXtgXPk&amp;winzoom=1##">算法与数据结构</a></p>
+<blockquote>
+<p><strong>来自：开源中国社区</strong></p>
+<p><strong>链接：https://www.oschina.net/translate/tutorial-number-theory <strong><strong>（点击尾部阅读原文前往）</strong></strong></strong></p>
+<p>原文：https://www.codechef.com/wiki/tutorial-number-theory/</p>
+</blockquote>
+<p>这篇文章讨论了数论中每个程序员都应该知道的几个重要概念。本文的内容既不是对数论的入门介绍，也不是针对数论中任何特定算法的讨论，而只是想要做为数论的一篇参考。如果读者想要获取关于数论的更多细节，文中也提供了一些外部的参考文献（大多数来自于 Wikipedia 和 Wolfram ）。</p>
+<p><strong>-1、Dilworth定理</strong></p>
+<blockquote>
+<p>偏序集的两个定理：<br>
+定理1) 令（X,≤）是一个有限偏序集，并令r是其最大链的大小。则X可以被划分成r个但不能再少的反链。<br>
+其对偶定理称为Dilworth定理：<br>
+定理2) 令（X,≤）是一个有限偏序集，并令m是反链的最大的大小。则X可以被划分成m个但不能再少的链。<br>
+<strong>即：链的最少划分数 = 反链的最长长度</strong><br>
+1 7 8 2 3 4<br>
+反链：最长不上升子序列（如：（7，2））长度 = 2；<br>
+即：按升序划分，最少的链划分数为2，为（1，2，3，4）和（7，8）。</p>
+</blockquote>
+<p><strong>0、皮亚诺公理</strong></p>
+<p>整个算术规则都是建立在 5 个基本公理基础之上的，这 5 个基本公理被称为皮亚诺公理。皮亚诺公理定义了自然数所具有的特性，具体如下：</p>
+<p>（1）0是自然数；</p>
+<p>（2）每个自然数都有一个后续自然数；</p>
+<p>（3）0不是任何自然数的后续自然数；</p>
+<p>（4）不同自然数的后续自然数不同；</p>
+<p>（5）如果集合S包含了数字0，并且包含S中每一个数字的后续自然数，那么集合S就包含了所有的自然数。</p>
+<p>上述第5个公理也被称为“数学归纳法的基础”。</p>
+<p>通常，除了我们想要证明其他算术定理的情况，我们很少直接使用上述公理。但作为算术的基石，这些公理是值得我们去了解的。</p>
+<p><strong>延伸阅读：</strong></p>
+<p>https://en.wikipedia.org/wiki/Peano_axioms</p>
+<p>http://mathworld.wolfram.com/PeanosAxioms.html</p>
+<p><strong>1、算术基本定理和除法运算法则</strong></p>
+<p>正如这个定理的名称所言，算术基本定理是数论中所有概念的核心。算术基本定理含义如下：任何一个大于1的整数都可以以某种特定的方式写成质数的乘积的形式（这种特定方式取决于乘积中质数的顺序）。例如，18 = 2 * 9, 1755 = 33 *5 * 13. 这个定理在几乎所有的数论运算法则中都扮演着十分重要的角色，例如求一个数的质数因子、最大公约数、除数的和等等。想要证明这个定理其实很简单，实际上它是欧几里得第一个定理的一个推论（下面小节会讨论到）。</p>
+<p>除法运算法则含义是说：给定两个整数a，b（b不等于0），那么存在两个整数q和r使得下面的等式成立：</p>
+<p>a = bq + r， 0 &lt;= r &lt; b</p>
+<p><strong>延伸阅读：</strong></p>
+<p>https://en.wikipedia.org/wiki/Fundamental_theorem_of_arithmetic</p>
+<p>http://mathworld.wolfram.com/FundamentalTheoremofArithmetic.html</p>
+<p>https://en.wikibooks.org/wiki/Number_Theory/Elementary_Divisibility</p>
+<p>https://en.wikipedia.org/wiki/Division_algorithm</p>
+<p>通常我们把q称为商，而把r称为余数。如果r = 0，那么我就说b整除a，并且表示为：b | a.</p>
+<p><strong>2、欧几里得定理</strong></p>
+<p>数学中两个重要定理，被称为“欧几里德的第一定理（或欧几里德的引理）”和“欧几里德的第二定理（通常简称为”欧几里德定理“），内容如下：</p>
+<p><strong>第一定理：</strong> p|ab =&gt; p|a or p|b。该定理的直接结论就是算术基本定理。</p>
+<p><strong>第二定理：</strong> 质数的数量是无限的。有很多简单的证明方法。</p>
+<p>虽然确实存在无限多的质数，但也应该记住，质数之间存在任意大的差值。换句话说，给定n的前提下，总是可以获得一些列的n个连续复合数。</p>
+<p><strong>延伸阅读：</strong> Euclid's Theorem、Euclid's Lemma、walfram</p>
+<p><strong>3、最大公约数、最小公倍数和贝祖定理</strong></p>
+<p>欧几里得算法是求两个数的最大公约数最常用的算法，而且也是一个很高效的算法，因为使用欧几里得算法求解两个数的最大公约数的算法步骤最多不会超过这两个数中较小的那个数的5倍。最大公约数通常使用圆括号表示—— (a,b) 表示a和b的最大公约数。类似地，最小公倍数通常使用方括号表示—— [a,b] 表示a和b的最小公倍数。</p>
+<p>如果 (a,b) = 1，即 [a,b] = ab，此时我们称a和b互质。</p>
+<p>如果 (a,b) = d，那么 (a/d,b/d) = 1。</p>
+<p>最大公约数和最小公倍数之间的关系可以由一个非常简单的等式来表示：(a,b) * [a,b] = ab. 该等式为我们提供了一种快速计算两个数的最小公倍数的方法。</p>
+<p>贝祖定理是说，如果 d = （a,b） 那么一定存在整数 x 和整数 y 满足 ax + by = d. （当然，如果存在的话，那么线性双变量方程的理论保证了无穷多解的存在性）。同样值得注意的是，k = d 是满足 ax + by = k 有一个关于 x 和 y 的解的最小正整数。</p>
+<p>指定 a 和 b，我们可以通过递归或迭代的方式实现扩展的欧几里得算法来求解满足等式 ax + by = d 的 x 和 y。</p>
+<p><strong>延伸阅读：</strong> GCD、Bezout's Identity、Euclid's Algorithm、Extended Euclid's Algorithm</p>
+<p><strong>4、整数因式分解</strong></p>
+<p>整数因子分解的最常用的算法是 Eratosthenes 筛选法。在分解N时，将质数扫描到 sqrt(N）就足够了。另外，如果我们需要对 1 到 N 之间的所有数字进行因式分解，则可以使用该算法的单次运行来完成此任务 - 对于 1 到 N 之间的每个整数 k ，我们可以保持一对映射——整除 k 的最小质数、最大倍数，(p，a)。k 的剩余质因子与 k/(pa) 的相似。</p>
+<p><strong>延伸阅读：</strong> wikipedia、 interactive animation</p>
+<p><strong>5、线性同余方程组</strong></p>
+<p>形如ax≡b (mod n)的方程式（x是未知数）称为线性同余。当且仅当存在整数x使得n | (ax-b)成立时，这样的方程组将有一个解，即ax -b = ny，y是整数，换句话说，ax + n（-y）= b。我们已经从Bezout的等式中得知，像这样的线性不定方程将只有在（a，n）的gcd（假设该值为d）整除b时才有解。在这种情况下，让b = dd'，a = da'，n = dn'，所以我们有：</p>
+<p>da'x + dn'（ - y）= dd'，其中gcd（a'，n'）= 1<br>
+带入变量d<br>
+a'x + n'（ - y）= d'。<br>
+由于gcd（a'，n'） = 1，现在我们可以使用扩展的欧几里德的算法来找到a'x + n'（ - y）= 1的解，然后将该解乘以d'得到对于a'x + n'（ - y）= d'的解。</p>
+<p>注意，如果ax≡b（mod n）有一个解，则mod（n / d）有且仅有一个解。如果这个解是用x0表示的，那么mod n将恰好有d个解，由x0 + kn/d给出，其中0&lt;= k&lt;d。在关于二次方程的教程中详细讨论了这一点。</p>
+<p><strong>延伸阅读：</strong> Linear Congruence Theorem、Solving Linear Congruences</p>
+<p><strong>6、中国剩余定理</strong></p>
+<p>典型的问题形式是“寻找一个数，除以2余1，除以3余2，除以7余5”其余各项可以被推广为一元线性同余方程组之后可以使用中国剩余定理来解决。举个例子，下面的问题可以被表示为三个线性同余式：“x ≡ 1 (mod 2), x ≡ 2 mod(3), x ≡ 5 mod (7)”</p>
+<p><strong>也就是一元线性同余式方程组：</strong><br>
+x ≡ a1 (mod n1)<br>
+x ≡ a2 (mod n2)<br>
+x ≡ a3 (mod n3)<br>
+....<br>
+x ≡ ak (mod nk)</p>
+<p>假设整数ni,nj两两互质，则对任意的n=n1n2...nk，方程组有解</p>
+<p>对于任意的i，当0 &lt;= di &lt; ni，令ci=n/ni，令di为同余式cix=1(mod ni)的解（这个解法可以在利用扩展的欧几里德算法）。上面的线性方程组的通解可以给出为：</p>
+<p>c = a1c1d1 + a2c2d2 + ... + akckdk</p>
+<p>中国剩余定理的直接推论如下：假设 n = p1a1 * p2a2 * .... * pkak 为 n 的素因子分解。 那么，对于任何整数 a 和 b，我们对于每个 i 都有 a = b (mod n) iff a = b (mod piai ) 。</p>
+<p>讨论一下 Ni 的不一定都是两两互质的中国剩余定理的推广，如下 - 线性同余系统</p>
+<p>x≡a1（mod n1）<br>
+x≡a2（mod n2）<br>
+x≡a3（mod n3）<br>
+....<br>
+x≡ak（mod nk）</p>
+<p>有解，当对于每个 i != j 都有 iff gcd(ni,nj) 除 (ai-aj) ，且存在唯一解 mod n，其中 n 是 n1，n2 ... nk 的最小公倍数</p>
+<p><strong>进一步阅读：</strong> 中国剩余定理，求解线性同余，小程序</p>
+<p><strong>7、二次方一致性</strong></p>
+<p>给定 q 和 n，如果等式 x2≡q（mod n） 具有解，则 q 称为二次残差的模 n。如果该方程不具有解，则q被称为“二次非残差”。例如，x2≡9（mod 15）具有解 x = 12，因此 9 是模 15 的二次余数。另一方面，等式 x2≡11（mod 15）没有解，因此 11 是二次非残差，为了简单起见，如果一个正方形可以取一些正整数 n 的形式（nk + q），则整数 q 是模 n 的二次余数。</p>
+<p>发现具有质数模的二次一致性是否具有一个解，是有些容易的：x2≡a（mod p）只有在（p-1）/ 2 = 1（mod p）时才具有解。 在这种情况下，可以使用 Shank-Tonelli 算法来获得解决方案。</p>
+<p>**延伸阅读: ** 二次残差、二次互反性、模拟、Shank-Tonelli算法、E4手册</p>
+<p><strong>8、欧拉 Phi 函数、除数函数、约数和、Mobius 函数</strong></p>
+<p>欧拉的 <strong>Phi 函数</strong> （又称为常数函数，由φ表示）是自然数的函数，给出与相应的自然数互质的正整数的数目。因此，φ(8) = 4， φ(9) = 6 等。 该函数的以下属性值得注意：</p>
+<p>a) 如果 p 是素数，则 φ(pk) = (p-1)pk-1</p>
+<p>b) φ 函数是乘法的，即如果 if (a,b) = 1 则 φ(ab) = φ(a)φ(b)。</p>
+<p>c) φ(n) 的值可以通过欧拉公式获得：令 n = p1a1 * p2a2 * .... * pkak 是 n 的素因子分解。则</p>
+<ul>
+<li>φ(n) = n * (1- 1/p1)) * (1- 1/p2)) * ... * (1- 1/pk))</li>
+</ul>
+<p>d) 以编程方式，如果我们欲求 1 到 n 的 φ ， 那么我们可以非常好地使用筛选算法连同 φ 的乘法性质。中心思想是：如果 n 是素数，则 φ(n) = n-1。否则，如果 n 是素数的幂，例如 n= pk，则 φ(n) = (p-1)pk-1。否则，对于某个素数p，令 n=pk*q 。使用乘法属性， 我们有 φ(n) = φ(pk)φ(q)</p>
+<p><strong>φ(n) 的两个重要属性：</strong></p>
+<p>i. aφ(n) ≡ 1 (mod n) 每当 (a,n) = 1。 具体来说， 对于素数p，如果 p 不能整除 a，则 ap-1 ≡ 1 (mod p)。 这种特化也被称为费马小定理。</p>
+<p>ii. 令 d1, d2, ...dk 为 n 的所有除数（包括 n）。则 φ(d1) + φ(d2) + ... + φ(dk) = n<br>
+例如，18的除数是1、2、3、6、9 和 18。观察到 φ(1) + φ(2) + φ(3) + φ(6) + φ(9) + φ(18) = 1 + 1 + 2 + 2 + 6 + 6 = 18</p>
+<p>该<strong>除数函数</strong>，表示为 d(n)，给出了一个自然数的除数的数目。例如，d(18) = 6。类似地，除数函数之和，表示为 σ(n)，给出了 n 的除数的和。 因此，σ(18) = 1+2+3+6+9+18 = 39。关于这两个函数以下属性毫无价值：</p>
+<p>a) 如果 p 是素数，则 d(p) = 2。另外， d(pk) = k+1， 并且 σ(p) = p+1</p>
+<p>b) 如果 n 是两个不同的素数的乘积，假使 n = pq， 则 σ(n) = n+1+(p+q)。另外观察到这种情况：φ(n) = n+1-(p+q)。</p>
+<p>c) 一般来说，令 n = p1a1 * p2a2 * .... * pkak 。则 d(n) = (a1+1) * (a2+1) * ... (ak + 1)，并且 σ(n) 由以下乘积给出：</p>
+<ul>
+<li>σ(n) = ( (p1(a1+1) - 1) / (p1-1) ) * ( (p2(a2+1) - 1) / (p2-1) ) * ... * ( (pk(ak+1) - 1) / (pk-1) )</li>
+</ul>
+<p>如果 σ(n) =2n，则 n 被称为“完全数”。换句话说， 完全数的真因子（即除了自身以外的除数）的和恰好等于它本身。</p>
+<p><strong>mobius函数µ(n) 在所有正整数中定义如下：</strong></p>
+<ul>
+<li>
+<p>在 n 是非平方数（即 n 是不能被任意整数平方得到）并且 n 有偶数个不同的素数因子，则 µ(n) = 1</p>
+</li>
+<li>
+<p>在 n 是非平方数（即 n 是不能被任意整数平方得到）并且 n 具有奇数个不同素数因子，则µ(n) = -1</p>
+</li>
+</ul>
+<p>在 n 是平方数，即 n 是某个整数的平方，则 µ(n) = 0</p>
+<p>Mobius 函数是乘法分配性的，即 a 和 b 互为质数，则 µ(ab) = µ(a)*µ(b).</p>
+<p>计算欧拉方程函数的一个有用公式可以用 mobius 函数给出：令 d1，d2，... dk 为 n 的所有除数。然后</p>
+<p>φ(n) = (d1 * mu (n/d1) ) + (d2 * µ(n/d2) ) + .... + (dk * µ(n/dk) )</p>
+<p>这也可以写成：</p>
+<p>φ(n) = (µ(d1) *  (n/d1) ) + (µ(d2) * (n/d2) ) + .... + (µ(dk) * (n/dk) )</p>
+<p>使用筛选法计算 phi[n] 的 Java 实现如下：</p>
+<pre><code>//read/get n int phi[] = new int[n+1];   
+for(int i=2; i &lt;= n; i++) phi[i] = i; //phi[1] is 0   for(int i=2; i &lt;= n; i++)   
+if( phi[i] == i )   
+for(int j=i; j &lt;= n; j += i )   
+phi[j] = (phi[j]/i)*(i-1);
+</code></pre>
+<p><strong>阶乘</strong></p>
+<p>阶乘是非常重要的。N 的阶乘定义如下：N = (N)<em>(N-1)</em>(N-2)*(N-3)...1。在计算 nPr nCr 时需要使用阶乘。他们像这里描述的那样很快变得非常大，所以他们需要非常仔细的处理大数、大整数表示等。</p>
+<p>延伸阅读：欧拉的 Totient 函数、除数函数、除数和总和、Mobius函数</p>
+<p>到此我们完成了对基本数理论概念的讨论。对于那些对数理论感兴趣的人，这里有一些值得一读的书——</p>
+<p><strong>An introduction to the theory of numbers:</strong> by Niven, Zukerman and Montgomery （数论导论）</p>
+<p>**Elementary Number Theory : **by David Burton （数论基础）</p>
+<p><strong>整数序列</strong></p>
+<p>流行的整数序列有很多。它们中的许多都基于递归关系。主要的定理被广泛用于了解其复杂性，边界与循环的关系。很多流行的整数序列，例如：费布那切数列，鲁卡斯数字, 斯特恩双原子数字, 懒卡特数字, 帕多万数字 还有多边形数字，诸如 五角形数字, 六角形数字。</p>
+<p>**对数论的介绍：**哈迪和赖特</p>
+<p><strong>初等数论:</strong> 琼斯和琼斯</p>
+<p>数学诱导 - 一种技术教程，经常用于离散空间的证明。</p>
+<p>具有数学归纳原理的问题和解决方案的教程。</p>
+
+            </div>
+            
+              <div class="tag-container">
+                
+                  <a href="https://microtears.github.io/tag/h7A427uHM" class="tag">
+                    algorithm
+                  </a>
+                
+                  <a href="https://microtears.github.io/tag/DsjWB-WTw" class="tag">
+                    迁移
+                  </a>
+                
+              </div>
+            
+            
+
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+
+<script type="application/javascript">
+
+AOS.init();
+
+hljs.initHighlightingOnLoad()
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+
+  </body>
+</html>

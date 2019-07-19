@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://microtears.github.io</id>
     <title>YU-NO</title>
-    <updated>2019-07-17T12:00:00.931Z</updated>
+    <updated>2019-07-19T13:00:43.132Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://microtears.github.io"/>
     <link rel="self" href="https://microtears.github.io/atom.xml"/>
@@ -10,6 +10,280 @@
     <logo>https://microtears.github.io/images/avatar.png</logo>
     <icon>https://microtears.github.io/favicon.ico</icon>
     <rights>All rights reserved 2019, YU-NO</rights>
+    <entry>
+        <title type="html"><![CDATA[Flutter[Android]引入firebase时flutter run/(build apk)报错解决方法]]></title>
+        <id>https://microtears.github.io/post/flutterandroidyin-ru-firebase-shi-cuo-wu-jie-jue-fang-fa</id>
+        <link href="https://microtears.github.io/post/flutterandroidyin-ru-firebase-shi-cuo-wu-jie-jue-fang-fa">
+        </link>
+        <updated>2019-07-19T11:48:25.000Z</updated>
+        <content type="html"><![CDATA[<p>当在flutter项目中引入了firebase组件后，运行以下命令：</p>
+<ul>
+<li><code>flutter run</code></li>
+<li><code>flutter build apk</code></li>
+</ul>
+<p>会出现下文的报错信息。</p>
+<pre><code class="language-plain">D8: Cannot fit requested classes in a single dex file (# methods: 84722 &gt; 65536)
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:transformDexArchiveWithExternalLibsDexMergerForRelease'.
+&gt; com.android.builder.dexing.DexArchiveMergerException: Error while merging dex archives: 
+PROJECT_PATH\build\app\intermediates\transforms\dexBuilder\release\0.jar,
+PROJECT_PATHbuild\app\intermediates\transforms\dexBuilder\release\1.jar, 
+PROJECT_PATH\build\app\intermediates\transforms\dexBuilder\release\2.jar,
+PROJECT_PATH\build\app\intermediates\transforms\dexBuilder\release\3.jar,
+···
+PROJECT_PATH\build\app\intermediates\transforms\dexBuilder\release\319.jar
+  The number of method references in a .dex file cannot exceed 64K.
+  Learn how to resolve this issue at https://developer.android.com/tools/building/multidex.html
+
+* Try:
+Run with --stacktrace option to get the stack trace. Run with --info or --debug option to get more log output. Run with --scan to get full insights.
+
+* Get more help at https://help.gradle.org
+
+BUILD FAILED in 3m 4s
+Running Gradle task 'assembleRelease'...
+Running Gradle task 'assembleRelease'... Done                     186.7s (!)
+Gradle task assembleRelease failed with exit code 1
+</code></pre>
+<p>其中有一句</p>
+<blockquote>
+<p>The number of method references in a .dex file cannot exceed 64K.<br>
+Learn how to resolve this issue at https://developer.android.com/tools/building/multidex.html</p>
+</blockquote>
+<p>不仅告诉了我们错误原因，而且给出了解决办法。<br>
+现在按照文档中的方案，在app/build.gradle内下下文部分做如下修改。</p>
+<pre><code class="language-groovy"> defaultConfig {
+        applicationId &quot;YOUR_APPLICATION_ID&quot;
+        // minSdkVersion 16
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+        testInstrumentationRunner &quot;android.support.test.runner.AndroidJUnitRunner&quot;
+    }
+</code></pre>
+<p>然后重新运行命令。出现了如下报错信息。</p>
+<pre><code class="language-plain">All com.android.support libraries must use the exact same version specification (mixing versions can lead to runtime crashes.
+···
+</code></pre>
+<p>该问题是由于依赖库版本不一致引发的。本例中出问题的组件为<code>exifinterface</code>，<br>
+解决办法是在project/build.gradle内结尾部分加入如下代码。</p>
+<p><strong>不过，在最新的firebase组件中，不会再出现这个问题了，可以不进行这一步操作</strong></p>
+<pre><code class="language-groovy">subprojects {
+    project.configurations.all {
+        resolutionStrategy.eachDependency { details -&gt;
+            if (details.requested.name == 'exifinterface'  &amp;&amp; !details.requested.name.contains('multidex') ) {
+                details.useVersion &quot;1.0.0&quot;
+            }
+        }
+    }
+}
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Git 使用记录]]></title>
+        <id>https://microtears.github.io/post/git-shi-yong-ji-lu</id>
+        <link href="https://microtears.github.io/post/git-shi-yong-ji-lu">
+        </link>
+        <updated>2019-02-16T00:41:15.000Z</updated>
+        <content type="html"><![CDATA[<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>git init</td>
+<td>创建版本库</td>
+</tr>
+<tr>
+<td>git clone [PATH]</td>
+<td>克隆仓库</td>
+</tr>
+<tr>
+<td>git add [NAME]</td>
+<td>添加到暂存区</td>
+</tr>
+<tr>
+<td>git commit -m [MESSAGE]</td>
+<td>提交暂存区</td>
+</tr>
+<tr>
+<td>git push [ORIGN] [MASTER]</td>
+<td>推送本地分支到远程分支</td>
+</tr>
+<tr>
+<td>git push -u [ORIGN] [MASTER]</td>
+<td>推送本地分支到远程分支并关联</td>
+</tr>
+<tr>
+<td>git remote</td>
+<td>显示远程库</td>
+</tr>
+<tr>
+<td>git remote -v</td>
+<td>显示远程库（详细信息）</td>
+</tr>
+<tr>
+<td>git remoter add [ORIGN] [SERVER]</td>
+<td>连接到远程仓库</td>
+</tr>
+<tr>
+<td>git checkout [BRANCH]</td>
+<td>切换分支</td>
+</tr>
+<tr>
+<td>git checkout -b [BRANCH]</td>
+<td>创建并切换分支</td>
+</tr>
+<tr>
+<td>git checkout -b [BRANCH] [REMOTE]</td>
+<td>创建并切换远程仓库分支的本地分支</td>
+</tr>
+<tr>
+<td>git checkout -- [FILENAME]</td>
+<td>用HEAD中的最新内容替换工作区文件/撤销修改</td>
+</tr>
+<tr>
+<td>git branch</td>
+<td>查看分支</td>
+</tr>
+<tr>
+<td>git branch [BRANCH]</td>
+<td>创建分支</td>
+</tr>
+<tr>
+<td>git branch -d [BRANCH]</td>
+<td>删除分支</td>
+</tr>
+<tr>
+<td>git branch -D [BRANCH]</td>
+<td>强制删除分支</td>
+</tr>
+<tr>
+<td>git branch --set-upstream-to=[ORGIN] [BRANCH]</td>
+<td>链接远程分支与本地分支</td>
+</tr>
+<tr>
+<td>git pull</td>
+<td>更新本地仓库至最新（fetch+merge）</td>
+</tr>
+<tr>
+<td>git merge  [BRANCH]</td>
+<td>合并其他分支到当前分支</td>
+</tr>
+<tr>
+<td>git merge --no-ff -m [MESSAGE] [BRANCH]</td>
+<td>合并其他分支到当前分支（禁用Fast forward）</td>
+</tr>
+<tr>
+<td>git reset HEAD [FILENAME]</td>
+<td>将暂存区的修改撤回</td>
+</tr>
+<tr>
+<td>git log</td>
+<td>查看提交日志</td>
+</tr>
+<tr>
+<td>git log --graph</td>
+<td>分支合并图</td>
+</tr>
+<tr>
+<td>git reflog</td>
+<td>查看命令日志</td>
+</tr>
+<tr>
+<td>git reset --hard HEAD<sup>/HEAD</sup>^</td>
+<td>回退到上一个/上上个版本</td>
+</tr>
+<tr>
+<td>git reset --hard [COMMITID]</td>
+<td>回退到指定版本</td>
+</tr>
+<tr>
+<td>git status</td>
+<td>查看工作区</td>
+</tr>
+<tr>
+<td>git rm [FILE]</td>
+<td>删除文件（包括本地）</td>
+</tr>
+<tr>
+<td>git rm --cached [FILE]</td>
+<td>删除文件（暂存区）</td>
+</tr>
+<tr>
+<td>git rm -r [PATH]</td>
+<td>删除文件夹（包括本地）</td>
+</tr>
+<tr>
+<td>git rm -r  --cached [PATH]</td>
+<td>删除文件夹（暂存区）</td>
+</tr>
+<tr>
+<td>git stash</td>
+<td>保存当前工作区</td>
+</tr>
+<tr>
+<td>git stash list</td>
+<td>查看保存的工作区</td>
+</tr>
+<tr>
+<td>git stash apply</td>
+<td>恢复工作区</td>
+</tr>
+<tr>
+<td>git stash drop</td>
+<td>删除保存的工作区</td>
+</tr>
+<tr>
+<td>git stash pop</td>
+<td>恢复并删除工作区</td>
+</tr>
+<tr>
+<td>git stash apply [STASH]</td>
+<td>恢复指定工作区</td>
+</tr>
+<tr>
+<td>git rebase</td>
+<td></td>
+</tr>
+<tr>
+<td>git config --global color.ui true</td>
+<td>开启彩色模式</td>
+</tr>
+<tr>
+<td>git config --global user.name [NAME]</td>
+<td>你的名字</td>
+</tr>
+<tr>
+<td>git config --global user.email [EMAIL]</td>
+<td>你的email</td>
+</tr>
+<tr>
+<td>git check-ignore</td>
+<td>检查gitignore</td>
+</tr>
+<tr>
+<td>git config --global alias.[ALIAS] [COMMAND]</td>
+<td>配置别名</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-mermaid">graph LR;
+fork((Fork))--&gt;ch((Change));
+ch((Change))--&gt;pr((Pull Request));
+class fork,ch,pr CN;
+classDef CN  fill:#f9ffff,stroke:#333,stroke-width:8px;
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Hide Desktop Icon[AutoHotKey]]]></title>
         <id>https://microtears.github.io/post/hide-desktop-iconautohotkey</id>
@@ -879,117 +1153,42 @@ Generating Kotlin data class from any legal JSON text when right click on direct
 ]]></content>
     </entry>
     <entry>
-        <title type="html"><![CDATA[在VSCode中编写Kotlin/Java]]></title>
-        <id>https://microtears.github.io/post/zai-vscode-zhong-bian-xie-kotlinjava</id>
-        <link href="https://microtears.github.io/post/zai-vscode-zhong-bian-xie-kotlinjava">
+        <title type="html"><![CDATA[Bitmap 笔记]]></title>
+        <id>https://microtears.github.io/post/bitmap-bi-ji</id>
+        <link href="https://microtears.github.io/post/bitmap-bi-ji">
         </link>
-        <updated>2018-11-27T16:11:24.000Z</updated>
-        <summary type="html"><![CDATA[<p>不希望每次运行一下代码就要去启动Android Studio这个庞然大物，正好vscode可以做一个轻量级的IDE，所以配置了vscode用来编写Kotlin程序</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>不希望每次运行一下代码就要去启动Android Studio这个庞然大物，正好vscode可以做一个轻量级的IDE，所以配置了vscode用来编写Kotlin程序</p>
-<!-- more -->
-<h2 id="前言">前言</h2>
-<p>不希望每次运行一下代码就要去启动Android Studio这个庞然大物，正好vscode可以做一个轻量级的IDE，所以配置了vscode用来编写Kotlin程序</p>
-<h2 id="环境配置">环境配置</h2>
-<p>首先可以在Android Studio的安装目录下找到Kotlin Compiler：<br>
-<img src="https://s1.ax1x.com/2018/05/12/CBWw9J.png" alt="1"><br>
-<img src="https://s1.ax1x.com/2018/05/12/CBW039.png" alt="1"><br>
-在环境变量中添加以下项：<br>
-值为：Kotlin Compiler Path\bin<br>
-例如：D:\Program Files\Android\Android Studio\plugins\Kotlin\kotlinc\bin<br>
-<img src="https://s1.ax1x.com/2018/05/12/CBW4gA.png" alt="1"><br>
-然后再控制台输入命令<code>kotlinc -version</code>检测环境是否配置妥当<br>
-如果正常，则如下图所示<br>
-<img src="https://s1.ax1x.com/2018/05/12/CBhUSJ.png" alt="1"><br>
-如果出现这种情况<br>
-<img src="https://s1.ax1x.com/2018/05/12/CBhtW4.png" alt="1"><br>
-则是jdk版本配置不正确或者JAVA环境配置错误所致，重新配置即可（推荐使用jdk1.8）</p>
-<h2 id="配置vscode">配置VSCODE</h2>
-<p>在vscode扩展中安装Kotlin Language和Code Runner这两个扩展包<br>
-<img src="https://s1.ax1x.com/2018/05/12/CB4bE6.png" alt="1"><br>
-<img src="https://s1.ax1x.com/2018/05/12/CB4qUK.md.png" alt="1"><br>
-安装后重启加载扩展，就可以编写Kotlin代码并编译运行了,右键<code>Run Code</code>或者<code>Ctrl</code>+<code>Alt</code>+<code>N</code>运行程序，,OK，像这样<br>
-<img src="https://s1.ax1x.com/2018/05/12/CB7My4.png" alt="1"><br>
-但是我们发现，输出面板中文出现了乱码，可行的解决办法是在用户设置中添加一句<code>&quot;code-runner.runInTerminal&quot;: true,</code>，表示让Kotlin程序通过Terminal运行，就不会出现中文乱码了<br>
-效果如下：<br>
-<img src="https://s1.ax1x.com/2018/05/12/CB7alD.png" alt="1"><br>
-而且在程序目录下还会生成相应的jar包，如：<br>
-<img src="https://s1.ax1x.com/2018/05/12/CB7USO.png" alt="1"></p>
-<h2 id="总结">总结</h2>
-<p>至此，vscode关于Kotlin的配置就已经完成了.</p>
-<p><em>Enjoy Your Code！</em><br>
-<em>2018/08/31</em></p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[ kotlin val的一次错误运用]]></title>
-        <id>https://microtears.github.io/post/kotlin-val-de-yi-ci-cuo-wu-yun-yong</id>
-        <link href="https://microtears.github.io/post/kotlin-val-de-yi-ci-cuo-wu-yun-yong">
-        </link>
-        <updated>2018-11-27T16:09:38.000Z</updated>
-        <summary type="html"><![CDATA[<p>由于kotlin中被val或var修饰成员自带getter()/setter()（被val 修饰的成员没有setter()），所以在定义变量名称的时候不再像Java那样在成员变量之前加入小写m，类似于<code>mApplication</code>；所以一段时间不曾在代码里看到getXXX或setXXX出现，所以有一下代码出现：</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>由于kotlin中被val或var修饰成员自带getter()/setter()（被val 修饰的成员没有setter()），所以在定义变量名称的时候不再像Java那样在成员变量之前加入小写m，类似于<code>mApplication</code>；所以一段时间不曾在代码里看到getXXX或setXXX出现，所以有一下代码出现：</p>
-<!-- more -->
-<pre><code class="language-kotlin">    private var page = 1
-    private val userModel = UserModel.instance
-    private val statementModel by lazyNone { StatementModel() }
-    var isRefresh = false
-        private set
-    val nextPage = statementModel.getPage(userModel.scholar, ++page)
+        <updated>2018-12-23T21:54:49.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="捕获outofmemoryerror">捕获OutOfMemoryError</h2>
+<blockquote>
+<p>因为Bitmap非常耗内存，了避免应用在分配Bitmap内存的时候出现OutOfMemory异常以后Crash掉，需要特别注意实例化Bitmap部分的代码。通常，在实例化Bitmap的代码中，一定要对OutOfMemory异常进行捕获。很多开发者会习惯性的在代码中直接捕获Exception。但是对于OutOfMemoryError来说，这样做是捕获不到的。因为OutOfMemoryError是一种Error，而不是Exception。</p>
+</blockquote>
+<pre><code class="language-java">Bitmap bitmap = null;
+    try {
+        // 实例化Bitmap
+        bitmap = BitmapFactory.decodeFile(path);
+    } catch (OutOfMemoryError e) {
+
+    }
+    if (bitmap == null) {
+        return defaultBitmapMap; // 如果实例化失败 返回默认的Bitmap对象
+    }
 </code></pre>
-<p>注意以上代码中的nextPage，它的本意是调用nextPage然后获取下一页的数据，但是我却忽略了被val 修饰的成员并不能绑定一个函数，val 成员可以绑定一个lambda对象，以此来让它表现出类似于函数的效果，且调用方式也类似，例如：</p>
-<pre><code class="language-kotlin">     val nextInt={  ++page}
-     val value=nextInt()
-</code></pre>
-<p>但是 nextInt 任然是一个对象，只不过是比较特殊点的lambda对象罢了。所以在开头提到的代码中，利用val 修饰的成员来绑定函数是一个错误的行为，但为什么编译器没有提示出错呢，问题正是出在了<code>statementModel.getPage(userModel.scholar, ++page)</code>函数返回了一个对象而不是<code>Unit</code>，所以val 成员只是引用了该函数第一次运行的结果，由于返回的对象也非lambda对象，自然也不能像函数那样调用，所以正确的写法应该是如下所示:</p>
-<pre><code class="language-kotlin">    private var page = 1
-    private val userModel = UserModel.instance
-    private val statementModel by lazyNone { StatementModel() }
-    var isRefresh = false
-        private set
-    fun nextPage() = statementModel.getPage(userModel.scholar, ++page)
-</code></pre>
-<p>出现这个问题是由于对被val修饰成员的理解出现偏差，故记录之。</p>
-<p><em>写于2018/11/28</em></p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[QQ sdk和Android sdk 28的兼容处理]]></title>
-        <id>https://microtears.github.io/post/qq-sdk-he-android-sdk-28-de-jian-rong-chu-li</id>
-        <link href="https://microtears.github.io/post/qq-sdk-he-android-sdk-28-de-jian-rong-chu-li">
-        </link>
-        <updated>2018-11-27T16:06:46.000Z</updated>
-        <summary type="html"><![CDATA[<p>Android 最新的SDK早就出来了，版本号为28，包含了很多新东西，用起来是爽了，可其中的坑是一个接一个的，今天主要说下集成QQ_SDK的时候遇到的一些问题</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>Android 最新的SDK早就出来了，版本号为28，包含了很多新东西，用起来是爽了，可其中的坑是一个接一个的，今天主要说下集成QQ_SDK的时候遇到的一些问题</p>
-<!-- more -->
-<p>首先是Android这次在SDK_28中移除了QQ_SDK还在使用的Apache_HTTP组件，so，如果你想用上最新的SDK而且还要集成QQ登陆等功能，那么你需要这样做：<br>
-在你的app下的build.gradle中添加下面这句话。</p>
-<pre><code class="language-Groovy">android {
-    //QQ_SDK使用了AndroidX去掉的Apache_Http组件
-    useLibrary 'org.apache.http.legacy'
-}
-</code></pre>
-<p>其次还使用了这些被移除的组件：<br>
-同样在下面的位置添加相应的依赖。</p>
-<pre><code class="language-Groovy">dependencies {
-    implementation 'org.jbundle.util.osgi.wrapped:org.jbundle.util.osgi.wrapped.org.apache.http.client:4.1.2'
-    //noinspection DuplicatePlatformClasses
-    implementation 'commons-logging:commons-logging:1.2'
-}
-</code></pre>
-<p>但如果你的项目开启了混淆，你会发现即是这样做了之后还是会报错，你还需要在你的混淆规则里添加以下规则：</p>
-<pre><code class="language-proguard-rules">-keep class org.apache.** {*;}
--dontwarn org.apache.**
--keep class org.apache.http.** { *; }
--keep class android.net.http.** { *; }
--dontwarn org.apache.http.**
--dontwarn android.net.http.**
-</code></pre>
-<p>OK 解下来就可以正常使用了</p>
-<p>下次再讲SDK_28中的新控件在使用方面的坑。</p>
-<p><em>写于2018/08/30</em></p>
+<p>作者：李李哈哈哈<br>
+链接：https://www.jianshu.com/p/c77158b6e07e</p>
+<h2 id="android-bitmap默认的色彩模式是argb_8888">Android Bitmap默认的色彩模式是ARGB_8888</h2>
+<h2 id="options类的inpreferredconfig">Options类的inPreferredConfig</h2>
+<ol>
+<li>ALPHA_8：每个像素占用1byte内存。</li>
+<li>ARGB_4444:每个像素占用2byte内存</li>
+<li>ARGB_8888:每个像素占用4byte内存</li>
+<li>RGB_565:每个像素占用2byte内存</li>
+</ol>
+<h2 id="options类的insamplesize采样率">Options类的inSampleSize采样率</h2>
+<blockquote>
+<p>当inSampleSize=1时，采样后的图片为图片的原始大小。<br>
+除了1以外，inSampleSize的取值应该总为2的整数倍，否则会【向下取整】，取一个最接近2的整数倍，比如inSampleSize=3时，系统会取inSampleSize=2<br>
+当inSampleSize=2时，采样后的图片的宽高均为原始图片宽高的1/2</p>
+</blockquote>
 ]]></content>
     </entry>
 </feed>

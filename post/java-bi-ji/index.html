@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>JAVA 笔记 | YU-NO</title>
+<meta name="description" content="岁月总是历久弥新，需要细细品尝。">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://microtears.github.io/favicon.ico?v=1563541231925">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://microtears.github.io/styles/main.css">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144016944-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144016944-1');
+</script>
+
+
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://microtears.github.io">
+        <img src="https://microtears.github.io/images/avatar.png?v=1563541231925" class="site-logo">
+        <h1 class="site-title">YU-NO</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="site-nav">
+            标签
+          </a>
+        
+      
+        
+          <a href="/post/about" class="site-nav">
+            关于
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+          <a class="social-link" href="https://github.com/microtears" target="_blank">
+            <i class="fab fa-github"></i>
+          </a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      岁月总是历久弥新，需要细细品尝。
+    </div>
+    <div class="site-footer">
+      <span id="timeX"></span>
+<span class="my-face">❤</span>
+<script type="text/javascript">
+    function updateTime() {
+        var date1 = '2019/07/17 00:00:00';
+        var date2 = new Date();
+        var date3 = date2.getTime() - new Date(date1).getTime();
+        var days = Math.floor(date3 / (24 * 3600 * 1000));
+        var leave1 = date3 % (24 * 3600 * 1000);
+        var hours = Math.floor(leave1 / (3600 * 1000));
+        var leave2 = leave1 % (3600 * 1000);
+        var minutes = Math.floor(leave2 / (60 * 1000));
+        var leave3 = leave2 % (60 * 1000);
+        var seconds = Math.round(leave3 / 1000);
+        var timeX = document.getElementById('timeX');
+        timeX.innerHTML = "已运行" + days + "天" + hours + "小时" + minutes + "分钟" + seconds + "秒";
+    }
+    setInterval(updateTime, 1000);
+</script>
+<br/>
+<br/>    
+Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://microtears.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">JAVA 笔记</h2>
+            <div class="post-date">2018-11-24</div>
+            
+            <div class="post-content">
+              <h2 id="gc">GC</h2>
+<ul>
+<li>
+<p>引用计数法</p>
+<p>当一个对象被应用是，其引用计数器+1，垃圾回收时清理掉引用计数器=0的对象，但无法解决循环引用问题。</p>
+</li>
+<li>
+<p>可达性分析法</p>
+<p>将对象关系看做图，将根级对象不可达的对象清理掉。</p>
+</li>
+<li>
+<p>标记清除算法</p>
+<p>第一步标记需要回收的对象，第二部回收。缺点：内存碎片化。</p>
+</li>
+<li>
+<p>复制算法</p>
+<p>将存货对象复制到另一块内存区域，然后整理内存。优点：避免内存碎片化。缺点：低效的内存使用率。</p>
+</li>
+<li>
+<p>分代算法</p>
+<p>将对象划分为新生代和老年代。不同年代施以不同回收策略。调高GC效率。</p>
+<blockquote>
+<p>新生代对象分为三个区域：Eden 区和两个 Survivor 区。新创建的对象都放在 Eden区，当 Eden 区的内存达到阈值之后会触发 Minor GC，这时会将存活的对象复制到一个 Survivor 区中，这些存活对象的生命存活计数会加一。这时 Eden 区会闲置，当再一次达到阈值触发 Minor GC 时，会将Eden区和之前一个 Survivor 区中存活的对象复制到另一个 Survivor 区中，采用的是我之前提到的复制算法，同时它们的生命存活计数也会加一。这个过程会持续很多遍，直到对象的存活计数达到一定的阈值后会触发一个叫做晋升的现象：新生代的这个对象会被放置到老年代中。老年代中的对象都是经过多次 GC 依然存活的生命周期很长的 Java 对象。当老年代的内存达到阈值后会触发 Major GC，采用的是标记整理算法。</p>
+</blockquote>
+<p>作者：BlackFlagBin<br>
+链接：https://juejin.im/post/5b8f15e26fb9a01a031b12d9</p>
+</li>
+</ul>
+<h2 id="jvm内存区域的划分">JVM内存区域的划分</h2>
+<ul>
+<li>线程私有区域
+<ul>
+<li>
+<p>程序计数器</p>
+<p>线程私有。任意时间任意线程只有一个方法执行，程序计数器存放的就是当前方法的JVM指令地址。</p>
+</li>
+<li>
+<p>JVM虚拟机栈</p>
+<p>创建线程的时候同时创建线程内的虚拟机栈，栈中存放栈帧，对应各个方法调用。</p>
+</li>
+<li>
+<p>本地方法栈</p>
+<p>存放Native方法</p>
+</li>
+</ul>
+</li>
+<li>线程公有区域
+<ul>
+<li>
+<p>堆</p>
+<p>内存管理的核心区域。对象实例存在于此。</p>
+</li>
+<li>
+<p>方法区</p>
+</li>
+<li>
+<p>运行时常量池</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="类加载过程">类加载过程</h2>
+<blockquote>
+<p>Java 中类加载分为 3 个步骤：加载、链接、初始化。</p>
+<ul>
+<li>加载。 加载是将字节码数据从不同的数据源读取到JVM内存，并映射为 JVM 认可的数据结构，也就是 Class 对象的过程。数据源可以是 Jar 文件、Class 文件等等。如果数据的格式并不是 ClassFile 的结构，则会报 ClassFormatError。</li>
+<li>链接。 链接是类加载的核心部分，这一步分为 3 个步骤：验证、准备、解析。
+<ul>
+<li>验证。 验证是保证JVM安全的重要步骤。JVM需要校验字节信息是否符合规范，避免恶意信息和不规范数据危害JVM运行安全。如果验证出错，则会报VerifyError。</li>
+<li>准备。 这一步会创建静态变量，并为静态变量开辟内存空间。</li>
+<li>解析。 这一步会将符号引用替换为直接引用。</li>
+</ul>
+</li>
+<li>初始化。 初始化会为静态变量赋值，并执行静态代码块中的逻辑。</li>
+</ul>
+</blockquote>
+<h2 id="双亲委派模型">双亲委派模型</h2>
+<blockquote>
+<p>类加载器大致分为3类：启动类加载器、扩展类加载器、应用程序类加载器。</p>
+</blockquote>
+<blockquote>
+<p>启动类加载器主要加载 jre/lib下的jar文件。<br>
+扩展类加载器主要加载 jre/lib/ext 下的jar文件。<br>
+应用程序类加载器主要加载 classpath  下的文件。</p>
+</blockquote>
+<blockquote>
+<p>所谓的双亲委派模型就是当加载一个类时，会优先使用父类加载器加载，当父类加载器无法加载时才会使用子类加载器去加载。这么做的目的是为了避免类的重复加载。</p>
+</blockquote>
+<p>防止替换系统类，例如System等。避免由于不同类加载器加载导致的类型判断问题。</p>
+<h2 id="volatile和synchronize的区别">volatile和synchronize的区别</h2>
+<ul>
+<li>
+<p>volatile</p>
+<p>保证可见性，禁止指令重排。</p>
+<p>告诉编译器，此变量禁止使用cpu缓存。由于cpu为了提高效率，会将主存中的变量层层缓存，导致一个线程修改其值对另一个变量并不可见，由此导致程序出错。</p>
+</li>
+<li>
+<p>synchronize</p>
+<p>对一个对象或者方法加锁实现同步访问。重量锁。</p>
+</li>
+</ul>
+<h2 id="单例模式">单例模式</h2>
+<ul>
+<li>双重判断饿汉式</li>
+</ul>
+<pre><code class="language-java">public class SingleTon {
+    //需要注意的是volatile
+    private static volatile SingleTon mInstance;
+
+    private SingleTon() {
+
+    }
+
+    public static SingleTon getInstance() {
+        if (mInstance == null) { 
+            synchronized (SingleTon.class) {
+                if (mInstance == null) {
+                    mInstance=new SingleTon();
+                }
+            }
+        }
+
+        return mInstance;
+    }
+}
+</code></pre>
+<p>注意事项：mInstance需要volatile修饰，否则非线程安全，因为<code>mInstance=new SingleTon()</code>非原子操作，而是包含三个操作：</p>
+<ol>
+<li>给 mInstance 分配内存</li>
+<li>调用 SingleTon 的构造方法初始化成员变量</li>
+<li>将 mInstance 指向分配的内存空间（在这一步 mInstance 已经不为 null 了）</li>
+</ol>
+<blockquote>
+<p>我们知道 JVM 会发生指令重排，正常的执行顺序是1-2-3，但发生指令重排后可能会导致1-3-2。我们考虑这样一种情况，当线程 A 执行到1-3-2的3步骤暂停了，这时候线程 B 调用了 getInstance，走到了最外层的if判断上，由于最外层的 if 判断并没有 synchronized 包裹，所以可以执行到这一句，这时候由于线程 A 已经执行了步骤3，此时 mInstance 已经不为 null 了，所以线程B直接返回了 mInstance。但其实我们知道，完整的初始化必须走完这三个步骤，由于线程 A 只走了两个步骤，所以一定会报错的。载请联系作者获得授权，非商业转载请注明出处。</p>
+</blockquote>
+<ul>
+<li>静态内部类实现的单例：</li>
+</ul>
+<pre><code class="language-java">class SingletonWithInnerClass {
+
+    private SingletonWithInnerClass() {
+
+    }
+
+    private static class SingletonHolder{
+        private static SingletonWithInnerClass INSTANCE=new SingletonWithInnerClass();
+    }
+
+    public SingletonWithInnerClass getInstance() {
+        return SingletonHolder.INSTANCE;
+    }
+
+}
+</code></pre>
+<blockquote>
+<p>复制代码由于外部类的加载并不会导致内部类立即加载，只有当调用 getInstance 的时候才会加载内部类，所以实现了延迟初始化。由于类只会被加载一次，并且类加载也是线程安全的，所以满足我们所有的需求。静态内部类实现的单例也是最为推荐的一种方式。</p>
+</blockquote>
+<h2 id="java中引用类型的区别具体的使用场景">Java中引用类型的区别，具体的使用场景</h2>
+<h3 id="java中引用类型分为四类强引用-软引用-弱引用-虚引用">Java中引用类型分为四类：强引用、软引用、弱引用、虚引用。</h3>
+<blockquote>
+<ul>
+<li>强引用： 强引用指的是通过 new 对象创建的引用，垃圾回收器即使是内存不足也不会回收强引用指向的对象。</li>
+<li>软引用： 软引用是通过 SoftRefrence 实现的，它的生命周期比强引用短，在内存不足，抛出 OOM 之前，垃圾回收器会回收软引用引用的对象。软引用常见的使用场景是存储一些内存敏感的缓存，当内存不足时会被回收。</li>
+<li>弱引用： 弱引用是通过 WeakRefrence 实现的，它的生命周期比软引用还短，GC 只要扫描到弱引用的对象就会回收。弱引用常见的使用场景也是存储一些内存敏感的缓存。</li>
+<li>虚引用： 虚引用是通过 FanttomRefrence 实现的，它的生命周期最短，随时可能被回收。如果一个对象只被虚引用引用，我们无法通过虚引用来访问这个对象的任何属性和方法。它的作用仅仅是保证对象在 finalize 后，做某些事情。虚引用常见的使用场景是跟踪对象被垃圾回收的活动，当一个虚引用关联的对象被垃圾回收器回收之前会收到一条系统通知。</li>
+</ul>
+</blockquote>
+<h1 id="exception-和-error的区别">Exception 和 Error的区别</h1>
+<blockquote>
+<p>Exception 和 Error 都继承于 Throwable，在 Java 中，只有 Throwable 类型的对象才能被 throw 或者 catch，它是异常处理机制的基本组成类型。<br>
+Exception 和 Error 体现了 Java 对不同异常情况的分类。Exception 是程序正常运行中，可以预料的意外情况，可能并且应该被捕获，进行相应的处理。<br>
+Error 是指在正常情况下，不大可能出现的情况，绝大部分 Error 都会使程序处于非正常、不可恢复的状态。既然是非正常，所以不便于也不需要捕获，常见的 OutOfMemoryError 就是 Error 的子类。</p>
+</blockquote>
+<blockquote>
+<p>Exception 又分为 checked Exception 和 unchecked Exception。</p>
+<ul>
+<li>checked Exception 在代码里必须显式的进行捕获，这是编译器检查的一部分。</li>
+<li>unchecked Exception 也就是运行时异常，类似空指针异常、数组越界等，通常是可以避免的逻辑错误，具体根据需求来判断是否需要捕获，并不会在编译器强制要求。</li>
+</ul>
+</blockquote>
+
+            </div>
+            
+              <div class="tag-container">
+                
+                  <a href="https://microtears.github.io/tag/DsjWB-WTw" class="tag">
+                    迁移
+                  </a>
+                
+              </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://microtears.github.io/post/lru-suan-fa">
+                  <h3 class="post-title">
+                    LRU算法
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+
+<script type="application/javascript">
+
+AOS.init();
+
+hljs.initHighlightingOnLoad()
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+
+  </body>
+</html>

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>在VSCode中编写Kotlin/Java | YU-NO</title>
+<title>Git 使用记录 | YU-NO</title>
 <meta name="description" content="岁月总是历久弥新，需要细细品尝。">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -126,46 +126,202 @@ Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea<
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
           <div class="post-detail">
-            <h2 class="post-title">在VSCode中编写Kotlin/Java</h2>
-            <div class="post-date">2018-11-28</div>
-            
-              <div class="feature-container" style="background-image: url('https://s1.ax1x.com/2018/05/12/CBhUSJ.png')">
-              </div>
+            <h2 class="post-title">Git 使用记录</h2>
+            <div class="post-date">2019-02-16</div>
             
             <div class="post-content">
-              <p>不希望每次运行一下代码就要去启动Android Studio这个庞然大物，正好vscode可以做一个轻量级的IDE，所以配置了vscode用来编写Kotlin程序</p>
-<!-- more -->
-<h2 id="前言">前言</h2>
-<p>不希望每次运行一下代码就要去启动Android Studio这个庞然大物，正好vscode可以做一个轻量级的IDE，所以配置了vscode用来编写Kotlin程序</p>
-<h2 id="环境配置">环境配置</h2>
-<p>首先可以在Android Studio的安装目录下找到Kotlin Compiler：<br>
-<img src="https://s1.ax1x.com/2018/05/12/CBWw9J.png" alt="1"><br>
-<img src="https://s1.ax1x.com/2018/05/12/CBW039.png" alt="1"><br>
-在环境变量中添加以下项：<br>
-值为：Kotlin Compiler Path\bin<br>
-例如：D:\Program Files\Android\Android Studio\plugins\Kotlin\kotlinc\bin<br>
-<img src="https://s1.ax1x.com/2018/05/12/CBW4gA.png" alt="1"><br>
-然后再控制台输入命令<code>kotlinc -version</code>检测环境是否配置妥当<br>
-如果正常，则如下图所示<br>
-<img src="https://s1.ax1x.com/2018/05/12/CBhUSJ.png" alt="1"><br>
-如果出现这种情况<br>
-<img src="https://s1.ax1x.com/2018/05/12/CBhtW4.png" alt="1"><br>
-则是jdk版本配置不正确或者JAVA环境配置错误所致，重新配置即可（推荐使用jdk1.8）</p>
-<h2 id="配置vscode">配置VSCODE</h2>
-<p>在vscode扩展中安装Kotlin Language和Code Runner这两个扩展包<br>
-<img src="https://s1.ax1x.com/2018/05/12/CB4bE6.png" alt="1"><br>
-<img src="https://s1.ax1x.com/2018/05/12/CB4qUK.md.png" alt="1"><br>
-安装后重启加载扩展，就可以编写Kotlin代码并编译运行了,右键<code>Run Code</code>或者<code>Ctrl</code>+<code>Alt</code>+<code>N</code>运行程序，,OK，像这样<br>
-<img src="https://s1.ax1x.com/2018/05/12/CB7My4.png" alt="1"><br>
-但是我们发现，输出面板中文出现了乱码，可行的解决办法是在用户设置中添加一句<code>&quot;code-runner.runInTerminal&quot;: true,</code>，表示让Kotlin程序通过Terminal运行，就不会出现中文乱码了<br>
-效果如下：<br>
-<img src="https://s1.ax1x.com/2018/05/12/CB7alD.png" alt="1"><br>
-而且在程序目录下还会生成相应的jar包，如：<br>
-<img src="https://s1.ax1x.com/2018/05/12/CB7USO.png" alt="1"></p>
-<h2 id="总结">总结</h2>
-<p>至此，vscode关于Kotlin的配置就已经完成了.</p>
-<p><em>Enjoy Your Code！</em><br>
-<em>2018/08/31</em></p>
+              <table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>git init</td>
+<td>创建版本库</td>
+</tr>
+<tr>
+<td>git clone [PATH]</td>
+<td>克隆仓库</td>
+</tr>
+<tr>
+<td>git add [NAME]</td>
+<td>添加到暂存区</td>
+</tr>
+<tr>
+<td>git commit -m [MESSAGE]</td>
+<td>提交暂存区</td>
+</tr>
+<tr>
+<td>git push [ORIGN] [MASTER]</td>
+<td>推送本地分支到远程分支</td>
+</tr>
+<tr>
+<td>git push -u [ORIGN] [MASTER]</td>
+<td>推送本地分支到远程分支并关联</td>
+</tr>
+<tr>
+<td>git remote</td>
+<td>显示远程库</td>
+</tr>
+<tr>
+<td>git remote -v</td>
+<td>显示远程库（详细信息）</td>
+</tr>
+<tr>
+<td>git remoter add [ORIGN] [SERVER]</td>
+<td>连接到远程仓库</td>
+</tr>
+<tr>
+<td>git checkout [BRANCH]</td>
+<td>切换分支</td>
+</tr>
+<tr>
+<td>git checkout -b [BRANCH]</td>
+<td>创建并切换分支</td>
+</tr>
+<tr>
+<td>git checkout -b [BRANCH] [REMOTE]</td>
+<td>创建并切换远程仓库分支的本地分支</td>
+</tr>
+<tr>
+<td>git checkout -- [FILENAME]</td>
+<td>用HEAD中的最新内容替换工作区文件/撤销修改</td>
+</tr>
+<tr>
+<td>git branch</td>
+<td>查看分支</td>
+</tr>
+<tr>
+<td>git branch [BRANCH]</td>
+<td>创建分支</td>
+</tr>
+<tr>
+<td>git branch -d [BRANCH]</td>
+<td>删除分支</td>
+</tr>
+<tr>
+<td>git branch -D [BRANCH]</td>
+<td>强制删除分支</td>
+</tr>
+<tr>
+<td>git branch --set-upstream-to=[ORGIN] [BRANCH]</td>
+<td>链接远程分支与本地分支</td>
+</tr>
+<tr>
+<td>git pull</td>
+<td>更新本地仓库至最新（fetch+merge）</td>
+</tr>
+<tr>
+<td>git merge  [BRANCH]</td>
+<td>合并其他分支到当前分支</td>
+</tr>
+<tr>
+<td>git merge --no-ff -m [MESSAGE] [BRANCH]</td>
+<td>合并其他分支到当前分支（禁用Fast forward）</td>
+</tr>
+<tr>
+<td>git reset HEAD [FILENAME]</td>
+<td>将暂存区的修改撤回</td>
+</tr>
+<tr>
+<td>git log</td>
+<td>查看提交日志</td>
+</tr>
+<tr>
+<td>git log --graph</td>
+<td>分支合并图</td>
+</tr>
+<tr>
+<td>git reflog</td>
+<td>查看命令日志</td>
+</tr>
+<tr>
+<td>git reset --hard HEAD<sup>/HEAD</sup>^</td>
+<td>回退到上一个/上上个版本</td>
+</tr>
+<tr>
+<td>git reset --hard [COMMITID]</td>
+<td>回退到指定版本</td>
+</tr>
+<tr>
+<td>git status</td>
+<td>查看工作区</td>
+</tr>
+<tr>
+<td>git rm [FILE]</td>
+<td>删除文件（包括本地）</td>
+</tr>
+<tr>
+<td>git rm --cached [FILE]</td>
+<td>删除文件（暂存区）</td>
+</tr>
+<tr>
+<td>git rm -r [PATH]</td>
+<td>删除文件夹（包括本地）</td>
+</tr>
+<tr>
+<td>git rm -r  --cached [PATH]</td>
+<td>删除文件夹（暂存区）</td>
+</tr>
+<tr>
+<td>git stash</td>
+<td>保存当前工作区</td>
+</tr>
+<tr>
+<td>git stash list</td>
+<td>查看保存的工作区</td>
+</tr>
+<tr>
+<td>git stash apply</td>
+<td>恢复工作区</td>
+</tr>
+<tr>
+<td>git stash drop</td>
+<td>删除保存的工作区</td>
+</tr>
+<tr>
+<td>git stash pop</td>
+<td>恢复并删除工作区</td>
+</tr>
+<tr>
+<td>git stash apply [STASH]</td>
+<td>恢复指定工作区</td>
+</tr>
+<tr>
+<td>git rebase</td>
+<td></td>
+</tr>
+<tr>
+<td>git config --global color.ui true</td>
+<td>开启彩色模式</td>
+</tr>
+<tr>
+<td>git config --global user.name [NAME]</td>
+<td>你的名字</td>
+</tr>
+<tr>
+<td>git config --global user.email [EMAIL]</td>
+<td>你的email</td>
+</tr>
+<tr>
+<td>git check-ignore</td>
+<td>检查gitignore</td>
+</tr>
+<tr>
+<td>git config --global alias.[ALIAS] [COMMAND]</td>
+<td>配置别名</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-mermaid">graph LR;
+fork((Fork))--&gt;ch((Change));
+ch((Change))--&gt;pr((Pull Request));
+class fork,ch,pr CN;
+classDef CN  fill:#f9ffff,stroke:#333,stroke-width:8px;
+</code></pre>
 
             </div>
             
@@ -180,9 +336,9 @@ Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea<
             
               <div class="next-post">
                 <div class="next">下一篇</div>
-                <a href="https://microtears.github.io/post/kotlin-val-de-yi-ci-cuo-wu-yun-yong">
+                <a href="https://microtears.github.io/post/hide-desktop-iconautohotkey">
                   <h3 class="post-title">
-                     kotlin val的一次错误运用
+                    Hide Desktop Icon[AutoHotKey]
                   </h3>
                 </a>
               </div>

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>在VSCode中编写Kotlin/Java | YU-NO</title>
+<title>Flutter[Android]引入firebase时flutter run/(build apk)报错解决方法 | YU-NO</title>
 <meta name="description" content="岁月总是历久弥新，需要细细品尝。">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -126,53 +126,83 @@ Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea<
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
           <div class="post-detail">
-            <h2 class="post-title">在VSCode中编写Kotlin/Java</h2>
-            <div class="post-date">2018-11-28</div>
-            
-              <div class="feature-container" style="background-image: url('https://s1.ax1x.com/2018/05/12/CBhUSJ.png')">
-              </div>
+            <h2 class="post-title">Flutter[Android]引入firebase时flutter run/(build apk)报错解决方法</h2>
+            <div class="post-date">2019-07-19</div>
             
             <div class="post-content">
-              <p>不希望每次运行一下代码就要去启动Android Studio这个庞然大物，正好vscode可以做一个轻量级的IDE，所以配置了vscode用来编写Kotlin程序</p>
-<!-- more -->
-<h2 id="前言">前言</h2>
-<p>不希望每次运行一下代码就要去启动Android Studio这个庞然大物，正好vscode可以做一个轻量级的IDE，所以配置了vscode用来编写Kotlin程序</p>
-<h2 id="环境配置">环境配置</h2>
-<p>首先可以在Android Studio的安装目录下找到Kotlin Compiler：<br>
-<img src="https://s1.ax1x.com/2018/05/12/CBWw9J.png" alt="1"><br>
-<img src="https://s1.ax1x.com/2018/05/12/CBW039.png" alt="1"><br>
-在环境变量中添加以下项：<br>
-值为：Kotlin Compiler Path\bin<br>
-例如：D:\Program Files\Android\Android Studio\plugins\Kotlin\kotlinc\bin<br>
-<img src="https://s1.ax1x.com/2018/05/12/CBW4gA.png" alt="1"><br>
-然后再控制台输入命令<code>kotlinc -version</code>检测环境是否配置妥当<br>
-如果正常，则如下图所示<br>
-<img src="https://s1.ax1x.com/2018/05/12/CBhUSJ.png" alt="1"><br>
-如果出现这种情况<br>
-<img src="https://s1.ax1x.com/2018/05/12/CBhtW4.png" alt="1"><br>
-则是jdk版本配置不正确或者JAVA环境配置错误所致，重新配置即可（推荐使用jdk1.8）</p>
-<h2 id="配置vscode">配置VSCODE</h2>
-<p>在vscode扩展中安装Kotlin Language和Code Runner这两个扩展包<br>
-<img src="https://s1.ax1x.com/2018/05/12/CB4bE6.png" alt="1"><br>
-<img src="https://s1.ax1x.com/2018/05/12/CB4qUK.md.png" alt="1"><br>
-安装后重启加载扩展，就可以编写Kotlin代码并编译运行了,右键<code>Run Code</code>或者<code>Ctrl</code>+<code>Alt</code>+<code>N</code>运行程序，,OK，像这样<br>
-<img src="https://s1.ax1x.com/2018/05/12/CB7My4.png" alt="1"><br>
-但是我们发现，输出面板中文出现了乱码，可行的解决办法是在用户设置中添加一句<code>&quot;code-runner.runInTerminal&quot;: true,</code>，表示让Kotlin程序通过Terminal运行，就不会出现中文乱码了<br>
-效果如下：<br>
-<img src="https://s1.ax1x.com/2018/05/12/CB7alD.png" alt="1"><br>
-而且在程序目录下还会生成相应的jar包，如：<br>
-<img src="https://s1.ax1x.com/2018/05/12/CB7USO.png" alt="1"></p>
-<h2 id="总结">总结</h2>
-<p>至此，vscode关于Kotlin的配置就已经完成了.</p>
-<p><em>Enjoy Your Code！</em><br>
-<em>2018/08/31</em></p>
+              <p>当在flutter项目中引入了firebase组件后，运行以下命令：</p>
+<ul>
+<li><code>flutter run</code></li>
+<li><code>flutter build apk</code></li>
+</ul>
+<p>会出现下文的报错信息。</p>
+<pre><code class="language-plain">D8: Cannot fit requested classes in a single dex file (# methods: 84722 &gt; 65536)
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:transformDexArchiveWithExternalLibsDexMergerForRelease'.
+&gt; com.android.builder.dexing.DexArchiveMergerException: Error while merging dex archives: 
+PROJECT_PATH\build\app\intermediates\transforms\dexBuilder\release\0.jar,
+PROJECT_PATHbuild\app\intermediates\transforms\dexBuilder\release\1.jar, 
+PROJECT_PATH\build\app\intermediates\transforms\dexBuilder\release\2.jar,
+PROJECT_PATH\build\app\intermediates\transforms\dexBuilder\release\3.jar,
+···
+PROJECT_PATH\build\app\intermediates\transforms\dexBuilder\release\319.jar
+  The number of method references in a .dex file cannot exceed 64K.
+  Learn how to resolve this issue at https://developer.android.com/tools/building/multidex.html
+
+* Try:
+Run with --stacktrace option to get the stack trace. Run with --info or --debug option to get more log output. Run with --scan to get full insights.
+
+* Get more help at https://help.gradle.org
+
+BUILD FAILED in 3m 4s
+Running Gradle task 'assembleRelease'...
+Running Gradle task 'assembleRelease'... Done                     186.7s (!)
+Gradle task assembleRelease failed with exit code 1
+</code></pre>
+<p>其中有一句</p>
+<blockquote>
+<p>The number of method references in a .dex file cannot exceed 64K.<br>
+Learn how to resolve this issue at https://developer.android.com/tools/building/multidex.html</p>
+</blockquote>
+<p>不仅告诉了我们错误原因，而且给出了解决办法。<br>
+现在按照文档中的方案，在app/build.gradle内下下文部分做如下修改。</p>
+<pre><code class="language-groovy"> defaultConfig {
+        applicationId &quot;YOUR_APPLICATION_ID&quot;
+        // minSdkVersion 16
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+        testInstrumentationRunner &quot;android.support.test.runner.AndroidJUnitRunner&quot;
+    }
+</code></pre>
+<p>然后重新运行命令。出现了如下报错信息。</p>
+<pre><code class="language-plain">All com.android.support libraries must use the exact same version specification (mixing versions can lead to runtime crashes.
+···
+</code></pre>
+<p>该问题是由于依赖库版本不一致引发的。本例中出问题的组件为<code>exifinterface</code>，<br>
+解决办法是在project/build.gradle内结尾部分加入如下代码。</p>
+<p><strong>不过，在最新的firebase组件中，不会再出现这个问题了，可以不进行这一步操作</strong></p>
+<pre><code class="language-groovy">subprojects {
+    project.configurations.all {
+        resolutionStrategy.eachDependency { details -&gt;
+            if (details.requested.name == 'exifinterface'  &amp;&amp; !details.requested.name.contains('multidex') ) {
+                details.useVersion &quot;1.0.0&quot;
+            }
+        }
+    }
+}
+</code></pre>
 
             </div>
             
               <div class="tag-container">
                 
-                  <a href="https://microtears.github.io/tag/DsjWB-WTw" class="tag">
-                    迁移
+                  <a href="https://microtears.github.io/tag/Xi__9s4OR" class="tag">
+                    flutter
                   </a>
                 
               </div>
@@ -180,9 +210,9 @@ Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea<
             
               <div class="next-post">
                 <div class="next">下一篇</div>
-                <a href="https://microtears.github.io/post/kotlin-val-de-yi-ci-cuo-wu-yun-yong">
+                <a href="https://microtears.github.io/post/git-shi-yong-ji-lu">
                   <h3 class="post-title">
-                     kotlin val的一次错误运用
+                    Git 使用记录
                   </h3>
                 </a>
               </div>
