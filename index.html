@@ -9,7 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://microtears.github.io/favicon.ico?v=1563541231925">
+<link rel="shortcut icon" href="https://microtears.github.io/favicon.ico?v=1563629258155">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://microtears.github.io/styles/main.css">
 
@@ -39,7 +39,7 @@
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://microtears.github.io">
-        <img src="https://microtears.github.io/images/avatar.png?v=1563541231925" class="site-logo">
+        <img src="https://microtears.github.io/images/avatar.png?v=1563629258155" class="site-logo">
         <h1 class="site-title">YU-NO</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -125,6 +125,22 @@ Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea<
 
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
+          
+            <article class="post-item">
+              <div class="left">
+                <a href="https://microtears.github.io/post/flutter-tong-guo-completer-jiang-hui-diao-han-shu-chuan-zhi-de-fang-shi-zhuan-hua-wei-future">
+                  <h2 class="post-title">Flutter通过Completer将回调函数传值的方式转化为Future</h2>
+                </a>
+                <div class="post-date">
+                  2019-07-20
+                </div>
+                <div class="post-abstract">
+                  <p>在今天编写vision类的时候，遇到这么一个问题，我们需要从<code>Image</code> Widget中获取到图像的二进制数据。观察过源码之后发现，<code>Image</code>是对<code>ImageProvider</code>中的数据流进行了注册监听，用到了回调。我们采用同样的方式去获取<code>ImageInfo</code>对象，虽然<code>ImagePrivider</code>对我们提供了<code>ImageStream</code>，但是<code>ImageStream</code>类并不是集成自<code>Stream</code>，所以对于<code>Stream</code>提供的那些方法自然不能奏效。只能采取<code>ImageStream</code>提供的方案：<code>ImageStreamListener</code>，但是这样一来我们就只能通过<code>ImageStreamListener</code>参数中的回调函数来处理返回的数据，这样既不利于我们思维理解，也不利于数据的处理，那么有没有一种办法是可以将这种回调方式转化为Future返回值呢？答案当然是存在这种办法的。</p>
+
+                </div>
+              </div>
+              
+            </article>
           
             <article class="post-item">
               <div class="left">
@@ -255,22 +271,6 @@ Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea<
                 <div class="post-abstract">
                   <p>在照着Tensorflow官网的demo敲了一遍分类器项目的代码后，运行倒是成功了，结果也不错。但是最终还是要训练自己的数据，所以尝试准备加载自定义的数据，然而demo中只是出现了<code>fashion_mnist.load_data()</code>并没有详细的读取过程，随后我又找了些资料，把读取的过程记录在这里。<br>
 首先提一下需要用到的模块：</p>
-
-                </div>
-              </div>
-              
-            </article>
-          
-            <article class="post-item">
-              <div class="left">
-                <a href="https://microtears.github.io/post/google-translate-de-api-diao-yong">
-                  <h2 class="post-title">Google Translate的API调用</h2>
-                </a>
-                <div class="post-date">
-                  2019-02-04
-                </div>
-                <div class="post-abstract">
-                  <p>由于经常用到谷歌翻译，而每次切换到网页又觉得耗费时间，所以决定自己写一个小工具来用，于是就去查询了一番谷歌翻译的API，但是看到都说是API已经开始收费了，但还是有人通过网页爬出了网页翻译的API但是利用起来比较繁琐。之后又找到了一个简单的API，如下：</p>
 
                 </div>
               </div>

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>YU-NO</title>
+<title>Flutter通过Completer将回调函数传值的方式转化为Future | YU-NO</title>
 <meta name="description" content="岁月总是历久弥新，需要细细品尝。">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -125,85 +125,48 @@ Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea<
 
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
-          
-            <article class="post-item">
-              <div class="left">
-                <a href="https://microtears.github.io/post/lru-suan-fa">
-                  <h2 class="post-title">LRU算法</h2>
-                </a>
-                <div class="post-date">
-                  2018-10-19
-                </div>
-                <div class="post-abstract">
-                  <p>LRU(Least Recently Used)即最近最少使用，是一种缓存算法（页面置换算法）。我们知道，缓存通常是具有固定大小的，他应该只保存那些常常被用到的数据，而数据如何更新则是通过缓存算法实现，LRU算法就是一种简单，常用的缓存算法。</p>
+          <div class="post-detail">
+            <h2 class="post-title">Flutter通过Completer将回调函数传值的方式转化为Future</h2>
+            <div class="post-date">2019-07-20</div>
+            
+            <div class="post-content">
+              <p>在今天编写vision类的时候，遇到这么一个问题，我们需要从<code>Image</code> Widget中获取到图像的二进制数据。观察过源码之后发现，<code>Image</code>是对<code>ImageProvider</code>中的数据流进行了注册监听，用到了回调。我们采用同样的方式去获取<code>ImageInfo</code>对象，虽然<code>ImagePrivider</code>对我们提供了<code>ImageStream</code>，但是<code>ImageStream</code>类并不是集成自<code>Stream</code>，所以对于<code>Stream</code>提供的那些方法自然不能奏效。只能采取<code>ImageStream</code>提供的方案：<code>ImageStreamListener</code>，但是这样一来我们就只能通过<code>ImageStreamListener</code>参数中的回调函数来处理返回的数据，这样既不利于我们思维理解，也不利于数据的处理，那么有没有一种办法是可以将这种回调方式转化为Future返回值呢？答案当然是存在这种办法的。</p>
+<!-- more -->
+<p>解决方法如下：</p>
+<pre><code class="language-dart">	final Completer&lt;ByteData&gt; completer = Completer();
+    ImageStreamListener listener;
+    listener = ImageStreamListener((ImageInfo image, bool synchronousCall) {
+      completer.complete(image.image.toByteData());
+      newStream.removeListener(listener);
+    });
+    newStream.addListener(listener);
+    final bytes = (await completer.future).buffer.asUint8List();
+    final visionImage = FirebaseVisionImage.fromBytes(
+        bytes,
+        FirebaseVisionImageMetadata(
+          size: Size(widget.width, widget.height),
+          rawFormat: null,
+          planeData: null,
+    ));
+</code></pre>
+<p>其中Dartlang中的<code>Completer</code>对象就可以将这种回调传值的方式转化为Future返回值，仔细想一下，是不是和Java中的<code>CountDownLatch</code>可以起到的作用是不是很类似呢。</p>
 
-                </div>
+            </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://microtears.github.io/post/flutterandroidyin-ru-firebase-shi-cuo-wu-jie-jue-fang-fa">
+                  <h3 class="post-title">
+                    Flutter[Android]引入firebase时flutter run/(build apk)报错解决方法
+                  </h3>
+                </a>
               </div>
-              
-                <a class="right" href="https://microtears.github.io/post/lru-suan-fa">
-                  <div class="feature-container" style="background-image: url('https://microtears.github.io/post-images/lru-suan-fa.jpg')">
-                  </div>
-                </a>
-              
-            </article>
-          
-            <article class="post-item">
-              <div class="left">
-                <a href="https://microtears.github.io/post/zai-activity-he-duo-ge-fragment-zhi-jian-gong-xiang-zi-yuan">
-                  <h2 class="post-title">在Activity和多个Fragment之间共享资源</h2>
-                </a>
-                <div class="post-date">
-                  2018-10-18
-                </div>
-                <div class="post-abstract">
-                  
-                </div>
-              </div>
-              
-                <a class="right" href="https://microtears.github.io/post/zai-activity-he-duo-ge-fragment-zhi-jian-gong-xiang-zi-yuan">
-                  <div class="feature-container" style="background-image: url('https://microtears.github.io/post-images/zai-activity-he-duo-ge-fragment-zhi-jian-gong-xiang-zi-yuan.jpg')">
-                  </div>
-                </a>
-              
-            </article>
-          
-            <article class="post-item">
-              <div class="left">
-                <a href="https://microtears.github.io/post/jian-dan-ji-lu">
-                  <h2 class="post-title">简单记录</h2>
-                </a>
-                <div class="post-date">
-                  2018-03-28
-                </div>
-                <div class="post-abstract">
-                  
-                </div>
-              </div>
-              
-            </article>
-          
-            <article class="post-item">
-              <div class="left">
-                <a href="https://microtears.github.io/post/mei-ge-cheng-xu-yuan-du-ying-gai-zhi-dao-de-ji-chu-shu-lun">
-                  <h2 class="post-title">每个程序员都应该知道的基础数论 </h2>
-                </a>
-                <div class="post-date">
-                  2017-10-18
-                </div>
-                <div class="post-abstract">
-                  
-                </div>
-              </div>
-              
-            </article>
-          
+            
 
-          <div class="pagination-container">
-  
-    <a href="https://microtears.github.io/page/2/" class="prev"><i class="icon-arrow-ios-back-outline"></i> 上一页</a>
-  
-  
-</div>
+            
+
+          </div>
 
         </div>
       </div>
