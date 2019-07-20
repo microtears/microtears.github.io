@@ -9,7 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://microtears.github.io/favicon.ico?v=1563629258155">
+<link rel="shortcut icon" href="https://microtears.github.io/favicon.ico?v=1563629586785">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://microtears.github.io/styles/main.css">
 
@@ -39,7 +39,7 @@
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://microtears.github.io">
-        <img src="https://microtears.github.io/images/avatar.png?v=1563629258155" class="site-logo">
+        <img src="https://microtears.github.io/images/avatar.png?v=1563629586785" class="site-logo">
         <h1 class="site-title">YU-NO</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -130,7 +130,7 @@ Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea<
             <div class="post-date">2019-07-20</div>
             
             <div class="post-content">
-              <p>在今天编写vision类的时候，遇到这么一个问题，我们需要从<code>Image</code> Widget中获取到图像的二进制数据。观察过源码之后发现，<code>Image</code>是对<code>ImageProvider</code>中的数据流进行了注册监听，用到了回调。我们采用同样的方式去获取<code>ImageInfo</code>对象，虽然<code>ImagePrivider</code>对我们提供了<code>ImageStream</code>，但是<code>ImageStream</code>类并不是集成自<code>Stream</code>，所以对于<code>Stream</code>提供的那些方法自然不能奏效。只能采取<code>ImageStream</code>提供的方案：<code>ImageStreamListener</code>，但是这样一来我们就只能通过<code>ImageStreamListener</code>参数中的回调函数来处理返回的数据，这样既不利于我们思维理解，也不利于数据的处理，那么有没有一种办法是可以将这种回调方式转化为Future返回值呢？答案当然是存在这种办法的。</p>
+              <p>在今天编写vision类的时候，遇到这么一个问题，我们需要从<code>Image</code> Widget中获取到图像的二进制数据。观察过源码之后发现，<code>Image</code>是对<code>ImageProvider</code>中的数据流进行了注册监听，用到了回调。我们采用同样的方式去获取<code>ImageInfo</code>对象，虽然<code>ImagePrivider</code>对我们提供了<code>ImageStream</code>，但是<code>ImageStream</code>类并不是继承自<code>Stream</code>，所以对于<code>Stream</code>提供的那些方法自然不能奏效。只能采取<code>ImageStream</code>提供的方案：<code>ImageStreamListener</code>，但是这样一来我们就只能通过<code>ImageStreamListener</code>参数中的回调函数来处理返回的数据，这样既不利于我们思维理解，也不利于数据的处理，那么有没有一种办法是可以将这种回调方式转化为Future返回值呢？答案当然是存在这种办法的。</p>
 <!-- more -->
 <p>解决方法如下：</p>
 <pre><code class="language-dart">	final Completer&lt;ByteData&gt; completer = Completer();
