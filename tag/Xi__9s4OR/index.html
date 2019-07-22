@@ -9,7 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://microtears.github.io/favicon.ico?v=1563629586785">
+<link rel="shortcut icon" href="https://microtears.github.io/favicon.ico?v=1563758884715">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://microtears.github.io/styles/main.css">
 
@@ -39,7 +39,7 @@
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://microtears.github.io">
-        <img src="https://microtears.github.io/images/avatar.png?v=1563629586785" class="site-logo">
+        <img src="https://microtears.github.io/images/avatar.png?v=1563758884715" class="site-logo">
         <h1 class="site-title">YU-NO</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -129,6 +129,38 @@ Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea<
           
             <article class="post-item">
               <div class="left">
+                <a href="https://microtears.github.io/post/flutter-lu-you-tui-chu-dong-hua">
+                  <h2 class="post-title">Flutter路由退出动画</h2>
+                </a>
+                <div class="post-date">
+                  2019-07-22
+                </div>
+                <div class="post-abstract">
+                  <p><code>secondaryAnimation</code>是ModalRoute类的一个get field，也实际存在于ModalRoute类中：<code>ProxyAnimation _secondaryAnimationProxy;</code>，另外我们还可以通过如下方式获取到<code>secondaryAnimation</code>对象：<code>ModalRoute.of(context).secondaryAnimation</code>。</p>
+
+                </div>
+              </div>
+              
+            </article>
+          
+            <article class="post-item">
+              <div class="left">
+                <a href="https://microtears.github.io/post/flutter-tong-guo-completer-jiang-hui-diao-han-shu-chuan-zhi-de-fang-shi-zhuan-hua-wei-future">
+                  <h2 class="post-title">Flutter通过Completer将回调函数传值的方式转化为Future</h2>
+                </a>
+                <div class="post-date">
+                  2019-07-20
+                </div>
+                <div class="post-abstract">
+                  <p>在今天编写vision类的时候，遇到这么一个问题，我们需要从<code>Image</code> Widget中获取到图像的二进制数据。观察过源码之后发现，<code>Image</code>是对<code>ImageProvider</code>中的数据流进行了注册监听，用到了回调。我们采用同样的方式去获取<code>ImageInfo</code>对象，虽然<code>ImagePrivider</code>对我们提供了<code>ImageStream</code>，但是<code>ImageStream</code>类并不是继承自<code>Stream</code>，所以对于<code>Stream</code>提供的那些方法自然不能奏效。只能采取<code>ImageStream</code>提供的方案：<code>ImageStreamListener</code>，但是这样一来我们就只能通过<code>ImageStreamListener</code>参数中的回调函数来处理返回的数据，这样既不利于我们思维理解，也不利于数据的处理，那么有没有一种办法是可以将这种回调方式转化为Future返回值呢？答案当然是存在这种办法的。</p>
+
+                </div>
+              </div>
+              
+            </article>
+          
+            <article class="post-item">
+              <div class="left">
                 <a href="https://microtears.github.io/post/flutterandroidyin-ru-firebase-shi-cuo-wu-jie-jue-fang-fa">
                   <h2 class="post-title">Flutter[Android]引入firebase时flutter run/(build apk)报错解决方法</h2>
                 </a>
@@ -139,6 +171,26 @@ Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea<
                   
                 </div>
               </div>
+              
+            </article>
+          
+            <article class="post-item">
+              <div class="left">
+                <a href="https://microtears.github.io/post/wrap-gai-zao-chong-man-zheng-xing-de-liu-shi-bu-ju">
+                  <h2 class="post-title">Wrap改造：充满整行的流式布局</h2>
+                </a>
+                <div class="post-date">
+                  2019-07-15
+                </div>
+                <div class="post-abstract">
+                  
+                </div>
+              </div>
+              
+                <a class="right" href="https://microtears.github.io/post/wrap-gai-zao-chong-man-zheng-xing-de-liu-shi-bu-ju">
+                  <div class="feature-container" style="background-image: url('https://s2.ax1x.com/2019/07/13/ZhKq4H.md.png')">
+                  </div>
+                </a>
               
             </article>
           

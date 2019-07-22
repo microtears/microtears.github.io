@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>Hide Desktop Icon[AutoHotKey] | YU-NO</title>
+<title>Flutter路由退出动画 | YU-NO</title>
 <meta name="description" content="岁月总是历久弥新，需要细细品尝。">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -126,68 +126,57 @@ Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea<
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
           <div class="post-detail">
-            <h2 class="post-title">Hide Desktop Icon[AutoHotKey]</h2>
-            <div class="post-date">2019-02-12</div>
+            <h2 class="post-title">Flutter路由退出动画</h2>
+            <div class="post-date">2019-07-22</div>
             
             <div class="post-content">
-              <pre><code class="language-autohotkey">/* Library:
- *      Hide Desktop Icon
- * Description:
- *      Hide the desktop icon by double clicking the right mouse button
- * Warnning:
- *      None.
- * Version:
- *      v1.0.5
- * Author:
- *      泠音
- */
-
-&lt;!-- more --&gt;
-
-intInterval:=300
-~RButton::
-    If(A_PriorHotkey &lt;&gt; &quot;~RBUtton&quot; or A_TimeSincePriorHotkey &gt; intInterval){
-        KeyWait, RButton
-        return
-    }
-If(check()){
-    HideOrShowDesktopIcons()
-    Sleep, 40
-    Send, {Esc}
-    return
-}
-
-check(){
-    MouseGetPos,X,Y,ID,CLASS
-    return CLASS==&quot;SysListView321&quot; 
-        or CLASS==&quot;SHELLDLL_DefView1&quot;
-        or CLASS==&quot;&quot;
-        or WinExist(&quot;ahk_class WorkerW&quot; . &quot; ahk_id &quot; . CLASS)
-}
-
-HideOrShowDesktopIcons()
-{
-	ControlGet, class, Hwnd,, SysListView321, ahk_class Progman
-	If class =
-		ControlGet, class, Hwnd,, SysListView321, ahk_class WorkerW
- 
-	If DllCall(&quot;IsWindowVisible&quot;, UInt,class)
-		WinHide, ahk_id %class%
-	Else
-		WinShow, ahk_id %class%
-}
+              <p><code>secondaryAnimation</code>是ModalRoute类的一个get field，也实际存在于ModalRoute类中：<code>ProxyAnimation _secondaryAnimationProxy;</code>，另外我们还可以通过如下方式获取到<code>secondaryAnimation</code>对象：<code>ModalRoute.of(context).secondaryAnimation</code>。</p>
+<!-- more -->
+<h1 id="flutter-secondaryanimation解析">Flutter secondaryAnimation解析</h1>
+<h2 id="secondaryanimation出现在哪里">secondaryAnimation出现在哪里</h2>
+<p><code>secondaryAnimation</code>是ModalRoute类的一个get field，也实际存在于ModalRoute类中：<code>ProxyAnimation _secondaryAnimationProxy;</code>，另外我们还可以通过如下方式获取到<code>secondaryAnimation</code>对象：<code>ModalRoute.of(context).secondaryAnimation</code>。</p>
+<!-- more -->
+<p>除此之外，我们一般还会在自定义<code>Route</code>的时候遇到它：</p>
+<pre><code class="language-dart">PageRouteBuilder(
+  pageBuilder: (BuildContext context, Animation animation, Animation secondaryAnimation) =&gt;
+      WelcomePage(),
+  transitionsBuilder: (BuildContext context, Animation&lt;double&gt; animation,
+          Animation&lt;double&gt; secondaryAnimation, Widget child) =&gt;
+      SlideTransition(
+        position: Tween&lt;Offset&gt;(
+          begin: Offset(0.0, 0.0),
+          end: Offset(0.0, 0),
+        ).animate(animation),
+        child: SlideTransition(
+          position: Tween&lt;Offset&gt;(
+            begin: Offset(0.0, 0),
+            end: Offset(0.0, -1.0),
+          ).animate(secondaryAnimation),
+          child: child,
+        ),
+      ),
+  transitionDuration: Duration(milliseconds: 400),
+);
 </code></pre>
+<p>对于<code>secondaryAnimation</code>，源码文档中对它的解释如下：</p>
+<blockquote>
+<p>When the [Navigator] pushes a route on the top of its stack, the<br>
+[secondaryAnimation] can be used to define how the route that was on<br>
+the top of the stack leaves the screen. Similarly when the topmost route<br>
+is popped, the secondaryAnimation can be used to define how the route<br>
+below it reappears on the screen. When the Navigator pushes a new route<br>
+on the top of its stack, the old topmost route's secondaryAnimation<br>
+runs from 0.0 to 1.0. When the Navigator pops the topmost route, the<br>
+secondaryAnimation for the route below it runs from 1.0 to 0.0.</p>
+</blockquote>
+<p>上文是说<code>secondaryAnimation</code>是控制已经是top的<code>route</code>退出动画，但是当我在需要动画的页面按照文档里给的样例编写后，只有页面进入动画是正常的，前一个页面的退出动画并没有有所表现。后来在StackOverflow搜索相关问题后有人解释说是<code>secondaryAnimation</code>其实还是用于控制<code>pageBuilder</code>返回的Widget页面的退出动画，而不是我理解的前一个路由的动画，所以如果要对前后2个页面建立动画，前一个路由的退出动画应该由它自己负责，也就是我们应该对前一个路由利用<code>transitionsBuilder</code>为其创建退出动画，而不是在第二个路由页面创建。</p>
 
             </div>
             
               <div class="tag-container">
                 
-                  <a href="https://microtears.github.io/tag/_XrUOq-Z7" class="tag">
-                    autohotkey
-                  </a>
-                
-                  <a href="https://microtears.github.io/tag/DsjWB-WTw" class="tag">
-                    迁移
+                  <a href="https://microtears.github.io/tag/Xi__9s4OR" class="tag">
+                    flutter
                   </a>
                 
               </div>
@@ -195,9 +184,9 @@ HideOrShowDesktopIcons()
             
               <div class="next-post">
                 <div class="next">下一篇</div>
-                <a href="https://microtears.github.io/post/quick-switch-virtual-desktopautohotkey">
+                <a href="https://microtears.github.io/post/flutter-tong-guo-completer-jiang-hui-diao-han-shu-chuan-zhi-de-fang-shi-zhuan-hua-wei-future">
                   <h3 class="post-title">
-                    Quick Switch Virtual Desktop[AutoHotkey]
+                    Flutter通过Completer将回调函数传值的方式转化为Future
                   </h3>
                 </a>
               </div>

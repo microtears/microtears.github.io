@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>Hide Desktop Icon[AutoHotKey] | YU-NO</title>
+<title>CI 脚本运行错误 | YU-NO</title>
 <meta name="description" content="岁月总是历久弥新，需要细细品尝。">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -126,78 +126,33 @@ Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea<
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
           <div class="post-detail">
-            <h2 class="post-title">Hide Desktop Icon[AutoHotKey]</h2>
-            <div class="post-date">2019-02-12</div>
+            <h2 class="post-title">CI 脚本运行错误</h2>
+            <div class="post-date">2019-07-12</div>
             
             <div class="post-content">
-              <pre><code class="language-autohotkey">/* Library:
- *      Hide Desktop Icon
- * Description:
- *      Hide the desktop icon by double clicking the right mouse button
- * Warnning:
- *      None.
- * Version:
- *      v1.0.5
- * Author:
- *      泠音
- */
-
-&lt;!-- more --&gt;
-
-intInterval:=300
-~RButton::
-    If(A_PriorHotkey &lt;&gt; &quot;~RBUtton&quot; or A_TimeSincePriorHotkey &gt; intInterval){
-        KeyWait, RButton
-        return
-    }
-If(check()){
-    HideOrShowDesktopIcons()
-    Sleep, 40
-    Send, {Esc}
-    return
-}
-
-check(){
-    MouseGetPos,X,Y,ID,CLASS
-    return CLASS==&quot;SysListView321&quot; 
-        or CLASS==&quot;SHELLDLL_DefView1&quot;
-        or CLASS==&quot;&quot;
-        or WinExist(&quot;ahk_class WorkerW&quot; . &quot; ahk_id &quot; . CLASS)
-}
-
-HideOrShowDesktopIcons()
-{
-	ControlGet, class, Hwnd,, SysListView321, ahk_class Progman
-	If class =
-		ControlGet, class, Hwnd,, SysListView321, ahk_class WorkerW
- 
-	If DllCall(&quot;IsWindowVisible&quot;, UInt,class)
-		WinHide, ahk_id %class%
-	Else
-		WinShow, ahk_id %class%
-}
+              <h2 id="报错信息">报错信息</h2>
+<pre><code class="language-shell">$ openssl aes-256-cbc -K $encrypted_d2e7c15ed967_key -iv $encrypted_d2e7c15ed967_iv -in mood.jks.enc -out mood.jks -d
+bad decrypt
+140442486961824:error:0606506D:digital envelope routines:EVP_DecryptFinal_ex:wrong final block length:evp_enc.c:532:
+The command &quot;openssl aes-256-cbc -K $encrypted_d2e7c15ed967_key -iv $encrypted_d2e7c15ed967_iv -in mood.jks.enc -out mood.jks -d&quot; failed and exited with 1 during.
+Your build has been stopped.
 </code></pre>
+<h2 id="错误原因">错误原因</h2>
+<blockquote>
+<p>Caveat</p>
+<p>There is a report of this function not working on a local Windows machine. Please use a Linux or OS X machine.</p>
+</blockquote>
+<h2 id="解决办法">解决办法</h2>
+<p>在linux或mac os下运行<code>travis encrypt-file mood.jks --add</code>命令。</p>
 
             </div>
-            
-              <div class="tag-container">
-                
-                  <a href="https://microtears.github.io/tag/_XrUOq-Z7" class="tag">
-                    autohotkey
-                  </a>
-                
-                  <a href="https://microtears.github.io/tag/DsjWB-WTw" class="tag">
-                    迁移
-                  </a>
-                
-              </div>
             
             
               <div class="next-post">
                 <div class="next">下一篇</div>
-                <a href="https://microtears.github.io/post/quick-switch-virtual-desktopautohotkey">
+                <a href="https://microtears.github.io/post/git-shi-yong-ji-lu">
                   <h3 class="post-title">
-                    Quick Switch Virtual Desktop[AutoHotkey]
+                    Git 使用记录
                   </h3>
                 </a>
               </div>
