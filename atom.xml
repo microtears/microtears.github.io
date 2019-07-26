@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://microtears.github.io</id>
     <title>YU-NO</title>
-    <updated>2019-07-22T01:50:48.566Z</updated>
+    <updated>2019-07-26T07:16:11.162Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://microtears.github.io"/>
     <link rel="self" href="https://microtears.github.io/atom.xml"/>
@@ -10,6 +10,149 @@
     <logo>https://microtears.github.io/images/avatar.png</logo>
     <icon>https://microtears.github.io/favicon.ico</icon>
     <rights>All rights reserved 2019, YU-NO</rights>
+    <entry>
+        <title type="html"><![CDATA[Flutter Travis CI 脚本相关问题]]></title>
+        <id>https://microtears.github.io/post/ZLJCVmnE2</id>
+        <link href="https://microtears.github.io/post/ZLJCVmnE2">
+        </link>
+        <updated>2019-07-26T06:27:43.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="q1">Q1</h2>
+<h2 id="报错信息">报错信息</h2>
+<pre><code class="language-shell">$ openssl aes-256-cbc -K $encrypted_d2e7c15ed967_key -iv $encrypted_d2e7c15ed967_iv -in mood.jks.enc -out mood.jks -d
+bad decrypt
+140442486961824:error:0606506D:digital envelope routines:EVP_DecryptFinal_ex:wrong final block length:evp_enc.c:532:
+The command &quot;openssl aes-256-cbc -K $encrypted_d2e7c15ed967_key -iv $encrypted_d2e7c15ed967_iv -in mood.jks.enc -out mood.jks -d&quot; failed and exited with 1 during.
+Your build has been stopped.
+</code></pre>
+<h2 id="错误原因">错误原因</h2>
+<blockquote>
+<p>Caveat</p>
+<p>There is a report of this function not working on a local Windows machine. Please use a Linux or OS X machine.</p>
+</blockquote>
+<h2 id="解决办法">解决办法</h2>
+<p>在linux或mac os下运行<code>travis encrypt-file mood.jks --add</code>命令。</p>
+<h2 id="q2">Q2</h2>
+<h2 id="报错信息-2">报错信息</h2>
+<pre><code class="language-shell">Please make sure you have the correct access rights
+and the repository exists.
+fatal: clone of 'git@github.com:microtears/asset_generator.git' into submodule path '/home/travis/build/microtears/Mood/asset_generator' failed
+Failed to clone 'asset_generator'. Retry scheduled
+Cloning into '/home/travis/build/microtears/Mood/asset_generator'...
+Permission denied (publickey).
+fatal: Could not read from remote repository.
+Please make sure you have the correct access rights
+and the repository exists.
+fatal: clone of 'git@github.com:microtears/asset_generator.git' into submodule path '/home/travis/build/microtears/Mood/asset_generator' failed
+Failed to clone 'asset_generator' a second time, aborting
+The command &quot;eval git submodule update --init --recursive &quot; failed. 
+</code></pre>
+<h2 id="错误原因-2">错误原因</h2>
+<p>使用git协议的地址时候，自动使用了publickey进行了验证，由于该publickey并没有添加到github账户上，所以Permission denied (publickey).</p>
+<h2 id="解决办法-2">解决办法</h2>
+<p>如果项目中有submodule，则将其中所有使用git协议的url切换到https协议</p>
+<h2 id="q3">Q3</h2>
+<h2 id="报错信息-3">报错信息</h2>
+<pre><code class="language-shell">No file or variants found for asset: assets/flare.
+[   +1 ms] Error building assets
+</code></pre>
+<h2 id="错误原因-3">错误原因</h2>
+<p>pubspec.yaml assets路径填写错误或者该路径下文件不存在。</p>
+<h2 id="解决办法-3">解决办法</h2>
+<p>将路径修改为正确的路径，清除那些实际不存在文件的路径。</p>
+<h2 id="q4">Q4</h2>
+<h2 id="报错信息-4">报错信息</h2>
+<pre><code class="language-shell">&gt; Configure project :app
+File /home/travis/.android/repositories.cfg could not be loaded.
+Checking the license for package Android SDK Build-Tools 28.0.3 in /usr/local/android-sdk/licenses
+Warning: License for package Android SDK Build-Tools 28.0.3 not accepted.
+Checking the license for package Android SDK Platform 28 in /usr/local/android-sdk/licenses
+Warning: License for package Android SDK Platform 28 not accepted.
+
+
+FAILURE: Build failed with an exception.
+
+* Where:
+Build file '/home/travis/build/microtears/Mood/android/build.gradle' line: 25
+
+* What went wrong:
+A problem occurred evaluating root project 'android'.
+&gt; A problem occurred configuring project ':app'.
+   &gt; Failed to install the following Android SDK packages as some licences have not been accepted.
+   	build-tools;28.0.3 Android SDK Build-Tools 28.0.3
+   	platforms;android-28 Android SDK Platform 28
+   To build this project, accept the SDK license agreements and install the missing components using the Android Studio SDK Manager.
+   Alternatively, to transfer the license agreements from one workstation to another, see http://d.android.com/r/studio-ui/export-licenses.html
+
+   Using Android SDK: /usr/local/android-sdk
+
+   * Try:
+   Run with --stacktrace option to get the stack trace. Run with --info or --debug option to get more log output. Run with --scan to get full insights.
+
+   * Get more help at https://help.gradle.org
+
+BUILD FAILED in 42s
+</code></pre>
+<h2 id="错误原因-4">错误原因</h2>
+<blockquote>
+<p>some licences have not been accepted.</p>
+</blockquote>
+<h2 id="解决办法-4">解决办法</h2>
+<p>.travis.yml before_installs部分添加：</p>
+<pre><code class="language-yaml">- touch $HOME/.android/repositories.cfg
+- yes | sdkmanager &quot;platforms;android-28&quot;
+- yes | sdkmanager &quot;build-tools;28.0.3&quot;
+</code></pre>
+<p>修改完成后如下：</p>
+<pre><code class="language-yaml">
+···
+
+before_install:
+- touch $HOME/.android/repositories.cfg
+- yes | sdkmanager &quot;platforms;android-28&quot;
+- yes | sdkmanager &quot;build-tools;28.0.3&quot;
+
+···
+
+</code></pre>
+<h2 id="q5">Q5</h2>
+<h2 id="报错信息-5">报错信息</h2>
+<pre><code class="language-shell">0.00s$ touch $HOME/.android/repositories.cfg
+0.01s$ yes | sdkmanager &quot;platforms;android-28&quot;
+/home/travis/.travis/functions: line 104: sdkmanager: command not found
+The command &quot;yes | sdkmanager &quot;platforms;android-28&quot;&quot; failed and exited with 127 during .
+</code></pre>
+<h2 id="错误原因-5">错误原因</h2>
+<p>没有导出相应的环境变量</p>
+<h2 id="解决办法-5">解决办法</h2>
+<p>.travis.yml添加：<code>dist: trusty</code>，注意不要出现语法错误</p>
+<h2 id="q6">Q6</h2>
+<h2 id="报错信息-6">报错信息</h2>
+<p>Travis CI 发布到Github Release的包没有包含apk</p>
+<h2 id="错误原因-6">错误原因</h2>
+<p>apk文件被清理了</p>
+<h2 id="解决办法-6">解决办法</h2>
+<p>.travis.yml deploy部分添加（注意provider为releases）：</p>
+<pre><code class="language-yaml">skip_cleanup: true
+</code></pre>
+<p>修改完成后如下：</p>
+<pre><code class="language-yaml">
+···
+
+deploy:
+provider: releases
+tags: true
+api_key:
+  secure: ···
+file: build/app/outputs/apk/release/app-release.apk
+skip_cleanup: true
+on:
+  repo: microtears/Mood
+
+···
+
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Flutter路由退出动画]]></title>
         <id>https://microtears.github.io/post/flutter-lu-you-tui-chu-dong-hua</id>
@@ -276,8 +419,8 @@ void performLayout() {
 </code></pre>
 <h3 id="下一个计划">下一个计划</h3>
 <ul class="contains-task-list">
-<li class="task-list-item"><input class="task-list-item-checkbox" disabled="" type="checkbox" id="task-item-8021408"><label class="task-list-item-label" for="task-item-8021408"> 补完这份文档</label></li>
-<li class="task-list-item"><input class="task-list-item-checkbox" disabled="" type="checkbox" id="task-item-636908"><label class="task-list-item-label" for="task-item-636908"> 优化FilledWrap填充逻辑</label></li>
+<li class="task-list-item"><input class="task-list-item-checkbox" disabled="" type="checkbox" id="task-item-1095627"><label class="task-list-item-label" for="task-item-1095627"> 补完这份文档</label></li>
+<li class="task-list-item"><input class="task-list-item-checkbox" disabled="" type="checkbox" id="task-item-9605089"><label class="task-list-item-label" for="task-item-9605089"> 优化FilledWrap填充逻辑</label></li>
 </ul>
 ]]></content>
     </entry>
@@ -880,77 +1023,6 @@ public class Controller implements Initializable {
     }
 }
 
-</code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Idea VM options]]></title>
-        <id>https://microtears.github.io/post/idea-vm-options</id>
-        <link href="https://microtears.github.io/post/idea-vm-options">
-        </link>
-        <updated>2019-02-05T03:59:07.000Z</updated>
-        <content type="html"><![CDATA[<pre><code class="language-shell"># Custom IntelliJ IDEA VM options
-
-##################JVM模式############################
-
-# IDEA的JVM以Server模式启动（新生代默认使用ParNew）
--server
-
-
-##################内存分配###########################
-
-# 堆初始值占用3G，意味着IDEA启动即分配3G内存
--Xms3g
-
-# 堆最大值占用3G
--Xmx3g
-
-# 强制JVM在启动时申请到足够的堆内存（否则IDEA启动时堆初始大小不足3g）
--XX:+AlwaysPreTouch
-
-# 年轻代与老年代比例为1:3（默认值是1:4），降低年轻代的回收频率
--XX:NewRatio=3
-
-# 栈帧大小为16m
--Xss16m
-
-##################老年代回收器########################
-
-# 使用CMS老年代回收器
--XX:+UseConcMarkSweepGC
-
-# CMS的重新标记步骤：多线程一起执行
--XX:+CMSParallelRemarkEnabled
-
-# CMS的并发标记步骤：启用4个线程并发标记（理论上越多越好，前提是CPU核心足够多）
--XX:ConcGCThreads=8
-
-
-##################JIT编译器###########################
-
-# 代码缓存，用于存放Just In Time编译后的本地代码，如果塞满，JVM将只解释执行，不再编译native代码。
--XX:ReservedCodeCacheSize=512m
-
-# 分层编译，JIT编译优化越来越好，IDEA运行时间越久越快
--XX:+TieredCompilation
-
-# 节省64位指针占用的空间，代价是JVM额外开销
-#-XX:+UseCompressedOops
-
-# 增大软引用在JVM中的存活时长（堆空闲空间越大越久）
--XX:SoftRefLRUPolicyMSPerMB=50
-
-# 设为false Idea会提示无法利用Https更新
--Djsse.enableSNIExtension=true
-
--ea
--Dsun.io.useCanonCaches=false
--Djava.net.preferIPv4Stack=true
--Djdk.http.auth.tunneling.disabledSchemes=&quot;&quot;
--XX:+HeapDumpOnOutOfMemoryError
--XX:-OmitStackTraceInFastThrow
--XX:MaxJavaStackTraceDepth=10000
--Dide.no.platform.update=true
 </code></pre>
 ]]></content>
     </entry>
