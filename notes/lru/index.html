@@ -14,7 +14,9 @@
         <title>LRU算法</title>
       </head>
       <body>
-        <main><p>LRU(Least Recently Used)即最近最少使用，是一种缓存算法（页面置换算法）。我们知道，缓存通常是具有固定大小的，他应该只保存那些常常被用到的数据，而数据如何更新则是通过缓存算法实现，LRU算法就是一种简单，常用的缓存算法。</p>
+        <main>
+          <div class="row">
+            <article><p>LRU(Least Recently Used)即最近最少使用，是一种缓存算法（页面置换算法）。我们知道，缓存通常是具有固定大小的，他应该只保存那些常常被用到的数据，而数据如何更新则是通过缓存算法实现，LRU算法就是一种简单，常用的缓存算法。</p>
 <h2>原理</h2>
 <p>LRU算法是核心思想是：如果一个数据在最近一段时间都没有被用到，那么它在将来被使用到的可能性也很小。故当缓存空间已满的情况下，我们需要淘汰掉最久没有被访问到的数据。理想的LRU算法读写是时间复杂度应该都为O(1)。</p>
 <h2>实现</h2>
@@ -124,8 +126,30 @@
 </code></pre>
 <h2>结语</h2>
 <p>第一次听说LRU算法是在现代操作系统这本书中，但引起我深究的是Glide这个库在自定义Model的时候，便有了一探究竟的想法，故整理资料写下这些文字，一面是为了加深自己的影响，另一面也希望我所说的能让大家更简单的去理解LRU，一起学习。</p>
- </main>
-        <footer></footer>
+ </article>
+            <nav>
+    <div>
       
+  <p id="description">岁月总是历久弥新，需要细细品尝。
+  <br>
+  <br>
+  </p><p id="copyright">© 2019-2025 lingyin.</p>
+
+    </div>
+  </nav>
+          </div>
+          <footer></footer>
+        </main>
+      
+      <script type="module">
+        import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+          startOnLoad: false,
+          theme: "base",
+        });
+        await mermaid.run({
+          querySelector: ".language-mermaid",
+        });
+      </script>
     
   </body></html>

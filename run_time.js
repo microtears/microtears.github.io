@@ -11,7 +11,7 @@ function updateTime() {
   const seconds = Math.round(leave3 / 1000);
   const element = document.getElementById("run-time");
   element.innerHTML =
-    "已运行" + days + "天" + hours + "小时" + minutes + "分钟" + seconds + "秒";
+    "run time: " + days + "d " + hours + "h " + minutes + "m " + seconds + "s";
 }
 
 setInterval(updateTime, 1000);

@@ -14,7 +14,9 @@
         <title>在Activity和多个Fragment之间共享资源</title>
       </head>
       <body>
-        <main><p>Android Studio 默认生成的代码一般是这样的：</p>
+        <main>
+          <div class="row">
+            <article><p>Android Studio 默认生成的代码一般是这样的：</p>
 <pre><code class="language-kotlin hljs"><span class="hljs-keyword">package</span> com.messy.lingplayer.playui
 
 <span class="hljs-keyword">import</span> android.os.Bundle
@@ -73,8 +75,30 @@
 </blockquote>
 <p><img src="https://s1.ax1x.com/2018/10/18/iwUH3T.png" alt="1"></p>
 <p>这样就可以避免在Activity直接利用接口进行回调</p>
- </main>
-        <footer></footer>
+ </article>
+            <nav>
+    <div>
       
+  <p id="description">岁月总是历久弥新，需要细细品尝。
+  <br>
+  <br>
+  </p><p id="copyright">© 2019-2025 lingyin.</p>
+
+    </div>
+  </nav>
+          </div>
+          <footer></footer>
+        </main>
+      
+      <script type="module">
+        import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+          startOnLoad: false,
+          theme: "base",
+        });
+        await mermaid.run({
+          querySelector: ".language-mermaid",
+        });
+      </script>
     
   </body></html>

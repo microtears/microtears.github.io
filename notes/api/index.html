@@ -14,7 +14,9 @@
         <title>一些收集的api合集</title>
       </head>
       <body>
-        <main><table>
+        <main>
+          <div class="row">
+            <article><table>
 <thead>
 <tr>
 <th>名称</th>
@@ -50,8 +52,30 @@
 <span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>img.aibizhi.adesk.com
 <span class="hljs-attribute">Connection</span><span class="hljs-punctuation">: </span>Keep-Alive
 </code></pre>
- </main>
-        <footer></footer>
+ </article>
+            <nav>
+    <div>
       
+  <p id="description">岁月总是历久弥新，需要细细品尝。
+  <br>
+  <br>
+  </p><p id="copyright">© 2019-2025 lingyin.</p>
+
+    </div>
+  </nav>
+          </div>
+          <footer></footer>
+        </main>
+      
+      <script type="module">
+        import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+          startOnLoad: false,
+          theme: "base",
+        });
+        await mermaid.run({
+          querySelector: ".language-mermaid",
+        });
+      </script>
     
   </body></html>

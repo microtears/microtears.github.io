@@ -14,7 +14,9 @@
         <title>The story of your life</title>
       </head>
       <body>
-        <main><!-- more -->
+        <main>
+          <div class="row">
+            <article><!-- more -->
 <p>那些很真实的梦一定发生过</p>
 <p>2020/3/14</p>
 <hr>
@@ -245,8 +247,30 @@
 <p>今天真是倒霉透了，银行卡密码输错3次，去柜台又输错了3次，真锁死了。然而抽风的我又把钱存了进去，我靠！存完了我才反应过来，卡都锁定了，网银根本用不了啊！电脑密码也忘了。我今天是失忆了吗？😯</p>
 <p>2015/11/9</p>
 <hr>
- </main>
-        <footer></footer>
+ </article>
+            <nav>
+    <div>
       
+  <p id="description">岁月总是历久弥新，需要细细品尝。
+  <br>
+  <br>
+  </p><p id="copyright">© 2019-2025 lingyin.</p>
+
+    </div>
+  </nav>
+          </div>
+          <footer></footer>
+        </main>
+      
+      <script type="module">
+        import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+          startOnLoad: false,
+          theme: "base",
+        });
+        await mermaid.run({
+          querySelector: ".language-mermaid",
+        });
+      </script>
     
   </body></html>
