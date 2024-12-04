@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="岁月总是历久弥新，需要细细品尝。">
+
+        <link rel="stylesheet" href="/css/a11y-light.css">
+        <link rel="stylesheet" href="/styles/main.css">
+
+        
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&amp;display=swap">
+        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&amp;family=Open+Sans:ital,wght@0,300..800;1,300..800&amp;display=swap" rel="stylesheet">
+        <title>2019 Android library 怎么快速上传 Jcenter</title>
+      </head>
+      <body>
+        <main>
+          <div class="wrap">
+            <article><h1>2019 Android library 怎么快速上传 Jcenter</h1>
+<h2>Library 的两种结构</h2>
+<p>当我们写下自己的组件库时，结构可能如下面两种方式：</p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcf267ef65cf75~tplv-t2oaga2asx-image.image" alt="_"></p>
+<p>当我们的库比较简单时采用第一种方式就足够了，但是当库比较复杂时，第二种拆分为多个组件的方式能够跟好的组织与提供服务。下面会介绍这两种结构的项目如何快速上传 Jcenter。</p>
+<h2>注册 Bintray</h2>
+<p>第一步首先是注册 Bintray Open Source 账户，注册地址是
+<a href="https://bintray.com/signup/oss">Create Your JFrog Bintray Account</a>
+<a href="https://bintray.com/signup/oss">https://bintray.com/signup/oss</a>，
+请注意不要去 Bintray 主页注册为企业账户，否则删除账户需要在 3 个月后试用时长过期后才可以申请。</p>
+<p>注册页面预览：</p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dceac6e0197081~tplv-t2oaga2asx-image.image" alt="_"></p>
+<h2>建立 Maven 仓库</h2>
+<p>账号建立并成功登录之后,你们看到的页面可能和下图类似：</p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dceb2e3ca5ca1a~tplv-t2oaga2asx-image.image" alt="_"></p>
+<p>不同之处可能是 Owned Repositories 部分是空的。
+接下来就是建立自己的 maven 仓库了。
+点击 Owned Repositories 区域的 Add New Repository，
+重点在于 Type 需要选择 Maven 项，其他部分根据自己的实际情况填写。</p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dceb8ee2caf9b0~tplv-t2oaga2asx-image.image" alt="screencapture-bintray-swordsoul-2019-10-15-17_18_24.png"></p>
+<p>当创建成功之后，回自动进入的新的仓库页面，预览如下：</p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcebc5b386bd27~tplv-t2oaga2asx-image.image" alt="screencapture-bintray-beta-2019-10-15-17_24_04.png"></p>
+<h2>对单 Module Library 进行上传</h2>
+<p>既然仓库以及建立好了接下来就是对 library 将上传到刚刚建立的 maven 仓库了。</p>
+<h3>修改 Project build.gradle</h3>
+<p>首先在 project 下的 build.gradle 脚本添加必要的依赖：</p>
+<pre><code class="language-groovy hljs">buildscript {
+    dependencies {
+        ...
+        classpath <span class="hljs-string">'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'</span>
+        classpath <span class="hljs-string">'com.github.dcendents:android-maven-gradle-plugin:2.1'</span>
+        ...
+    }
+}
+allprojects {
+    <span class="hljs-comment">//如果是kotlin项目,请添加此项,纯Java项目请忽略</span>
+    tasks.withType(Javadoc).all { enabled = <span class="hljs-literal">false</span> }
+}
+</code></pre>
+<h3>建立 bintrayv1.gradle 文件</h3>
+<p>然后在 project 目录下新建 bintrayv1.gradle 文件，内容如下：</p>
+<pre><code class="language-groovy hljs">apply <span class="hljs-attr">plugin:</span> <span class="hljs-string">'com.jfrog.bintray'</span>
+
+version = libraryVersion
+
+<span class="hljs-keyword">if</span> (project.hasProperty(<span class="hljs-string">"android"</span>)) { <span class="hljs-comment">// Android libraries</span>
+    task sourcesJar(<span class="hljs-attr">type:</span> Jar) {
+        classifier = <span class="hljs-string">'sources'</span>
+        from android.sourceSets.main.java.srcDirs
+    }
+
+    task javadoc(<span class="hljs-attr">type:</span> Javadoc) {
+        source = android.sourceSets.main.java.srcDirs
+        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    }
+} <span class="hljs-keyword">else</span> { <span class="hljs-comment">// Java libraries</span>
+    task sourcesJar(<span class="hljs-attr">type:</span> Jar, <span class="hljs-attr">dependsOn:</span> classes) {
+        classifier = <span class="hljs-string">'sources'</span>
+        from sourceSets.main.allSource
+    }
+}
+
+task javadocJar(<span class="hljs-attr">type:</span> Jar, <span class="hljs-attr">dependsOn:</span> javadoc) {
+    classifier = <span class="hljs-string">'javadoc'</span>
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+<span class="hljs-comment">// Bintray</span>
+Properties properties = <span class="hljs-keyword">new</span> Properties()
+properties.load(project.rootProject.file(<span class="hljs-string">'local.properties'</span>).newDataInputStream())
+
+bintray {
+    user = properties.getProperty(<span class="hljs-string">"bintray.user"</span>)
+    key = properties.getProperty(<span class="hljs-string">"bintray.apikey"</span>)
+
+    configurations = [<span class="hljs-string">'archives'</span>]
+    pkg {
+        repo = bintrayRepo
+        name = bintrayName
+        desc = libraryDescription
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        licenses = allLicenses
+        publish = <span class="hljs-literal">true</span>
+        publicDownloadNumbers = <span class="hljs-literal">true</span>
+        version {
+            desc = libraryDescription
+            gpg {
+                sign = <span class="hljs-literal">true</span> <span class="hljs-comment">//Determines whether to GPG sign the files. The default is false</span>
+                passphrase = properties.getProperty(<span class="hljs-string">"bintray.gpg.password"</span>)
+                <span class="hljs-comment">//Optional. The passphrase for GPG signing'</span>
+            }
+        }
+    }
+}
+</code></pre>
+<h3>建立 installv1.gradle 文件</h3>
+<p>之后在 project 目录下再新建 installv1.gradle 文件，内容如下：</p>
+<pre><code class="language-groovy hljs">apply <span class="hljs-attr">plugin:</span> <span class="hljs-string">'com.github.dcendents.android-maven'</span>
+
+group = publishedGroupId                               <span class="hljs-comment">// Maven Group ID for the artifact</span>
+
+install {
+    repositories.mavenInstaller {
+        <span class="hljs-comment">// This generates POM.xml with proper parameters</span>
+        pom {
+            project {
+                packaging <span class="hljs-string">'aar'</span>
+                groupId publishedGroupId
+                artifactId artifact
+
+                <span class="hljs-comment">// Add your description here</span>
+                name libraryName
+                description libraryDescription
+                url siteUrl
+
+                <span class="hljs-comment">// Set your license</span>
+                licenses {
+                    license {
+                        name licenseName
+                        url licenseUrl
+                    }
+                }
+                developers {
+                    developer {
+                        id developerId
+                        name developerName
+                        email developerEmail
+                    }
+                }
+                scm {
+                    connection gitUrl
+                    developerConnection gitUrl
+                    url siteUrl
+
+                }
+            }
+        }
+    }
+}
+</code></pre>
+<p>这里解释一下为什么要新建这两个文件，这两个文件是 Bintray 为了方便上传 library 所编写的脚本，源文件位于 github，为了避免 gradle 同步过程中由网络引发的错误，所以直接将其内置与项目中。源地址分别是：</p>
+<ul>
+<li><a href="https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle">installv1.gradle</a></li>
+<li><a href="https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle">bintrayv1.gradle</a></li>
+</ul>
+<p>若嫌麻烦，也可在后续引用到改文件的地方直接填入 http 链接，不必新建为本地文件。</p>
+<h3>填写 Publish 信息</h3>
+<p>在需要上传的 module 下建立 publish.gradle 文件，填写内容如下：</p>
+<pre><code class="language-groovy hljs">ext {
+    <span class="hljs-comment">// 此处填写刚才建立的maven仓库的仓库名称</span>
+    bintrayRepo = <span class="hljs-string">'YourRepositoryName'</span>
+    <span class="hljs-comment">// library的group id</span>
+    publishedGroupId = <span class="hljs-string">'com.xxx.libraryName'</span>
+    <span class="hljs-comment">// library网站地址</span>
+    siteUrl = <span class="hljs-string">''</span>
+    <span class="hljs-comment">// library仓库地址</span>
+    gitUrl = <span class="hljs-string">''</span>
+
+    <span class="hljs-comment">// 注册时候的bintray username</span>
+    developerId = <span class="hljs-string">''</span>
+    <span class="hljs-comment">// 开发者名称</span>
+    developerName = <span class="hljs-string">''</span>
+    <span class="hljs-comment">// 开发者邮箱</span>
+    developerEmail = <span class="hljs-string">''</span>
+
+    <span class="hljs-comment">// 开源许可证（这里是Apache 2.0）</span>
+    licenseName = <span class="hljs-string">'The Apache Software License, Version 2.0'</span>
+    licenseUrl = <span class="hljs-string">'http://www.apache.org/licenses/LICENSE-2.0.txt'</span>
+    allLicenses = [<span class="hljs-string">"Apache-2.0"</span>]
+
+    <span class="hljs-comment">// library artifact（单个module一般就填写library name）</span>
+    artifact = <span class="hljs-string">'libraryName'</span>
+    libraryName = <span class="hljs-string">''</span>
+    libraryVersion = <span class="hljs-string">''</span>
+    libraryDescription = <span class="hljs-string">''</span>
+    <span class="hljs-comment">// bintrayName 是你在网页Repository页面能看到的名称</span>
+    bintrayName = <span class="hljs-string">'libraryName-'</span> + artifact
+}
+
+apply <span class="hljs-attr">from:</span> <span class="hljs-string">'../installv1.gradle'</span>
+apply <span class="hljs-attr">from:</span> <span class="hljs-string">'../bintrayv1.gradle'</span>
+</code></pre>
+<h3>修改 Module build.gradle 文件</h3>
+<p>只需要在需要上传的 module 目录下的 build.gradle 文件的最后添加以下代码：</p>
+<pre><code class="language-groovy hljs">apply <span class="hljs-attr">from:</span> <span class="hljs-string">'publish.gradle'</span>
+</code></pre>
+<h3>编辑 local.properties 文件</h3>
+<p>在 bintray 个人页面右上角头像处，点击 Edit Profile 进入个人信息编辑页面后，点击左下角的 API Key，
+会提示输入密码，输入密码后点击 Copy To Clipboard 就可以得到你自己的 bintray api key。</p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcee4ce83e0a1e~tplv-t2oaga2asx-image.image" alt="_"></p>
+<p>然后修改 project 目录下的 local.properties 文件，在末尾添加下面的内容。</p>
+<pre><code class="language-txt hljs language-plaintext">bintray.user=你的bintray username
+bintray.apikey=刚才复制的bintray api key
+</code></pre>
+<p>在获取到 bintray api key 之后就可以进行上传了。</p>
+<h2>对多 Module Library 进行上传</h2>
+<p>如果只是单 Module 可以跳过此部分。</p>
+<p>由于多 Module library 对于每个 module 而言，同属与同一个 library，所以 publish 信息中大部分信息相同，所以便把这些相同的信息提取出来。</p>
+<h3>建立 publish_info.gradle 文件</h3>
+<p>我们选择把相同的信息提取到 Project 目录下到 publish_info.gradle 文件中，内容如下：</p>
+<pre><code class="language-groovy hljs">ext {
+    <span class="hljs-comment">// 此处填写刚才建立的maven仓库的仓库名称</span>
+    bintrayRepo = <span class="hljs-string">'YourRepositoryName'</span>
+    <span class="hljs-comment">// library的group id</span>
+    publishedGroupId = <span class="hljs-string">'com.xxx.libraryName'</span>
+    <span class="hljs-comment">// library网站地址</span>
+    siteUrl = <span class="hljs-string">''</span>
+    <span class="hljs-comment">// library仓库地址</span>
+    gitUrl = <span class="hljs-string">''</span>
+
+    <span class="hljs-comment">// 注册时候的bintray username</span>
+    developerId = <span class="hljs-string">''</span>
+    <span class="hljs-comment">// 开发者名称</span>
+    developerName = <span class="hljs-string">''</span>
+    <span class="hljs-comment">// 开发者邮箱</span>
+    developerEmail = <span class="hljs-string">''</span>
+
+    <span class="hljs-comment">// 开源许可证（这里是Apache 2.0）</span>
+    licenseName = <span class="hljs-string">'The Apache Software License, Version 2.0'</span>
+    licenseUrl = <span class="hljs-string">'http://www.apache.org/licenses/LICENSE-2.0.txt'</span>
+    allLicenses = [<span class="hljs-string">"Apache-2.0"</span>]
+}
+</code></pre>
+<h3>填写 publish 信息</h3>
+<p>在每个 module 目录下建立 publish.gradle 文件，内容如下：</p>
+<pre><code class="language-groovy hljs">ext {
+    <span class="hljs-comment">// library artifact（单个module一般就填写library name）</span>
+    artifact = <span class="hljs-string">'libraryName'</span>
+    libraryName = <span class="hljs-string">''</span>
+    libraryVersion = <span class="hljs-string">''</span>
+    libraryDescription = <span class="hljs-string">''</span>
+    <span class="hljs-comment">// bintrayName 是你在网页Repository页面能看到的名称</span>
+    bintrayName = <span class="hljs-string">'libraryName-'</span> + artifact
+}
+
+apply <span class="hljs-attr">from:</span> <span class="hljs-string">'../publish_info.gradle'</span>
+apply <span class="hljs-attr">from:</span> <span class="hljs-string">'../installv1.gradle'</span>
+apply <span class="hljs-attr">from:</span> <span class="hljs-string">'../bintrayv1.gradle'</span>
+</code></pre>
+<p>其余步骤均与单个 module 上传部分相同。</p>
+<h2>上传</h2>
+<p>上传有两种方式：</p>
+<ul>
+<li>
+<p>命令行：
+打开终端，在 project 目录下运行如下命令即可（modelName 改为自己需要上传的 module 名称）：</p>
+<pre><code class="language-shell hljs">./gradlew moduleName:bU
+</code></pre>
+</li>
+<li>
+<p>IDE 可视化：</p>
+<p>选择侧边栏中的 gradle，然后导航至需要上传的 module 下，打开 Tasks/publishing/bintrayUpload，双击执行任务即可。</p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcefb6e09133de~tplv-t2oaga2asx-image.image" alt="_"></p>
+</li>
+</ul>
+<p>上传成功后截图：</p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcef836da74ddf~tplv-t2oaga2asx-image.image" alt="_"></p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcef9a828b9f93~tplv-t2oaga2asx-image.image" alt="_"></p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcefa529e4fd61~tplv-t2oaga2asx-image.image" alt="_"></p>
+<h2>添加至 Jcenter</h2>
+<p>新版 Bintray 网站改版之后 Add to Jcenter 被放置在了 Actions 按钮下。</p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcefea0053a2bb~tplv-t2oaga2asx-image.image" alt="_"></p>
+<p>点击 Add to Jcenter 按钮后，此时会弹出如下弹窗：
+在填写相关信息后，点击 Send，等待申请通过后，你的仓库便会被同步到 Jcenter。</p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcf022c151d563~tplv-t2oaga2asx-image.image" alt="_"></p>
+<p>当申请通过后，你会在网站的 Inbox 收到如下信息：</p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcf04d55f720e7~tplv-t2oaga2asx-image.image" alt="_"></p>
+<p>这表明你的 library 已经被同步至 Jcenter，接下来便可以在其他的 Android 项目里进行远程引用的，需要注意的是在每次 library 更新后，并不会马上被同步至 Jcenter，而是需要等待一段时间。</p>
+<h2>删除 Library/Repository</h2>
+<p>当不小心把信息填写错误后，我们可能需要删除错误的仓库和库。删除的方式如下：</p>
+<p>进入 Repository/Library 主页，在右上角的 Actions 选择 Edit，然后选择右上角的 Delete 按钮，最后等待删除成功提示即可。</p>
+ </article>
+            <nav>
+    <a id="avatar-container" href="/">
+      <img id="avatar" title="lingyin" src="https://avatars.githubusercontent.com/u/13548822">
+    </a>
+    
+    <p>岁月总是历久弥新，需要细细品尝。</p>
+
+    <p>
+      欢迎来到<a href="https://github.com/microtears"> lingyin </a>的开发者日志,
+      这里是我的一些奇思妙想。
+    </p>
+    <p>
+      它使用
+      <a href="https://lume.land/"> Lume </a>编写, 它是一个基于
+      <a href="https://deno.com/"> Deno </a>的静态网站生成器。
+    </p>
+    <br>
+    <p id="copyright">© 2019-2025 <a href="/">lingyin</a>.</p>
+  
+  </nav>
+          </div>
+          <footer></footer>
+        </main>
+      
+      
+      
+    
+  </body></html>
