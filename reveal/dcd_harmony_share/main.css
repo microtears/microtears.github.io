@@ -1,0 +1,45 @@
+:root {
+  --r-background-color: #fff;
+  --r-main-font: "Open Sans", "Source Sans Pro", Helvetica, sans-serif;
+  --r-main-font-size: 24px;
+  --r-code-font: "Open Sans", monospace;
+}
+
+.logo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100px;
+  height: 100px;
+}
+
+/* Chromium */
+code::-webkit-scrollbar {
+  display: none;
+  scrollbar-width: none;
+}
+
+/* Firefox */
+code {
+  scrollbar-width: none;
+}
+
+.reveal .slides {
+  text-align: left;
+}
+
+.reveal pre {
+  box-shadow: none;
+  margin: 0 0;
+}
+
+.reveal .code-wrapper code {
+  padding: 0;
+}
+
+.reveal table {
+  /* margin: auto;
+  border-collapse: collapse;
+  border-spacing: 0; */
+  font-size: medium;
+}
