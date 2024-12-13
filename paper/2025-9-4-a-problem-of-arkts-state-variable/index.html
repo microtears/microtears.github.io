@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="岁月总是历久弥新，需要细细品尝。">
+
+        <link rel="stylesheet" href="/css/a11y-light.css">
+        <link rel="stylesheet" href="/styles/main.css">
+
+        
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&amp;display=swap">
+        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&amp;family=Open+Sans:ital,wght@0,300..800;1,300..800&amp;display=swap" rel="stylesheet">
+        <title>为什么你写的鸿蒙 State变量刷新为什么时好时坏</title>
+
+        <!-- Google tag (gtag.js) -->
+        <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-TQQBL084VX"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag("js", new Date());
+
+          gtag("config", "G-TQQBL084VX");
+        </script>
+      </head>
+      <body>
+        <main>
+          <div class="wrap">
+            <article><h1>为什么你写的鸿蒙 State 变量刷新为什么时好时坏</h1>
+<h2>背景</h2>
+<p>有一次开发碰到了这样一个问题：下面的 Bad case 写法在鸿蒙上不会触发组件重新 build，进而导致页面状态没有刷新。</p>
+<h2>Bad case 写法</h2>
+<pre><code class="language-ts hljs language-javascript"><span class="hljs-keyword">class</span> <span class="hljs-title class_">BadState</span> {
+  <span class="hljs-attr">tick</span>: <span class="hljs-built_in">number</span> = <span class="hljs-number">0</span>
+
+  <span class="hljs-title function_">constructor</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">startTimer</span>()
+  }
+
+  <span class="hljs-keyword">private</span> <span class="hljs-title function_">startTimer</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-built_in">setInterval</span>(<span class="hljs-function">() =&gt;</span> {
+      <span class="hljs-variable language_">this</span>.<span class="hljs-property">tick</span>++
+    }, <span class="hljs-number">1000</span>)
+  }
+}
+
+<span class="hljs-meta">@Component</span>
+struct <span class="hljs-title class_">Bad</span> {
+  <span class="hljs-meta">@State</span> <span class="hljs-attr">state</span>: <span class="hljs-title class_">BadState</span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">BadState</span>()
+
+  <span class="hljs-title function_">build</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-title class_">Stack</span>() {
+      <span class="hljs-title class_">Text</span>(<span class="hljs-string">`Tick: <span class="hljs-subst">${<span class="hljs-variable language_">this</span>.state.tick}</span>`</span>)
+    }
+  }
+}
+</code></pre>
+<h2>Good case 写法</h2>
+<pre><code class="language-ts hljs language-javascript"><span class="hljs-meta">@Component</span>
+struct <span class="hljs-title class_">Good</span> {
+  <span class="hljs-meta">@State</span> <span class="hljs-attr">state</span>: <span class="hljs-title class_">GoodState</span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">GoodState</span>()
+
+  <span class="hljs-title function_">aboutToAppear</span>(): <span class="hljs-built_in">void</span> {
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">state</span>.<span class="hljs-title function_">startTimer</span>()
+  }
+
+  <span class="hljs-title function_">build</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-title class_">Stack</span>() {
+      <span class="hljs-title class_">Text</span>(<span class="hljs-string">`Tick: <span class="hljs-subst">${<span class="hljs-variable language_">this</span>.state.tick}</span>`</span>)
+    }
+  }
+}
+</code></pre>
+<h2>原因分析</h2>
+<p>Good case 逻辑：this 对象是被代理过的对象，具有监听与通知的功能。</p>
+<p><a href="https://imgse.com/i/pAboZE6"><img src="https://s21.ax1x.com/2024/12/13/pAboZE6.png" alt="pAboZE6.png"></a></p>
+<p>Bad case 逻辑：this 对象为原始对象，无监听与通知的功能。</p>
+<p><a href="https://imgse.com/i/pAboeUK"><img src="https://s21.ax1x.com/2024/12/13/pAboeUK.png" alt="pAboeUK.png"></a></p>
+<p>而上述两种逻辑差异点主要是 startTimer 的 caller 不同：Good case 中 startTimer 的 caller 是 this.state对象，这是一个被代理过的对象；Bad 中 startTimer 的 caller 是 this对象，即 BadState实例本身，这是一个没有被代理过的对象。
+所以根据上述分析得出结论： Bad case 中箭头函数对应的 this 指针所指的对象为startTimer方法的 caller， 它是一个没有被代理过的对象，对该对象的任何属性的修改都不会被 View 层感知。</p>
+ </article>
+            <nav>
+    <a id="avatar-container" href="/">
+      <img id="avatar" title="lingyin" src="https://avatars.githubusercontent.com/u/13548822">
+    </a>
+    
+    <p>岁月总是历久弥新，需要细细品尝。</p>
+
+    <p>
+      欢迎来到<a href="https://github.com/microtears"> lingyin </a>的开发者日志,
+      这里是我的一些奇思妙想。
+    </p>
+    <p>
+      它使用
+      <a href="https://lume.land/"> Lume </a>编写, 它是一个基于
+      <a href="https://deno.com/"> Deno </a>的静态网站生成器。
+    </p>
+    <div id="nav-break"></div>
+    <p id="copyright">© 2019-2025 <a href="/">lingyin</a>.</p>
+  
+  </nav>
+          </div>
+          <footer></footer>
+        </main>
+      
+      
+      
+    
+  </body></html>
