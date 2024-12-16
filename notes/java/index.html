@@ -1,243 +1,36 @@
-<!DOCTYPE html>
-<html lang="en"><head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="岁月总是历久弥新，需要细细品尝。">
+<!doctype html><html lang=en><meta charset=UTF-8><meta content="width=device-width,initial-scale=1.0"name=viewport><meta content=岁月总是历久弥新，需要细细品尝。 name=description><link href=/css/a11y-light.css rel=stylesheet><link href=/styles/main.css rel=stylesheet><link href=https://fonts.googleapis.com rel=preconnect><link crossorigin href=https://fonts.gstatic.com rel=preconnect><link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"rel=stylesheet><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"rel=stylesheet><title>JAVA 笔记</title><script src="https://www.googletagmanager.com/gtag/js?id=G-TQQBL084VX"async></script><script>function gtag(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[];gtag(`js`,new Date());gtag(`config`,`G-TQQBL084VX`)</script><body><main><div class=wrap><article><h2>GC</h2><ul><li><p>引用计数法</p> <p>当一个对象被应用是，其引用计数器+1，垃圾回收时清理掉引用计数器=0的对象，但无法解决循环引用问题。</p><li><p>可达性分析法</p> <p>将对象关系看做图，将根级对象不可达的对象清理掉。</p><li><p>标记清除算法</p> <p>第一步标记需要回收的对象，第二部回收。缺点：内存碎片化。</p><li><p>复制算法</p> <p>将存货对象复制到另一块内存区域，然后整理内存。优点：避免内存碎片化。缺点：低效的内存使用率。</p><li><p>分代算法</p> <p>将对象划分为新生代和老年代。不同年代施以不同回收策略。调高GC效率。</p> <blockquote><p>新生代对象分为三个区域：Eden 区和两个 Survivor 区。新创建的对象都放在 Eden区，当 Eden 区的内存达到阈值之后会触发 Minor GC， 这时会将存活的对象复制到一个 Survivor 区中，这些存活对象的生命存活计数会加一。这时 Eden 区会闲置，当再一次达到阈值触发 Minor GC 时， 会将Eden区和之前一个 Survivor 区中存活的对象复制到另一个 Survivor 区中，采用的是我之前提到的复制算法，同时它们的生命存活计数也会加一。 这个过程会持续很多遍，直到对象的存活计数达到一定的阈值后会触发一个叫做晋升的现象：新生代的这个对象会被放置到老年代中。 老年代中的对象都是经过多次 GC 依然存活的生命周期很长的 Java 对象。当老年代的内存达到阈值后会触发 Major GC，采用的是标记整理算法。</blockquote> <p>作者：BlackFlagBin</p> <p>链接：<a href=https://juejin.im/post/5b8f15e26fb9a01a031b12d9>https://juejin.im/post/5b8f15e26fb9a01a031b12d9</a></p></ul><h2>JVM内存区域的划分</h2><ul><li>线程私有区域 <ul><li><p>程序计数器</p> <p>线程私有。任意时间任意线程只有一个方法执行，程序计数器存放的就是当前方法的JVM指令地址。</p><li><p>JVM虚拟机栈</p> <p>创建线程的时候同时创建线程内的虚拟机栈，栈中存放栈帧，对应各个方法调用。</p><li><p>本地方法栈</p> <p>存放Native方法</p></ul><li>线程公有区域 <ul><li><p>堆</p> <p>内存管理的核心区域。对象实例存在于此。</p><li><p>方法区</p><li><p>运行时常量池</p></ul></ul><h2>类加载过程</h2><blockquote><p>Java 中类加载分为 3 个步骤：加载、链接、初始化。<ul><li>加载。 加载是将字节码数据从不同的数据源读取到JVM内存，并映射为 JVM 认可的数据结构，也就是 Class 对象的过程。数据源可以是 Jar 文件、Class 文件等等。如果数据的格式并不是 ClassFile 的结构，则会报 ClassFormatError。<li>链接。 链接是类加载的核心部分，这一步分为 3 个步骤：验证、准备、解析。 <ul><li>验证。 验证是保证JVM安全的重要步骤。JVM需要校验字节信息是否符合规范，避免恶意信息和不规范数据危害JVM运行安全。如果验证出错，则会报VerifyError。<li>准备。 这一步会创建静态变量，并为静态变量开辟内存空间。<li>解析。 这一步会将符号引用替换为直接引用。</ul><li>初始化。 初始化会为静态变量赋值，并执行静态代码块中的逻辑。</ul></blockquote><h2>双亲委派模型</h2><blockquote><p>类加载器大致分为3类：启动类加载器、扩展类加载器、应用程序类加载器。 启动类加载器主要加载 jre/lib下的jar文件。 扩展类加载器主要加载 jre/lib/ext 下的jar文件。 应用程序类加载器主要加载 classpath 下的文件。 所谓的双亲委派模型就是当加载一个类时，会优先使用父类加载器加载，当父类加载器无法加载时才会使用子类加载器去加载。这么做的目的是为了避免类的重复加载。</blockquote><p>防止替换系统类，例如System等。避免由于不同类加载器加载导致的类型判断问题。<h2>volatile和synchronize的区别</h2><ul><li><p>volatile</p> <p>保证可见性，禁止指令重排。</p> <p>告诉编译器，此变量禁止使用cpu缓存。由于cpu为了提高效率，会将主存中的变量层层缓存，导致一个线程修改其值对另一个变量并不可见，由此导致程序出错。</p><li><p>synchronize</p> <p>对一个对象或者方法加锁实现同步访问。重量锁。</p></ul><h2>单例模式</h2><ul><li>双重判断饿汉式</ul><pre><code class="language-java hljs"><span class=hljs-keyword>public</span> <span class=hljs-keyword>class</span> <span class="hljs-title class_">SingleTon</span> {
+    <span class=hljs-comment>//需要注意的是volatile</span>
+    <span class=hljs-keyword>private</span> <span class=hljs-keyword>static</span> <span class=hljs-keyword>volatile</span> SingleTon mInstance;
 
-        <link rel="stylesheet" href="/css/a11y-light.css">
-        <link rel="stylesheet" href="/styles/main.css">
-
-        
-
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&amp;display=swap">
-        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&amp;family=Open+Sans:ital,wght@0,300..800;1,300..800&amp;display=swap" rel="stylesheet">
-        <title>JAVA 笔记</title>
-
-        <!-- Google tag (gtag.js) -->
-        <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-TQQBL084VX"></script>
-        <script>
-          window.dataLayer = window.dataLayer || [];
-          function gtag() {
-            dataLayer.push(arguments);
-          }
-          gtag("js", new Date());
-
-          gtag("config", "G-TQQBL084VX");
-        </script>
-      </head>
-      <body>
-        <main>
-          <div class="wrap">
-            <article><h2>GC</h2>
-<ul>
-<li>
-<p>引用计数法</p>
-<p>当一个对象被应用是，其引用计数器+1，垃圾回收时清理掉引用计数器=0的对象，但无法解决循环引用问题。</p>
-</li>
-<li>
-<p>可达性分析法</p>
-<p>将对象关系看做图，将根级对象不可达的对象清理掉。</p>
-</li>
-<li>
-<p>标记清除算法</p>
-<p>第一步标记需要回收的对象，第二部回收。缺点：内存碎片化。</p>
-</li>
-<li>
-<p>复制算法</p>
-<p>将存货对象复制到另一块内存区域，然后整理内存。优点：避免内存碎片化。缺点：低效的内存使用率。</p>
-</li>
-<li>
-<p>分代算法</p>
-<p>将对象划分为新生代和老年代。不同年代施以不同回收策略。调高GC效率。</p>
-<blockquote>
-<p>新生代对象分为三个区域：Eden 区和两个 Survivor 区。新创建的对象都放在 Eden区，当 Eden 区的内存达到阈值之后会触发 Minor GC，
-这时会将存活的对象复制到一个 Survivor 区中，这些存活对象的生命存活计数会加一。这时 Eden 区会闲置，当再一次达到阈值触发 Minor GC 时，
-会将Eden区和之前一个 Survivor 区中存活的对象复制到另一个 Survivor 区中，采用的是我之前提到的复制算法，同时它们的生命存活计数也会加一。
-这个过程会持续很多遍，直到对象的存活计数达到一定的阈值后会触发一个叫做晋升的现象：新生代的这个对象会被放置到老年代中。
-老年代中的对象都是经过多次 GC 依然存活的生命周期很长的 Java 对象。当老年代的内存达到阈值后会触发 Major GC，采用的是标记整理算法。</p>
-</blockquote>
-<p>作者：BlackFlagBin</p>
-<p>链接：<a href="https://juejin.im/post/5b8f15e26fb9a01a031b12d9">https://juejin.im/post/5b8f15e26fb9a01a031b12d9</a></p>
-</li>
-</ul>
-<h2>JVM内存区域的划分</h2>
-<ul>
-<li>线程私有区域
-<ul>
-<li>
-<p>程序计数器</p>
-<p>线程私有。任意时间任意线程只有一个方法执行，程序计数器存放的就是当前方法的JVM指令地址。</p>
-</li>
-<li>
-<p>JVM虚拟机栈</p>
-<p>创建线程的时候同时创建线程内的虚拟机栈，栈中存放栈帧，对应各个方法调用。</p>
-</li>
-<li>
-<p>本地方法栈</p>
-<p>存放Native方法</p>
-</li>
-</ul>
-</li>
-<li>线程公有区域
-<ul>
-<li>
-<p>堆</p>
-<p>内存管理的核心区域。对象实例存在于此。</p>
-</li>
-<li>
-<p>方法区</p>
-</li>
-<li>
-<p>运行时常量池</p>
-</li>
-</ul>
-</li>
-</ul>
-<h2>类加载过程</h2>
-<blockquote>
-<p>Java 中类加载分为 3 个步骤：加载、链接、初始化。</p>
-<ul>
-<li>加载。 加载是将字节码数据从不同的数据源读取到JVM内存，并映射为 JVM 认可的数据结构，也就是 Class 对象的过程。数据源可以是 Jar 文件、Class 文件等等。如果数据的格式并不是 ClassFile 的结构，则会报 ClassFormatError。</li>
-<li>链接。 链接是类加载的核心部分，这一步分为 3 个步骤：验证、准备、解析。
-<ul>
-<li>验证。 验证是保证JVM安全的重要步骤。JVM需要校验字节信息是否符合规范，避免恶意信息和不规范数据危害JVM运行安全。如果验证出错，则会报VerifyError。</li>
-<li>准备。 这一步会创建静态变量，并为静态变量开辟内存空间。</li>
-<li>解析。 这一步会将符号引用替换为直接引用。</li>
-</ul>
-</li>
-<li>初始化。 初始化会为静态变量赋值，并执行静态代码块中的逻辑。</li>
-</ul>
-</blockquote>
-<h2>双亲委派模型</h2>
-<blockquote>
-<p>类加载器大致分为3类：启动类加载器、扩展类加载器、应用程序类加载器。
-启动类加载器主要加载 jre/lib下的jar文件。
-扩展类加载器主要加载 jre/lib/ext 下的jar文件。
-应用程序类加载器主要加载 classpath  下的文件。
-所谓的双亲委派模型就是当加载一个类时，会优先使用父类加载器加载，当父类加载器无法加载时才会使用子类加载器去加载。这么做的目的是为了避免类的重复加载。</p>
-</blockquote>
-<p>防止替换系统类，例如System等。避免由于不同类加载器加载导致的类型判断问题。</p>
-<h2>volatile和synchronize的区别</h2>
-<ul>
-<li>
-<p>volatile</p>
-<p>保证可见性，禁止指令重排。</p>
-<p>告诉编译器，此变量禁止使用cpu缓存。由于cpu为了提高效率，会将主存中的变量层层缓存，导致一个线程修改其值对另一个变量并不可见，由此导致程序出错。</p>
-</li>
-<li>
-<p>synchronize</p>
-<p>对一个对象或者方法加锁实现同步访问。重量锁。</p>
-</li>
-</ul>
-<h2>单例模式</h2>
-<ul>
-<li>双重判断饿汉式</li>
-</ul>
-<pre><code class="language-java hljs"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SingleTon</span> {
-    <span class="hljs-comment">//需要注意的是volatile</span>
-    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">volatile</span> SingleTon mInstance;
-
-    <span class="hljs-keyword">private</span> <span class="hljs-title function_">SingleTon</span><span class="hljs-params">()</span> {
+    <span class=hljs-keyword>private</span> <span class="hljs-title function_">SingleTon</span><span class=hljs-params>()</span> {
 
     }
 
-    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> SingleTon <span class="hljs-title function_">getInstance</span><span class="hljs-params">()</span> {
-        <span class="hljs-keyword">if</span> (mInstance == <span class="hljs-literal">null</span>) {
-            <span class="hljs-keyword">synchronized</span> (SingleTon.class) {
-                <span class="hljs-keyword">if</span> (mInstance == <span class="hljs-literal">null</span>) {
-                    mInstance=<span class="hljs-keyword">new</span> <span class="hljs-title class_">SingleTon</span>();
+    <span class=hljs-keyword>public</span> <span class=hljs-keyword>static</span> SingleTon <span class="hljs-title function_">getInstance</span><span class=hljs-params>()</span> {
+        <span class=hljs-keyword>if</span> (mInstance == <span class=hljs-literal>null</span>) {
+            <span class=hljs-keyword>synchronized</span> (SingleTon.class) {
+                <span class=hljs-keyword>if</span> (mInstance == <span class=hljs-literal>null</span>) {
+                    mInstance=<span class=hljs-keyword>new</span> <span class="hljs-title class_">SingleTon</span>();
                 }
             }
         }
 
-        <span class="hljs-keyword">return</span> mInstance;
+        <span class=hljs-keyword>return</span> mInstance;
     }
 }
-</code></pre>
-<p>注意事项：mInstance需要volatile修饰，否则非线程安全，因为<code>mInstance=new SingleTon()</code>非原子操作，而是包含三个操作：</p>
-<ol>
-<li>给 mInstance 分配内存</li>
-<li>调用 SingleTon 的构造方法初始化成员变量</li>
-<li>将 mInstance 指向分配的内存空间（在这一步 mInstance 已经不为 null 了）</li>
-</ol>
-<blockquote>
-<p>我们知道 JVM 会发生指令重排，正常的执行顺序是1-2-3，但发生指令重排后可能会导致1-3-2。我们考虑这样一种情况，当线程 A 执行到1-3-2的3步骤暂停了，
-这时候线程 B 调用了 getInstance，走到了最外层的if判断上，由于最外层的 if 判断并没有 synchronized 包裹，所以可以执行到这一句，这时候由于线程
-A 已经执行了步骤3，此时 mInstance 已经不为 null 了，所以线程B直接返回了 mInstance。但其实我们知道，完整的初始化必须走完这三个步骤，由于线程
-A 只走了两个步骤，所以一定会报错的。载请联系作者获得授权，非商业转载请注明出处。</p>
-</blockquote>
-<ul>
-<li>静态内部类实现的单例：</li>
-</ul>
-<pre><code class="language-java hljs"><span class="hljs-keyword">class</span> <span class="hljs-title class_">SingletonWithInnerClass</span> {
+</code></pre><p>注意事项：mInstance需要volatile修饰，否则非线程安全，因为<code>mInstance=new SingleTon()</code>非原子操作，而是包含三个操作：<ol><li>给 mInstance 分配内存<li>调用 SingleTon 的构造方法初始化成员变量<li>将 mInstance 指向分配的内存空间（在这一步 mInstance 已经不为 null 了）</ol><blockquote><p>我们知道 JVM 会发生指令重排，正常的执行顺序是1-2-3，但发生指令重排后可能会导致1-3-2。我们考虑这样一种情况，当线程 A 执行到1-3-2的3步骤暂停了， 这时候线程 B 调用了 getInstance，走到了最外层的if判断上，由于最外层的 if 判断并没有 synchronized 包裹，所以可以执行到这一句，这时候由于线程 A 已经执行了步骤3，此时 mInstance 已经不为 null 了，所以线程B直接返回了 mInstance。但其实我们知道，完整的初始化必须走完这三个步骤，由于线程 A 只走了两个步骤，所以一定会报错的。载请联系作者获得授权，非商业转载请注明出处。</blockquote><ul><li>静态内部类实现的单例：</ul><pre><code class="language-java hljs"><span class=hljs-keyword>class</span> <span class="hljs-title class_">SingletonWithInnerClass</span> {
 
-    <span class="hljs-keyword">private</span> <span class="hljs-title function_">SingletonWithInnerClass</span><span class="hljs-params">()</span> {
+    <span class=hljs-keyword>private</span> <span class="hljs-title function_">SingletonWithInnerClass</span><span class=hljs-params>()</span> {
 
     }
 
-    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SingletonHolder</span>{
-        <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> SingletonWithInnerClass INSTANCE=<span class="hljs-keyword">new</span> <span class="hljs-title class_">SingletonWithInnerClass</span>();
+    <span class=hljs-keyword>private</span> <span class=hljs-keyword>static</span> <span class=hljs-keyword>class</span> <span class="hljs-title class_">SingletonHolder</span>{
+        <span class=hljs-keyword>private</span> <span class=hljs-keyword>static</span> SingletonWithInnerClass INSTANCE=<span class=hljs-keyword>new</span> <span class="hljs-title class_">SingletonWithInnerClass</span>();
     }
 
-    <span class="hljs-keyword">public</span> SingletonWithInnerClass <span class="hljs-title function_">getInstance</span><span class="hljs-params">()</span> {
-        <span class="hljs-keyword">return</span> SingletonHolder.INSTANCE;
+    <span class=hljs-keyword>public</span> SingletonWithInnerClass <span class="hljs-title function_">getInstance</span><span class=hljs-params>()</span> {
+        <span class=hljs-keyword>return</span> SingletonHolder.INSTANCE;
     }
 
 }
-</code></pre>
-<blockquote>
-<p>复制代码由于外部类的加载并不会导致内部类立即加载，只有当调用 getInstance 的时候才会加载内部类，所以实现了延迟初始化。由于类只会被加载一次，并且类加载也是线程安全的，所以满足我们所有的需求。静态内部类实现的单例也是最为推荐的一种方式。</p>
-</blockquote>
-<h2>Java中引用类型的区别，具体的使用场景</h2>
-<h3>Java中引用类型分为四类：强引用、软引用、弱引用、虚引用</h3>
-<blockquote>
-<ul>
-<li>强引用： 强引用指的是通过 new 对象创建的引用，垃圾回收器即使是内存不足也不会回收强引用指向的对象。</li>
-<li>软引用： 软引用是通过 SoftRefrence 实现的，它的生命周期比强引用短，在内存不足，抛出 OOM 之前，垃圾回收器会回收软引用引用的对象。软引用常见的使用场景是存储一些内存敏感的缓存，当内存不足时会被回收。</li>
-<li>弱引用： 弱引用是通过 WeakRefrence 实现的，它的生命周期比软引用还短，GC 只要扫描到弱引用的对象就会回收。弱引用常见的使用场景也是存储一些内存敏感的缓存。</li>
-<li>虚引用： 虚引用是通过 FanttomRefrence 实现的，它的生命周期最短，随时可能被回收。如果一个对象只被虚引用引用，我们无法通过虚引用来访问这个对象的任何属性和方法。它的作用仅仅是保证对象在 finalize 后，做某些事情。虚引用常见的使用场景是跟踪对象被垃圾回收的活动，当一个虚引用关联的对象被垃圾回收器回收之前会收到一条系统通知。</li>
-</ul>
-</blockquote>
-<h2>Exception 和 Error的区别</h2>
-<blockquote>
-<p>Exception 和 Error 都继承于 Throwable，在 Java 中，只有 Throwable 类型的对象才能被 throw 或者 catch，它是异常处理机制的基本组成类型。
-Exception 和 Error 体现了 Java 对不同异常情况的分类。Exception 是程序正常运行中，可以预料的意外情况，可能并且应该被捕获，进行相应的处理。
-Error 是指在正常情况下，不大可能出现的情况，绝大部分 Error 都会使程序处于非正常、不可恢复的状态。既然是非正常，所以不便于也不需要捕获，
-常见的 OutOfMemoryError 就是 Error 的子类。</p>
-<p>Exception 又分为 checked Exception 和 unchecked Exception。</p>
-<ul>
-<li>checked Exception 在代码里必须显式的进行捕获，这是编译器检查的一部分。</li>
-<li>unchecked Exception 也就是运行时异常，类似空指针异常、数组越界等，通常是可以避免的逻辑错误，具体根据需求来判断是否需要捕获，并不会在编译器强制要求。</li>
-</ul>
-</blockquote>
- </article>
-            <nav>
-    <a id="avatar-container" href="/">
-      <img id="avatar" title="lingyin" src="https://avatars.githubusercontent.com/u/13548822">
-    </a>
-    
-    <p>岁月总是历久弥新，需要细细品尝。</p>
-
-    <p>
-      欢迎来到<a href="https://github.com/microtears"> lingyin </a>的开发者日志,
-      这里是我的一些奇思妙想。
-    </p>
-    <p>
-      它使用
-      <a href="https://lume.land/"> Lume </a>编写, 它是一个基于
-      <a href="https://deno.com/"> Deno </a>的静态网站生成器。
-    </p>
-    <div id="nav-break"></div>
-    <p id="copyright">© 2019-2025 <a href="/">lingyin</a>.</p>
-  
-  </nav>
-          </div>
-          <footer></footer>
-        </main>
-      
-      
-      
-    
-  </body></html>
+</code></pre><blockquote><p>复制代码由于外部类的加载并不会导致内部类立即加载，只有当调用 getInstance 的时候才会加载内部类，所以实现了延迟初始化。由于类只会被加载一次，并且类加载也是线程安全的，所以满足我们所有的需求。静态内部类实现的单例也是最为推荐的一种方式。</blockquote><h2>Java中引用类型的区别，具体的使用场景</h2><h3>Java中引用类型分为四类：强引用、软引用、弱引用、虚引用</h3><blockquote><ul><li>强引用： 强引用指的是通过 new 对象创建的引用，垃圾回收器即使是内存不足也不会回收强引用指向的对象。<li>软引用： 软引用是通过 SoftRefrence 实现的，它的生命周期比强引用短，在内存不足，抛出 OOM 之前，垃圾回收器会回收软引用引用的对象。软引用常见的使用场景是存储一些内存敏感的缓存，当内存不足时会被回收。<li>弱引用： 弱引用是通过 WeakRefrence 实现的，它的生命周期比软引用还短，GC 只要扫描到弱引用的对象就会回收。弱引用常见的使用场景也是存储一些内存敏感的缓存。<li>虚引用： 虚引用是通过 FanttomRefrence 实现的，它的生命周期最短，随时可能被回收。如果一个对象只被虚引用引用，我们无法通过虚引用来访问这个对象的任何属性和方法。它的作用仅仅是保证对象在 finalize 后，做某些事情。虚引用常见的使用场景是跟踪对象被垃圾回收的活动，当一个虚引用关联的对象被垃圾回收器回收之前会收到一条系统通知。</ul></blockquote><h2>Exception 和 Error的区别</h2><blockquote><p>Exception 和 Error 都继承于 Throwable，在 Java 中，只有 Throwable 类型的对象才能被 throw 或者 catch，它是异常处理机制的基本组成类型。 Exception 和 Error 体现了 Java 对不同异常情况的分类。Exception 是程序正常运行中，可以预料的意外情况，可能并且应该被捕获，进行相应的处理。 Error 是指在正常情况下，不大可能出现的情况，绝大部分 Error 都会使程序处于非正常、不可恢复的状态。既然是非正常，所以不便于也不需要捕获， 常见的 OutOfMemoryError 就是 Error 的子类。<p>Exception 又分为 checked Exception 和 unchecked Exception。<ul><li>checked Exception 在代码里必须显式的进行捕获，这是编译器检查的一部分。<li>unchecked Exception 也就是运行时异常，类似空指针异常、数组越界等，通常是可以避免的逻辑错误，具体根据需求来判断是否需要捕获，并不会在编译器强制要求。</ul></blockquote></article><nav><a href=/ id=avatar-container> <img id=avatar src=https://avatars.githubusercontent.com/u/13548822 title=lingyin> </a><p>岁月总是历久弥新，需要细细品尝。<p>欢迎来到<a href=https://github.com/microtears> lingyin </a>的开发者日志, 这里是我的一些奇思妙想。<p>它使用 <a href=https://lume.land/> Lume </a>编写, 它是一个基于 <a href=https://deno.com/> Deno </a>的静态网站生成器。<div id=nav-break></div><p id=copyright>© 2019-2025 <a href=/>lingyin</a>.</nav></div><footer></footer></main>

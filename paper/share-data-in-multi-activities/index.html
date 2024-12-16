@@ -1,120 +1,45 @@
-<!DOCTYPE html>
-<html lang="en"><head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="岁月总是历久弥新，需要细细品尝。">
+<!doctype html><html lang=en><meta charset=UTF-8><meta content="width=device-width,initial-scale=1.0"name=viewport><meta content=岁月总是历久弥新，需要细细品尝。 name=description><link href=/css/a11y-light.css rel=stylesheet><link href=/styles/main.css rel=stylesheet><link href=https://fonts.googleapis.com rel=preconnect><link crossorigin href=https://fonts.gstatic.com rel=preconnect><link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"rel=stylesheet><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"rel=stylesheet><title>在Activity和多个Fragment之间共享资源</title><script src="https://www.googletagmanager.com/gtag/js?id=G-TQQBL084VX"async></script><script>function gtag(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[];gtag(`js`,new Date());gtag(`config`,`G-TQQBL084VX`)</script><body><main><div class=wrap><article><p>Android Studio 默认生成的代码一般是这样的：<pre><code class="language-kotlin hljs"><span class=hljs-keyword>package</span> com.messy.lingplayer.playui
 
-        <link rel="stylesheet" href="/css/a11y-light.css">
-        <link rel="stylesheet" href="/styles/main.css">
+<span class=hljs-keyword>import</span> android.os.Bundle
+<span class=hljs-keyword>import</span> android.view.LayoutInflater
+<span class=hljs-keyword>import</span> android.view.View
+<span class=hljs-keyword>import</span> android.view.ViewGroup
+<span class=hljs-keyword>import</span> androidx.fragment.app.Fragment
+<span class=hljs-keyword>import</span> androidx.lifecycle.ViewModelProviders
+<span class=hljs-keyword>import</span> com.messy.lingplayer.R
+<span class=hljs-keyword>import</span> com.messy.lingplayer.SharedViewModel
 
-        
+<span class=hljs-keyword>class</span> <span class="hljs-title class_">PlayUiFragment</span> : <span class=hljs-type>Fragment</span>() {
 
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&amp;display=swap">
-        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&amp;family=Open+Sans:ital,wght@0,300..800;1,300..800&amp;display=swap" rel="stylesheet">
-        <title>在Activity和多个Fragment之间共享资源</title>
-
-        <!-- Google tag (gtag.js) -->
-        <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-TQQBL084VX"></script>
-        <script>
-          window.dataLayer = window.dataLayer || [];
-          function gtag() {
-            dataLayer.push(arguments);
-          }
-          gtag("js", new Date());
-
-          gtag("config", "G-TQQBL084VX");
-        </script>
-      </head>
-      <body>
-        <main>
-          <div class="wrap">
-            <article><p>Android Studio 默认生成的代码一般是这样的：</p>
-<pre><code class="language-kotlin hljs"><span class="hljs-keyword">package</span> com.messy.lingplayer.playui
-
-<span class="hljs-keyword">import</span> android.os.Bundle
-<span class="hljs-keyword">import</span> android.view.LayoutInflater
-<span class="hljs-keyword">import</span> android.view.View
-<span class="hljs-keyword">import</span> android.view.ViewGroup
-<span class="hljs-keyword">import</span> androidx.fragment.app.Fragment
-<span class="hljs-keyword">import</span> androidx.lifecycle.ViewModelProviders
-<span class="hljs-keyword">import</span> com.messy.lingplayer.R
-<span class="hljs-keyword">import</span> com.messy.lingplayer.SharedViewModel
-
-<span class="hljs-keyword">class</span> <span class="hljs-title class_">PlayUiFragment</span> : <span class="hljs-type">Fragment</span>() {
-
-    <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">onCreateView</span><span class="hljs-params">(
-        inflater: <span class="hljs-type">LayoutInflater</span>, container: <span class="hljs-type">ViewGroup</span>?,
-        savedInstanceState: <span class="hljs-type">Bundle</span>?
+    <span class=hljs-keyword>override</span> <span class=hljs-function><span class=hljs-keyword>fun</span> <span class=hljs-title>onCreateView</span><span class=hljs-params>(
+        inflater: <span class=hljs-type>LayoutInflater</span>, container: <span class=hljs-type>ViewGroup</span>?,
+        savedInstanceState: <span class=hljs-type>Bundle</span>?
     )</span></span>: View? {
-        <span class="hljs-keyword">return</span> inflater.inflate(R.layout.play_ui_fragment, container, <span class="hljs-literal">false</span>)
+        <span class=hljs-keyword>return</span> inflater.inflate(R.layout.play_ui_fragment, container, <span class=hljs-literal>false</span>)
     }
 
-    <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">onActivityCreated</span><span class="hljs-params">(savedInstanceState: <span class="hljs-type">Bundle</span>?)</span></span> {
-        <span class="hljs-keyword">super</span>.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(<span class="hljs-keyword">this</span>).<span class="hljs-keyword">get</span>(SharedViewModel::<span class="hljs-keyword">class</span>.java)
-        <span class="hljs-comment">// <span class="hljs-doctag">TODO:</span> Use the ViewModel</span>
+    <span class=hljs-keyword>override</span> <span class=hljs-function><span class=hljs-keyword>fun</span> <span class=hljs-title>onActivityCreated</span><span class=hljs-params>(savedInstanceState: <span class=hljs-type>Bundle</span>?)</span></span> {
+        <span class=hljs-keyword>super</span>.onActivityCreated(savedInstanceState)
+        viewModel = ViewModelProviders.of(<span class=hljs-keyword>this</span>).<span class=hljs-keyword>get</span>(SharedViewModel::<span class=hljs-keyword>class</span>.java)
+        <span class=hljs-comment>// <span class=hljs-doctag>TODO:</span> Use the ViewModel</span>
     }
 
-    <span class="hljs-keyword">private</span> <span class="hljs-keyword">lateinit</span> <span class="hljs-keyword">var</span> viewModel: SharedViewModel
+    <span class=hljs-keyword>private</span> <span class=hljs-keyword>lateinit</span> <span class=hljs-keyword>var</span> viewModel: SharedViewModel
 
-    <span class="hljs-keyword">companion</span> <span class="hljs-keyword">object</span> {
-        <span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">newInstance</span><span class="hljs-params">()</span></span> = PlayUiFragment()
+    <span class=hljs-keyword>companion</span> <span class=hljs-keyword>object</span> {
+        <span class=hljs-function><span class=hljs-keyword>fun</span> <span class=hljs-title>newInstance</span><span class=hljs-params>()</span></span> = PlayUiFragment()
     }
 
 }
 
-</code></pre>
-<p>关键在于这一句</p>
-<pre><code class="language-kotlin hljs">viewModel = ViewModelProviders.of(<span class="hljs-keyword">this</span>).<span class="hljs-keyword">get</span>(SharedViewModel::<span class="hljs-keyword">class</span>.java)
-</code></pre>
-<p>其中 ViewModelProviders.of(this)表示将 viewModel 绑定到这个 Fragment 的生命周期（这里的 this 便表示当前的 Fragment 对象）我们可以将 this 改为 activity，即将 viewModel 绑定到 Fangment 所在的 Activity 的生命周期上，即</p>
-<pre><code class="language-kotlin hljs">viewModel = ViewModelProviders.of(activity!!).<span class="hljs-keyword">get</span>(SharedViewModel::<span class="hljs-keyword">class</span>.java)
-</code></pre>
-<p>然后再相应的 Activity 中绑定 SharedViewModel：</p>
-<pre><code class="language-kotlin hljs">
- <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">onCreate</span><span class="hljs-params">(savedInstanceState: <span class="hljs-type">Bundle</span>?)</span></span> {
-    <span class="hljs-keyword">super</span>.onCreate(savedInstanceState)
+</code></pre><p>关键在于这一句<pre><code class="language-kotlin hljs">viewModel = ViewModelProviders.of(<span class=hljs-keyword>this</span>).<span class=hljs-keyword>get</span>(SharedViewModel::<span class=hljs-keyword>class</span>.java)
+</code></pre><p>其中 ViewModelProviders.of(this)表示将 viewModel 绑定到这个 Fragment 的生命周期（这里的 this 便表示当前的 Fragment 对象）我们可以将 this 改为 activity，即将 viewModel 绑定到 Fangment 所在的 Activity 的生命周期上，即<pre><code class="language-kotlin hljs">viewModel = ViewModelProviders.of(activity!!).<span class=hljs-keyword>get</span>(SharedViewModel::<span class=hljs-keyword>class</span>.java)
+</code></pre><p>然后再相应的 Activity 中绑定 SharedViewModel：<pre><code class="language-kotlin hljs">
+ <span class=hljs-keyword>override</span> <span class=hljs-function><span class=hljs-keyword>fun</span> <span class=hljs-title>onCreate</span><span class=hljs-params>(savedInstanceState: <span class=hljs-type>Bundle</span>?)</span></span> {
+    <span class=hljs-keyword>super</span>.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
-    viewModel = ViewModelProviders.of(<span class="hljs-keyword">this</span>).<span class="hljs-keyword">get</span>(SharedViewModel::<span class="hljs-keyword">class</span>.java)
+    viewModel = ViewModelProviders.of(<span class=hljs-keyword>this</span>).<span class=hljs-keyword>get</span>(SharedViewModel::<span class=hljs-keyword>class</span>.java)
     initMediaBrowser()
     initView()
   }
-</code></pre>
-<p>那么便可在 Activity 的整个生命周期之内和多个 Fragment 共享资源</p>
-<h2>原理</h2>
-<blockquote>
-<p>ViewModel 的生命周期依赖于对应的 Activity 或 Fragment 的生命周期。通常会在 Activity 第一次 onCreate()时创建 ViewModel，ViewModel 的生命周期一直持续到 Activity 最终销毁或 Frament 最终 detached，期间由于屏幕旋转等配置变化引起的 Activity 销毁重建并不会导致 ViewModel 重建。借用官方示意图来解释一下：</p>
-</blockquote>
-<p><img src="https://s1.ax1x.com/2018/10/18/iwUH3T.png" alt="1"></p>
-<p>这样就可以避免在 Activity 直接利用接口进行回调</p>
- </article>
-            <nav>
-    <a id="avatar-container" href="/">
-      <img id="avatar" title="lingyin" src="https://avatars.githubusercontent.com/u/13548822">
-    </a>
-    
-    <p>岁月总是历久弥新，需要细细品尝。</p>
-
-    <p>
-      欢迎来到<a href="https://github.com/microtears"> lingyin </a>的开发者日志,
-      这里是我的一些奇思妙想。
-    </p>
-    <p>
-      它使用
-      <a href="https://lume.land/"> Lume </a>编写, 它是一个基于
-      <a href="https://deno.com/"> Deno </a>的静态网站生成器。
-    </p>
-    <div id="nav-break"></div>
-    <p id="copyright">© 2019-2025 <a href="/">lingyin</a>.</p>
-  
-  </nav>
-          </div>
-          <footer></footer>
-        </main>
-      
-      
-      
-    
-  </body></html>
+</code></pre><p>那么便可在 Activity 的整个生命周期之内和多个 Fragment 共享资源<h2>原理</h2><blockquote><p>ViewModel 的生命周期依赖于对应的 Activity 或 Fragment 的生命周期。通常会在 Activity 第一次 onCreate()时创建 ViewModel，ViewModel 的生命周期一直持续到 Activity 最终销毁或 Frament 最终 detached，期间由于屏幕旋转等配置变化引起的 Activity 销毁重建并不会导致 ViewModel 重建。借用官方示意图来解释一下：</blockquote><p><img alt=1 src=https://s1.ax1x.com/2018/10/18/iwUH3T.png><p>这样就可以避免在 Activity 直接利用接口进行回调</article><nav><a href=/ id=avatar-container> <img id=avatar src=https://avatars.githubusercontent.com/u/13548822 title=lingyin> </a><p>岁月总是历久弥新，需要细细品尝。<p>欢迎来到<a href=https://github.com/microtears> lingyin </a>的开发者日志, 这里是我的一些奇思妙想。<p>它使用 <a href=https://lume.land/> Lume </a>编写, 它是一个基于 <a href=https://deno.com/> Deno </a>的静态网站生成器。<div id=nav-break></div><p id=copyright>© 2019-2025 <a href=/>lingyin</a>.</nav></div><footer></footer></main>
