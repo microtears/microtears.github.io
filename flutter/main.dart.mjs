@@ -3313,6 +3313,7 @@ class CompiledApp {
 "_onLoadFuture",
 "Cannot find a lifecycle event Add(child=",
 ", parent=",
+"rebalance",
 "LifecycleEventStatus.",
 "_index",
 "overlays",
