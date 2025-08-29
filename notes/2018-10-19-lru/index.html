@@ -1,0 +1,96 @@
+<!doctype html><html lang=en><meta charset=UTF-8><meta content="width=device-width,initial-scale=1.0" name=viewport><meta content=岁月总是历久弥新，需要细细品尝。 name=description><link href=/css/a11y-light.css rel=stylesheet><link href=/styles/main.css rel=stylesheet><link href=https://fonts.googleapis.com rel=preconnect><link crossorigin href=https://fonts.gstatic.com rel=preconnect><link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel=stylesheet><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel=stylesheet><title>LRU算法</title><script src="https://www.googletagmanager.com/gtag/js?id=G-TQQBL084VX" async></script><script>window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag("js", new Date());
+
+          gtag("config", "G-TQQBL084VX");</script><body><main><div class=wrap><article><p>LRU(Least Recently Used)即最近最少使用，是一种缓存算法（页面置换算法）。我们知道，缓存通常是具有固定大小的，他应该只保存那些常常被用到的数据，而数据如何更新则是通过缓存算法实现，LRU算法就是一种简单，常用的缓存算法。<h2>原理</h2><p>LRU算法是核心思想是：如果一个数据在最近一段时间都没有被用到，那么它在将来被使用到的可能性也很小。故当缓存空间已满的情况下，我们需要淘汰掉最久没有被访问到的数据。理想的LRU算法读写是时间复杂度应该都为O(1)。<h2>实现</h2><p>为了达到理想的性能，我们需要一种既可以按访问顺序排序，又可以在常数时间随机访问的数据结构。这里可以采用HashMap和双向链表实现。HashMap可以存储Key，可以在常数时间里读写Key，而Value用来指向双向链表的节点，为了在常数时间里移除一个节点我们还需要Head节点和Tril节点。<ol><li>put(key,value) 首先在HashMap中查找Key如果存在，说明数据已在缓存中，我们只需要更新节点的值，并将节点放到链表头部即可。如果不存在说明数据不在缓存中，则需要构造节点，并将其放置在头部。在这个过程中，如果发现缓存已满，则需要淘汰掉链表尾部的数据并在HashMap中移除相应的Key。<li>get(key) 通过HashMap查找对应的节点，将其移动至头部并返回。</ol><p>代码实现如下：<pre><code class="language-kotlin hljs"><span class=hljs-keyword>class</span> <span class="hljs-title class_">LruCache</span>&lt;<span class=hljs-type>K, V</span>>() {
+    <span class=hljs-keyword>private</span> <span class=hljs-keyword>data</span> <span class=hljs-keyword>class</span> <span class="hljs-title class_">Node</span>&lt;<span class=hljs-type>K, V</span>>(
+            <span class=hljs-keyword>var</span> key: K? = <span class=hljs-literal>null</span>,
+            <span class=hljs-keyword>var</span> value: V? = <span class=hljs-literal>null</span>,
+            <span class=hljs-keyword>var</span> prev: Node&lt;K, V>? = <span class=hljs-literal>null</span>,
+            <span class=hljs-keyword>var</span> next: Node&lt;K, V>? = <span class=hljs-literal>null</span>
+    )
+
+    <span class=hljs-keyword>private</span> <span class=hljs-keyword>val</span> hashMap: HashMap&lt;K, Node&lt;K, V>> = hashMapOf()
+    <span class=hljs-keyword>private</span> <span class=hljs-keyword>var</span> count = <span class=hljs-number>0</span>
+    <span class=hljs-keyword>private</span> <span class=hljs-keyword>var</span> capacity = <span class=hljs-number>8</span>
+    <span class=hljs-keyword>private</span> <span class=hljs-keyword>val</span> head: Node&lt;K, V> = Node()
+    <span class=hljs-keyword>private</span> <span class=hljs-keyword>val</span> tail: Node&lt;K, V> = Node()
+
+    <span class=hljs-keyword>init</span> {
+        head.next = tail
+        tail.prev = head
+    }
+
+    <span class=hljs-keyword>constructor</span>(capacity: <span class=hljs-built_in>Int</span>) : <span class=hljs-keyword>this</span>() {
+        <span class=hljs-keyword>this</span>.capacity = capacity
+    }
+
+    <span class=hljs-function><span class=hljs-keyword>fun</span> <span class=hljs-title>get</span><span class=hljs-params>(key: <span class=hljs-type>K</span>)</span></span>: V? {
+        <span class=hljs-keyword>val</span> node = hashMap[key] ?: <span class=hljs-keyword>return</span> <span class=hljs-literal>null</span>
+        move(node)
+        <span class=hljs-keyword>return</span> node.value
+    }
+
+    <span class=hljs-function><span class=hljs-keyword>fun</span> <span class=hljs-title>put</span><span class=hljs-params>(key: <span class=hljs-type>K</span>, value: <span class=hljs-type>V</span>)</span></span> {
+        <span class=hljs-keyword>val</span> node = hashMap[key]
+        <span class=hljs-keyword>if</span> (node == <span class=hljs-literal>null</span>) {
+            <span class=hljs-keyword>val</span> newNode = Node(key, value)
+            add(newNode)
+            hashMap[key] = newNode
+            ++count
+            <span class=hljs-keyword>if</span> (count > capacity) {
+                <span class=hljs-keyword>val</span> deleteNode = delete()
+                hashMap.remove(deleteNode.key)
+                --count
+            }
+        } <span class=hljs-keyword>else</span> {
+            node.value = value
+            move(node)
+        }
+    }
+
+    <span class=hljs-keyword>private</span> <span class=hljs-function><span class=hljs-keyword>fun</span> <span class=hljs-title>add</span><span class=hljs-params>(node: <span class=hljs-type>Node</span>&lt;<span class=hljs-type>K</span>, V>)</span></span> {
+        node.prev = head
+        node.next = head.next
+        head.next!!.prev = node
+        head.next = node
+    }
+
+    <span class=hljs-keyword>private</span> <span class=hljs-function><span class=hljs-keyword>fun</span> <span class=hljs-title>remove</span><span class=hljs-params>(node: <span class=hljs-type>Node</span>&lt;<span class=hljs-type>K</span>, V>)</span></span> {
+        <span class=hljs-keyword>val</span> prev = node.prev!!
+        <span class=hljs-keyword>val</span> next = node.next!!
+        prev.next = next
+        next.prev = prev
+    }
+
+    <span class=hljs-keyword>private</span> <span class=hljs-function><span class=hljs-keyword>fun</span> <span class=hljs-title>move</span><span class=hljs-params>(node: <span class=hljs-type>Node</span>&lt;<span class=hljs-type>K</span>, V>)</span></span> {
+        remove(node)
+        add(node)
+    }
+
+    <span class=hljs-keyword>private</span> <span class=hljs-function><span class=hljs-keyword>fun</span> <span class=hljs-title>delete</span><span class=hljs-params>()</span></span>: Node&lt;K, V> {
+        <span class=hljs-keyword>val</span> node = tail.prev!!
+        remove(node)
+        <span class=hljs-keyword>return</span> node
+    }
+}
+</code></pre><p>而在实际使用中，我们可以使用LinkedHashMap实现，其内部就是使用双向链表，我们只需稍作修改便能使用。 在LinkedHashMap的构造参数<code>(initialCapacity:Int, loadFactor:Float,accessOrder:Boolean)</code>中,<code>initialCapacity</code>是HashMap的初始大小，<code>loadFactor</code>则是装载因子，<code>accessOrder=false</code>表示基于插入顺序，<code>accessOrder=true</code>表示基于访问顺序。 实现LRU的关键方法：<pre><code class="language-kotlin hljs"><span class=hljs-keyword>override</span> <span class=hljs-function><span class=hljs-keyword>fun</span> <span class=hljs-title>removeEldestEntry</span><span class=hljs-params>(eldest: <span class=hljs-type>MutableMap</span>.<span class=hljs-type>MutableEntry</span>&lt;<span class=hljs-type>K</span>, V>?)</span></span>: <span class=hljs-built_in>Boolean</span> {
+    <span class=hljs-keyword>return</span> size > capacity
+}
+</code></pre><p>以上表示当LinkedHashMap大小超过我们设定的大小时，移除链表首部的节点<pre><code class="language-kotlin hljs"><span class=hljs-keyword>class</span> <span class="hljs-title class_">LruChche</span>&lt;<span class=hljs-type>K, V</span>>(<span class=hljs-keyword>private</span> <span class=hljs-keyword>val</span> capacity: <span class=hljs-built_in>Int</span> = <span class=hljs-number>8</span>) {
+    <span class=hljs-keyword>private</span> <span class=hljs-keyword>var</span> hashMap: LinkedHashMap&lt;K, V> = <span class=hljs-keyword>object</span> : LinkedHashMap&lt;K, V>
+    (capacity / <span class=hljs-number>0.75</span>.toInt() + <span class=hljs-number>1</span>, <span class=hljs-number>0.75f</span>, <span class=hljs-literal>true</span>) {
+        <span class=hljs-keyword>override</span> <span class=hljs-function><span class=hljs-keyword>fun</span> <span class=hljs-title>removeEldestEntry</span><span class=hljs-params>(eldest: <span class=hljs-type>MutableMap</span>.<span class=hljs-type>MutableEntry</span>&lt;<span class=hljs-type>K</span>, V>?)</span></span>: <span class=hljs-built_in>Boolean</span> {
+            <span class=hljs-keyword>return</span> size > capacity
+        }
+    }
+
+    <span class=hljs-function><span class=hljs-keyword>fun</span> <span class=hljs-title>get</span><span class=hljs-params>(key: <span class=hljs-type>K</span>)</span></span>: V? = hashMap[key]
+    <span class=hljs-function><span class=hljs-keyword>fun</span> <span class=hljs-title>put</span><span class=hljs-params>(key: <span class=hljs-type>K</span>, value: <span class=hljs-type>V</span>)</span></span> {
+        hashMap[key] = value
+    }
+
+}
+</code></pre><h2>结语</h2><p>第一次听说LRU算法是在现代操作系统这本书中，但引起我深究的是Glide这个库在自定义Model的时候，便有了一探究竟的想法，故整理资料写下这些文字，一面是为了加深自己的影响，另一面也希望我所说的能让大家更简单的去理解LRU，一起学习。</article><nav><a href=/ id=avatar-container> <img id=avatar src=https://avatars.githubusercontent.com/u/13548822 title=lingyin> </a><p>岁月总是历久弥新，需要细细品尝。<p>欢迎来到<a href=https://github.com/microtears> lingyin </a>的开发者日志, 这里是我的一些奇思妙想。<p>它使用 <a href=https://lume.land/> Lume </a>编写, 它是一个基于 <a href=https://deno.com/> Deno </a>的静态网站生成器。<div id=nav-break></div><p id=copyright>© 2019-2025 <a href=/>lingyin</a>.</nav></div><footer></footer></main>

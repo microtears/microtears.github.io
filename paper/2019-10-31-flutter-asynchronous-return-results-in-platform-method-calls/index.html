@@ -1,0 +1,183 @@
+<!doctype html><html lang=en><meta charset=UTF-8><meta content="width=device-width,initial-scale=1.0" name=viewport><meta content=岁月总是历久弥新，需要细细品尝。 name=description><link href=/css/a11y-light.css rel=stylesheet><link href=/styles/main.css rel=stylesheet><link href=https://fonts.googleapis.com rel=preconnect><link crossorigin href=https://fonts.gstatic.com rel=preconnect><link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel=stylesheet><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel=stylesheet><title>Flutter在平台方法调用中异步返回结果</title><script src="https://www.googletagmanager.com/gtag/js?id=G-TQQBL084VX" async></script><script>window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag("js", new Date());
+
+          gtag("config", "G-TQQBL084VX");</script><body><main><div class=wrap><article><h1>Flutter 在平台方法调用中异步返回结果</h1><p>asynchronous_method_channel 是一个在 Flutter 和 Native 之间异步调用方法时，支持异步返回结果的插件。<p>在利用 Flutter 编写跨平台应用时，一些功能需要调用 Native 方法才能实现，可以利用 Flutter 为我们提供的 MethodChannel 实现。对与 Flutter 来说，所有的 Native 方法调用都是异步返回的，但是对于 Native 来说，对于来自 Flutter 的方法调用，我们要返回的结果却不能异步返回，如果我们尝试在执行异步操作之后调用<code>result.success(something)</code>，执行时会得到<code>java.lang.IllegalStateException: Reply already submitted</code>的错误信息。所以 AsynchronousMethodChannel 是对 MethodChannel 的一次封装，为其添加了异步返回方法调用结果的功能。因为对于 Flutter，和 Native 的通信即方法调用必须在平台主线程，但我们又知道应该尽量避免在主线程进行耗时操作，所以需要有一个措施来支持平台方法调用时异步返回结果，即编写本库的目的。<h2>关于 asynchronous_method_channel</h2><p><a href=https://pub.dev/packages/asynchronous_method_channel>Package</a>: https://pub.dev/packages/asynchronous_method_channel<p><a href=https://github.com/microtears/asynchronous-method-channel/tree/master/example>Example</a>: https://github.com/microtears/asynchronous-method-channel/tree/master/example<p><a href=https://github.com/microtears/asynchronous-method-channel>Repository</a>: https://github.com/microtears/asynchronous-method-channel<p><a href=https://pub.dev/documentation/asynchronous_method_channel/latest/>Documentation</a>: https://pub.dev/documentation/asynchronous_method_channel/latest/<p><a href=https://github.com/microtears/asynchronous-method-channel/issues>View/report issues</a>: https://github.com/microtears/asynchronous-method-channel/issues<h2>Flutter 配置</h2><ul><li>version: v1.9.1+hotfix.6<li>channel: master</ul><h2>在 Android 上通过 AsynchronousMethodChannel 和 kotlin 编写插件</h2><p>下面是一个利用 kotlin 协程执行异步任务并返回结果的示例。<p>在正式开始之前，需要我们了解的一件事是：Flutter 应用程序中 Android 模块的 gradle 不会自动导入我们需要的 Java 包，您必须手动添加以下代码。<pre><code class="language-kotlin hljs"><span class=hljs-keyword>import</span> io.flutter.plugins.asynchronous_method_channel.AsynchronousMethodChannel
+</code></pre><pre><code class="language-kotlin hljs"><span class=hljs-keyword>class</span> <span class="hljs-title class_">MainActivity</span>: <span class=hljs-type>FlutterActivity</span>() , AsynchronousMethodChannel.MethodCallHandler {
+    <span class=hljs-keyword>companion</span> <span class=hljs-keyword>object</span>{
+        <span class=hljs-keyword>const</span> <span class=hljs-keyword>val</span> CHANNEL=<span class=hljs-string>"AsynchronousMethodChannelExample"</span>
+    }
+    <span class=hljs-keyword>private</span> <span class=hljs-keyword>var</span> parentJob = Job()
+    <span class=hljs-keyword>private</span> <span class=hljs-keyword>val</span> coroutineContext: CoroutineContext
+        <span class=hljs-keyword>get</span>() = parentJob + Dispatchers.Main
+    <span class=hljs-keyword>private</span> <span class=hljs-keyword>val</span> scope = CoroutineScope(coroutineContext)
+
+    <span class=hljs-keyword>override</span> <span class=hljs-function><span class=hljs-keyword>fun</span> <span class=hljs-title>onCreate</span><span class=hljs-params>(savedInstanceState: <span class=hljs-type>Bundle</span>?)</span></span> {
+        <span class=hljs-keyword>super</span>.onCreate(savedInstanceState)
+        GeneratedPluginRegistrant.registerWith(<span class=hljs-keyword>this</span>)
+        AsynchronousMethodChannel(flutterView, CHANNEL).setMethodCallHandler(<span class=hljs-keyword>this</span>)
+    }
+
+
+    <span class=hljs-keyword>override</span> <span class=hljs-function><span class=hljs-keyword>fun</span> <span class=hljs-title>onMethodCall</span><span class=hljs-params>(call: <span class=hljs-type>MethodCall</span>, result: <span class=hljs-type>AsynchronousMethodChannel</span>.<span class=hljs-type>Result</span>)</span></span> {
+        <span class=hljs-keyword>when</span> (call.method) {
+            <span class=hljs-string>"getBatteryLevel"</span> -> {
+                result.success(<span class=hljs-literal>null</span>)
+                scope.launch(Dispatchers.IO){
+                    <span class=hljs-comment>// Do something</span>
+                    <span class=hljs-comment>// Perform asynchronous time-consuming tasks</span>
+
+                    <span class=hljs-comment>// Just return results after 2 seconds</span>
+                    delay(<span class=hljs-number>2000</span>)
+
+                    <span class=hljs-comment>// The method in AsynchronousMethodChannel.Result must be called on the main thread of the platform</span>
+                    scope.launch(Dispatchers.Main){
+                        result.successAsynchronous(getBatteryLevel().toString())
+                    }
+                }
+            }
+            <span class=hljs-keyword>else</span> -> result.notImplemented()
+        }
+    }
+
+    <span class=hljs-keyword>private</span> <span class=hljs-function><span class=hljs-keyword>fun</span> <span class=hljs-title>getBatteryLevel</span><span class=hljs-params>()</span></span>: <span class=hljs-built_in>Int</span> {
+        <span class=hljs-keyword>val</span> batteryLevel: <span class=hljs-built_in>Int</span>
+        batteryLevel = <span class=hljs-keyword>if</span> (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            <span class=hljs-keyword>val</span> batteryManager = getSystemService(Context.BATTERY_SERVICE) <span class=hljs-keyword>as</span> BatteryManager
+            batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
+        } <span class=hljs-keyword>else</span> {
+            <span class=hljs-keyword>val</span> intent = ContextWrapper(applicationContext).registerReceiver(<span class=hljs-literal>null</span>, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+            intent!!.getIntExtra(BatteryManager.EXTRA_LEVEL, -<span class=hljs-number>1</span>) * <span class=hljs-number>100</span> / intent.getIntExtra(BatteryManager.EXTRA_SCALE, -<span class=hljs-number>1</span>)
+        }
+        <span class=hljs-keyword>return</span> batteryLevel
+    }
+
+    <span class=hljs-keyword>override</span> <span class=hljs-function><span class=hljs-keyword>fun</span> <span class=hljs-title>onDestroy</span><span class=hljs-params>()</span></span> {
+        <span class=hljs-comment>// cancel all asynchronous jobs</span>
+        scope.cancel()
+        <span class=hljs-keyword>super</span>.onDestroy()
+    }
+}
+</code></pre><h2>在 Flutter 上通过 AsynchronousMethodChannel 和 dart 编写插件</h2><p>下面是一个在 Flutter 应用程序中使用 AsynchronousMethodChannel 的示例。<pre><code class="language-dart hljs"><span class=hljs-class><span class=hljs-keyword>class</span> <span class=hljs-title>_MyAppState</span> <span class=hljs-keyword>extends</span> <span class=hljs-title>State</span>&lt;<span class=hljs-title>MyApp</span>> </span>{
+  <span class=hljs-keyword>static</span> <span class=hljs-keyword>final</span> platform =
+      AsynchronousMethodChannel(<span class=hljs-string>'AsynchronousMethodChannelExample'</span>);
+  <span class=hljs-built_in>String</span> _batteryLevel = <span class=hljs-string>'Unknown'</span>;
+  <span class=hljs-built_in>String</span> _timeInfo = <span class=hljs-string>""</span>;
+  <span class=hljs-keyword>static</span> <span class=hljs-keyword>const</span> style = TextStyle(
+    fontSize: <span class=hljs-number>16</span>,
+    fontFamily: <span class=hljs-string>"monospace"</span>,
+  );
+
+  <span class=hljs-meta>@override</span>
+  <span class=hljs-keyword>void</span> initState() {
+    <span class=hljs-keyword>super</span>.initState();
+    initPlatformState();
+  }
+
+  <span class=hljs-comment>// Platform messages are asynchronous, so we initialize in an async method.</span>
+  Future&lt;<span class=hljs-keyword>void</span>> initPlatformState() <span class=hljs-keyword>async</span> {
+    <span class=hljs-built_in>String</span> batteryLevel;
+    <span class=hljs-comment>// Platform messages may fail, so we use a try/catch PlatformException.</span>
+    <span class=hljs-keyword>try</span> {
+      <span class=hljs-keyword>final</span> sb = <span class=hljs-built_in>StringBuffer</span>();
+      <span class=hljs-keyword>final</span> startAt = <span class=hljs-built_in>DateTime</span>.now();
+      sb.writeln(<span class=hljs-string>"[start] [<span class=hljs-subst>$startAt</span>]"</span>);
+      batteryLevel =
+          <span class=hljs-keyword>await</span> platform.invokeAsynchronousMethod(<span class=hljs-string>"getBatteryLevel"</span>);
+      <span class=hljs-keyword>final</span> endAt = <span class=hljs-built_in>DateTime</span>.now();
+      sb.writeln(<span class=hljs-string>"[end  ] [<span class=hljs-subst>$endAt</span>]"</span>);
+      sb.writeln(<span class=hljs-string>"[tag  ] [hours:minutes:seconds:us]"</span>);
+      sb.writeln(<span class=hljs-string>"[total] [<span class=hljs-subst>${endAt.difference(startAt)}</span>]"</span>);
+      _timeInfo = sb.toString();
+    } <span class=hljs-keyword>on</span> PlatformException {
+      batteryLevel = <span class=hljs-string>'Failed to get platform version.'</span>;
+    }
+
+    <span class=hljs-comment>// If the widget was removed from the tree while the asynchronous platform</span>
+    <span class=hljs-comment>// message was in flight, we want to discard the reply rather than calling</span>
+    <span class=hljs-comment>// setState to update our non-existent appearance.</span>
+    <span class=hljs-keyword>if</span> (!mounted) <span class=hljs-keyword>return</span>;
+
+    setState(() {
+      _batteryLevel = batteryLevel;
+    });
+  }
+
+  <span class=hljs-meta>@override</span>
+  Widget build(BuildContext context) {
+    <span class=hljs-keyword>return</span> MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: <span class=hljs-keyword>const</span> Text(<span class=hljs-string>'AsynchronousMethodChannel example app'</span>),
+        ),
+        body: Padding(
+          padding: <span class=hljs-keyword>const</span> EdgeInsets.all(<span class=hljs-number>20.0</span>),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: &lt;Widget>[
+              Text(<span class=hljs-string>'Battery level: <span class=hljs-subst>$_batteryLevel</span>\n'</span>, style: style),
+              Text(_timeInfo, style: style),
+              Center(
+                child: FlatButton(
+                  onPressed: initPlatformState,
+                  child: Text(<span class=hljs-string>"Get battery level"</span>),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+</code></pre><h2>截图</h2><p><img alt=example src=https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/31/16e1d8c357a37f57~tplv-t2oaga2asx-image.image><h2>在测试时使用 AsynchronousMethodChannel</h2><pre><code class="language-dart hljs"><span class=hljs-keyword>void</span> main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  <span class=hljs-keyword>final</span> AsynchronousMethodChannel channel =
+      AsynchronousMethodChannel(<span class=hljs-string>'asynchronous_method_channel'</span>);
+
+  setUp(() {
+    channel.setMockAsynchronousMethodCallHandler(
+        (MethodCall methodCall, MockResult result) <span class=hljs-keyword>async</span> {
+      <span class=hljs-keyword>switch</span> (methodCall.method) {
+        <span class=hljs-keyword>case</span> <span class=hljs-string>"asynchronousMethod"</span>:
+          <span class=hljs-comment>// Delay 30 milliseconds to return results</span>
+          Future.delayed(<span class=hljs-built_in>Duration</span>(milliseconds: <span class=hljs-number>30</span>),
+              () => result.success(methodCall.arguments));
+          <span class=hljs-keyword>break</span>;
+        <span class=hljs-keyword>case</span> <span class=hljs-string>"syncMethod"</span>:
+          <span class=hljs-keyword>return</span> <span class=hljs-string>"ok"</span>;
+          <span class=hljs-keyword>break</span>;
+        <span class=hljs-keyword>case</span> <span class=hljs-string>"getBatteryLevel"</span>:
+          result.success(<span class=hljs-string>"100"</span>);
+          <span class=hljs-keyword>break</span>;
+      }
+      <span class=hljs-keyword>return</span> <span class=hljs-keyword>null</span>;
+    });
+  });
+
+  tearDown(() {
+    channel.setMockAsynchronousMethodCallHandler(<span class=hljs-keyword>null</span>);
+  });
+
+  test(<span class=hljs-string>'testMethod'</span>, () <span class=hljs-keyword>async</span> {
+    expect(
+      <span class=hljs-keyword>await</span> channel.invokeAsynchronousMethod(
+        <span class=hljs-string>"asynchronousMethod"</span>,
+        {<span class=hljs-string>"arg"</span>: <span class=hljs-string>"arg1"</span>},
+      ),
+      {<span class=hljs-string>"arg"</span>: <span class=hljs-string>"arg1"</span>},
+    );
+    expect(
+      <span class=hljs-keyword>await</span> channel.invokeMethod(<span class=hljs-string>"syncMethod"</span>),
+      <span class=hljs-string>"ok"</span>,
+    );
+    expect(
+      <span class=hljs-keyword>await</span> channel.invokeAsynchronousMethod(<span class=hljs-string>"getBatteryLevel"</span>),
+      <span class=hljs-string>"100"</span>,
+    );
+  });
+}
+</code></pre><h2>在 IOS 上使用 AsynchronousMethodChannel</h2><p>预计在下一个版本发布。<h2>关于更多</h2><p>请参阅<a href=https://github.com/microtears/asynchronous-method-channel/tree/master/example>示例</a>。</article><nav><a href=/ id=avatar-container> <img id=avatar src=https://avatars.githubusercontent.com/u/13548822 title=lingyin> </a><p>岁月总是历久弥新，需要细细品尝。<p>欢迎来到<a href=https://github.com/microtears> lingyin </a>的开发者日志, 这里是我的一些奇思妙想。<p>它使用 <a href=https://lume.land/> Lume </a>编写, 它是一个基于 <a href=https://deno.com/> Deno </a>的静态网站生成器。<div id=nav-break></div><p id=copyright>© 2019-2025 <a href=/>lingyin</a>.</nav></div><footer></footer></main>

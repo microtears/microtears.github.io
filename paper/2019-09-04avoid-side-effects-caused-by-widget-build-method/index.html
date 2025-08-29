@@ -1,4 +1,10 @@
-<!doctype html><html lang=en><meta charset=UTF-8><meta content="width=device-width,initial-scale=1.0"name=viewport><meta content=岁月总是历久弥新，需要细细品尝。 name=description><link href=/css/a11y-light.css rel=stylesheet><link href=/styles/main.css rel=stylesheet><link href=https://fonts.googleapis.com rel=preconnect><link crossorigin href=https://fonts.gstatic.com rel=preconnect><link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"rel=stylesheet><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"rel=stylesheet><title>避免Widget build(BuildContext context)带来的副作用</title><script src="https://www.googletagmanager.com/gtag/js?id=G-TQQBL084VX"async></script><script>function gtag(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[];gtag(`js`,new Date());gtag(`config`,`G-TQQBL084VX`)</script><body><main><div class=wrap><article><h1>避免 Widget build(BuildContext context)带来的副作用</h1><p>Flutter 是一个响应式 UI 框架，当需要展示界面的时候，框架通过 build 方法生成一帧的画面，当画面频繁变化时，flutter 会重复调用 build 方法来生成每一帧。所以不合适的函数调用或者当 build 和一些 Widget（例如：<code>FutureBuilder</code>,<code>StreamBuilder</code>）合用时，可能会产生一些副作用。<p>以下是会产生副作用的示例：<pre><code class="language-dart hljs"><span class=hljs-keyword>import</span> <span class=hljs-string>'random_color.dart'</span> <span class=hljs-keyword>as</span> color;
+<!doctype html><html lang=en><meta charset=UTF-8><meta content="width=device-width,initial-scale=1.0" name=viewport><meta content=岁月总是历久弥新，需要细细品尝。 name=description><link href=/css/a11y-light.css rel=stylesheet><link href=/styles/main.css rel=stylesheet><link href=https://fonts.googleapis.com rel=preconnect><link crossorigin href=https://fonts.gstatic.com rel=preconnect><link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel=stylesheet><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel=stylesheet><title>避免Widget build(BuildContext context)带来的副作用</title><script src="https://www.googletagmanager.com/gtag/js?id=G-TQQBL084VX" async></script><script>window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag("js", new Date());
+
+          gtag("config", "G-TQQBL084VX");</script><body><main><div class=wrap><article><h1>避免 Widget build(BuildContext context)带来的副作用</h1><p>Flutter 是一个响应式 UI 框架，当需要展示界面的时候，框架通过 build 方法生成一帧的画面，当画面频繁变化时，flutter 会重复调用 build 方法来生成每一帧。所以不合适的函数调用或者当 build 和一些 Widget（例如：<code>FutureBuilder</code>,<code>StreamBuilder</code>）合用时，可能会产生一些副作用。<p>以下是会产生副作用的示例：<pre><code class="language-dart hljs"><span class=hljs-keyword>import</span> <span class=hljs-string>'random_color.dart'</span> <span class=hljs-keyword>as</span> color;
 
 <span class=hljs-class><span class=hljs-keyword>class</span> <span class=hljs-title>MyHomePage</span> <span class=hljs-keyword>extends</span> <span class=hljs-title>StatelessWidget</span> </span>{
   <span class=hljs-meta>@override</span>
@@ -11,7 +17,7 @@
             <span class=hljs-keyword>if</span> (snapshot.hasData) {
               <span class=hljs-keyword>final</span> colors = snapshot.data;
               <span class=hljs-keyword>return</span> Column(
-                children: &LTWidget>[
+                children: &lt;Widget>[
                   Expanded(flex: <span class=hljs-number>4</span>, child: Container(color: colors[<span class=hljs-number>0</span>])),
                   Expanded(flex: <span class=hljs-number>3</span>, child: Container(color: colors[<span class=hljs-number>1</span>])),
                   Expanded(flex: <span class=hljs-number>2</span>, child: Container(color: colors[<span class=hljs-number>2</span>])),
@@ -25,14 +31,14 @@
     );
   }
 }
-</code></pre><p>其中<code>randomColor</code>实现如下：<pre><code class="language-dart hljs">Future<<span class=hljs-built_in>List</span>&LTColor>> randomColors() <span class=hljs-keyword>async</span> {
+</code></pre><p>其中<code>randomColor</code>实现如下：<pre><code class="language-dart hljs">Future&lt;<span class=hljs-built_in>List</span>&lt;Color>> randomColors() <span class=hljs-keyword>async</span> {
   <span class=hljs-keyword>await</span> loadData();
   <span class=hljs-keyword>return</span> randomColorsSync();
 }
 
 <span class=hljs-keyword>var</span> functionCallCount = <span class=hljs-number>0</span>;
 
-<span class=hljs-built_in>List</span>&LTColor> randomColorsSync() {
+<span class=hljs-built_in>List</span>&lt;Color> randomColorsSync() {
   <span class=hljs-keyword>assert</span>(data.isNotEmpty);
   <span class=hljs-keyword>final</span> code = data[Random().nextInt(data.length)];
   functionCallCount++;
@@ -49,7 +55,7 @@
   _HomeWrapWidgetState createState() => _HomeWrapWidgetState();
 }
 
-<span class=hljs-class><span class=hljs-keyword>class</span> <span class=hljs-title>_HomeWrapWidgetState</span> <span class=hljs-keyword>extends</span> <span class=hljs-title>State</span><<span class=hljs-title>HomeWrapWidget</span>> </span>{
+<span class=hljs-class><span class=hljs-keyword>class</span> <span class=hljs-title>_HomeWrapWidgetState</span> <span class=hljs-keyword>extends</span> <span class=hljs-title>State</span>&lt;<span class=hljs-title>HomeWrapWidget</span>> </span>{
   <span class=hljs-meta>@override</span>
   Widget build(BuildContext context) {
     <span class=hljs-keyword>return</span> Scaffold(
@@ -74,8 +80,8 @@ I/flutter ( 4259): Function call count: 4
 I/flutter ( 4259): Function call count: 5
 I/flutter ( 4259): Function call count: 6
 ···
-</code></pre><p>每次按下按钮后，界面的配色都发生了变化，重新获取了新的配色方案。<p><img alt border=0 src=https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/9/4/16cfc99d3156c879~tplv-t2oaga2asx-image.image width=320><p>但是这并不是我们想要的效果，使用 FutureBuilder 的初衷时为了方便将 Future 数据映射为 UI,但是当我们更新界面其他部分时，却导致 FutureBuilder 再次获取了一遍数据，这种不符合直觉的结果在某些时候可能会产生一些错误。在示例部分我们使用了随机配色配合 FutureBuilder 构建 UI，所以当错误发生的时候，我们很明显可以观察到，但是如果将<code>randomColor</code>函数替换为一个 http 请求函数，当你请求同一个网址，返回相同的资源的时候，错误发生后，仅从界面是观察不到相应的变化的。<p>当我们更新界面其他部分的时候，却导致了对返回 Future 数据的资源的反复请求，尤其在发生路由页面动画的时候，会触发整个页面的 Widget 树重建，按照流畅应用 60FPS 的要求计算，对于 http 请求每秒会发送 60 次，算上动画时长，多设备多用户，对用户流量，对服务器都是极大的负担，同时每次请求返回不同的 Future 对象，还会导致 FutureBuilder 重复调用 builder 方法，这就是我在标题里提到的副作用。<p>对于这些副作用，解决方案有以下 3 种：<ol><li><p>在 initState 方法里获取 Future 对象并缓存</p> <p>由于<code>initState</code>方法在整个 StatefulWidget 的生命周期中只会调用一次，所以对于 Future、Stream，可以在该方法中将需要用到的返回结果缓存下来，供后续使用。如果调用的方法需要传递<code>BuildContext</code>对象，也可以在<code>didChangeDependencies</code>方法中缓存调用结果。<code>didChangeDependencies</code>方法会在 Element 依赖发生改变的时候被调用。</p> <p>code：</p> <pre><code class="language-dart hljs"><span class=hljs-class><span class=hljs-keyword>class</span> <span class=hljs-title>_MyHomePage2State</span> <span class=hljs-keyword>extends</span> <span class=hljs-title>State</span><<span class=hljs-title>MyHomePage2</span>> </span>{
-  Future<<span class=hljs-built_in>List</span>&LTColor>> colorsFuture;
+</code></pre><p>每次按下按钮后，界面的配色都发生了变化，重新获取了新的配色方案。<p><img alt border=0 src=https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/9/4/16cfc99d3156c879~tplv-t2oaga2asx-image.image width=320><p>但是这并不是我们想要的效果，使用 FutureBuilder 的初衷时为了方便将 Future 数据映射为 UI,但是当我们更新界面其他部分时，却导致 FutureBuilder 再次获取了一遍数据，这种不符合直觉的结果在某些时候可能会产生一些错误。在示例部分我们使用了随机配色配合 FutureBuilder 构建 UI，所以当错误发生的时候，我们很明显可以观察到，但是如果将<code>randomColor</code>函数替换为一个 http 请求函数，当你请求同一个网址，返回相同的资源的时候，错误发生后，仅从界面是观察不到相应的变化的。<p>当我们更新界面其他部分的时候，却导致了对返回 Future 数据的资源的反复请求，尤其在发生路由页面动画的时候，会触发整个页面的 Widget 树重建，按照流畅应用 60FPS 的要求计算，对于 http 请求每秒会发送 60 次，算上动画时长，多设备多用户，对用户流量，对服务器都是极大的负担，同时每次请求返回不同的 Future 对象，还会导致 FutureBuilder 重复调用 builder 方法，这就是我在标题里提到的副作用。<p>对于这些副作用，解决方案有以下 3 种：<ol><li><p>在 initState 方法里获取 Future 对象并缓存</p> <p>由于<code>initState</code>方法在整个 StatefulWidget 的生命周期中只会调用一次，所以对于 Future、Stream，可以在该方法中将需要用到的返回结果缓存下来，供后续使用。如果调用的方法需要传递<code>BuildContext</code>对象，也可以在<code>didChangeDependencies</code>方法中缓存调用结果。<code>didChangeDependencies</code>方法会在 Element 依赖发生改变的时候被调用。</p> <p>code：</p> <pre><code class="language-dart hljs"><span class=hljs-class><span class=hljs-keyword>class</span> <span class=hljs-title>_MyHomePage2State</span> <span class=hljs-keyword>extends</span> <span class=hljs-title>State</span>&lt;<span class=hljs-title>MyHomePage2</span>> </span>{
+  Future&lt;<span class=hljs-built_in>List</span>&lt;Color>> colorsFuture;
 
   <span class=hljs-meta>@override</span>
   <span class=hljs-keyword>void</span> initState() {
@@ -93,7 +99,7 @@ I/flutter ( 4259): Function call count: 6
             <span class=hljs-keyword>if</span> (snapshot.hasData) {
               <span class=hljs-keyword>final</span> colors = snapshot.data;
               <span class=hljs-keyword>return</span> Column(
-                children: &LTWidget>[
+                children: &lt;Widget>[
                   Expanded(flex: <span class=hljs-number>4</span>, child: Container(color: colors[<span class=hljs-number>0</span>])),
                   Expanded(flex: <span class=hljs-number>3</span>, child: Container(color: colors[<span class=hljs-number>1</span>])),
                   Expanded(flex: <span class=hljs-number>2</span>, child: Container(color: colors[<span class=hljs-number>2</span>])),
@@ -114,8 +120,8 @@ I/flutter ( 4259): Function call count: 6
    _MyHomePage3State createState() => _MyHomePage3State();
  }
 
- <span class=hljs-class><span class=hljs-keyword>class</span> <span class=hljs-title>_MyHomePage3State</span> <span class=hljs-keyword>extends</span> <span class=hljs-title>State</span><<span class=hljs-title>MyHomePage3</span>> </span>{
-   <span class=hljs-keyword>final</span> _memoizer = AsyncMemoizer<<span class=hljs-built_in>List</span>&LTColor>>();
+ <span class=hljs-class><span class=hljs-keyword>class</span> <span class=hljs-title>_MyHomePage3State</span> <span class=hljs-keyword>extends</span> <span class=hljs-title>State</span>&lt;<span class=hljs-title>MyHomePage3</span>> </span>{
+   <span class=hljs-keyword>final</span> _memoizer = AsyncMemoizer&lt;<span class=hljs-built_in>List</span>&lt;Color>>();
 
    <span class=hljs-meta>@override</span>
    Widget build(BuildContext context) {
@@ -127,7 +133,7 @@ I/flutter ( 4259): Function call count: 6
              <span class=hljs-keyword>if</span> (snapshot.hasData) {
                <span class=hljs-keyword>final</span> colors = snapshot.data;
                <span class=hljs-keyword>return</span> Column(
-                 children: &LTWidget>[
+                 children: &lt;Widget>[
                    Expanded(flex: <span class=hljs-number>4</span>, child: Container(color: colors[<span class=hljs-number>0</span>])),
                    Expanded(flex: <span class=hljs-number>3</span>, child: Container(color: colors[<span class=hljs-number>1</span>])),
                    Expanded(flex: <span class=hljs-number>2</span>, child: Container(color: colors[<span class=hljs-number>2</span>])),
@@ -159,14 +165,14 @@ I/flutter ( 4259): Function call count: 6
 }
 
 <span class=hljs-class><span class=hljs-keyword>class</span> <span class=hljs-title>ColorListWidget</span> <span class=hljs-keyword>extends</span> <span class=hljs-title>StatelessWidget</span> </span>{
-  <span class=hljs-keyword>final</span> <span class=hljs-built_in>List</span>&LTColor> colors;
+  <span class=hljs-keyword>final</span> <span class=hljs-built_in>List</span>&lt;Color> colors;
 
   <span class=hljs-keyword>const</span> ColorListWidget({Key key, <span class=hljs-meta>@required</span> <span class=hljs-keyword>this</span>.colors}) : <span class=hljs-keyword>super</span>(key: key);
 
   <span class=hljs-meta>@override</span>
   Widget build(BuildContext context) {
     <span class=hljs-keyword>return</span> Column(
-      children: &LTWidget>[
+      children: &lt;Widget>[
         buildColorTile(flex: <span class=hljs-number>4</span>, color: colors[<span class=hljs-number>0</span>]),
         buildColorTile(flex: <span class=hljs-number>3</span>, color: colors[<span class=hljs-number>1</span>]),
         buildColorTile(flex: <span class=hljs-number>2</span>, color: colors[<span class=hljs-number>2</span>]),
@@ -181,7 +187,7 @@ I/flutter ( 4259): Function call count: 6
       child: Container(
         color: color,
         child: Stack(
-          children: &LTWidget>[
+          children: &lt;Widget>[
             Positioned(
               left: <span class=hljs-number>0</span>,
               bottom: <span class=hljs-number>0</span>,

@@ -17643,7 +17643,7 @@ return n}}
 A.Z6.prototype={
 $1(a){var s=A.c0().b
 s=s==null?null:s.canvasKitBaseUrl
-return(s==null?"https://www.gstatic.com/flutter-canvaskit/877970cbc98718dbee8f0a34374fa2b1a1db2248/":s)+a},
+return(s==null?"https://www.gstatic.com/flutter-canvaskit/56f64c26474b70c7bc4d4c8785097499775d59e0/":s)+a},
 $S:72}
 A.vO.prototype={
 d4(a,b){var s,r=this.a
