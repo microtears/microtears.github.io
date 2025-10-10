@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="岁月总是历久弥新，需要细细品尝。">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/styles/a11y-light.min.css" />
+
+  <link rel="stylesheet" href="/article/style/main.css" />
+
+  <title>LRU算法</title>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TQQBL084VX" />
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+
+    gtag("config", "G-TQQBL084VX");
+  </script>
+</head>
+<body>
+  <main>
+    <div class="wrap">
+      <article>
+        
+        <div id="content"></div>
+        
+        <script type="module">
+          import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
+        
+          const md = "LRU(Least Recently Used)即最近最少使用，是一种缓存算法（页面置换算法）。我们知道，缓存通常是具有固定大小的，他应该只保存那些常常被用到的数据，而数据如何更新则是通过缓存算法实现，LRU算法就是一种简单，常用的缓存算法。\n\n## 原理\n\nLRU算法是核心思想是：如果一个数据在最近一段时间都没有被用到，那么它在将来被使用到的可能性也很小。故当缓存空间已满的情况下，我们需要淘汰掉最久没有被访问到的数据。理想的LRU算法读写是时间复杂度应该都为O(1)。\n\n## 实现\n\n为了达到理想的性能，我们需要一种既可以按访问顺序排序，又可以在常数时间随机访问的数据结构。这里可以采用HashMap和双向链表实现。HashMap可以存储Key，可以在常数时间里读写Key，而Value用来指向双向链表的节点，为了在常数时间里移除一个节点我们还需要Head节点和Tril节点。\n\n1. put(key,value)\n   首先在HashMap中查找Key如果存在，说明数据已在缓存中，我们只需要更新节点的值，并将节点放到链表头部即可。如果不存在说明数据不在缓存中，则需要构造节点，并将其放置在头部。在这个过程中，如果发现缓存已满，则需要淘汰掉链表尾部的数据并在HashMap中移除相应的Key。\n2. get(key)\n   通过HashMap查找对应的节点，将其移动至头部并返回。\n\n代码实现如下：\n\n```kotlin\nclass LruCache<K, V>() {\n    private data class Node<K, V>(\n            var key: K? = null,\n            var value: V? = null,\n            var prev: Node<K, V>? = null,\n            var next: Node<K, V>? = null\n    )\n\n    private val hashMap: HashMap<K, Node<K, V>> = hashMapOf()\n    private var count = 0\n    private var capacity = 8\n    private val head: Node<K, V> = Node()\n    private val tail: Node<K, V> = Node()\n\n    init {\n        head.next = tail\n        tail.prev = head\n    }\n\n    constructor(capacity: Int) : this() {\n        this.capacity = capacity\n    }\n\n    fun get(key: K): V? {\n        val node = hashMap[key] ?: return null\n        move(node)\n        return node.value\n    }\n\n    fun put(key: K, value: V) {\n        val node = hashMap[key]\n        if (node == null) {\n            val newNode = Node(key, value)\n            add(newNode)\n            hashMap[key] = newNode\n            ++count\n            if (count > capacity) {\n                val deleteNode = delete()\n                hashMap.remove(deleteNode.key)\n                --count\n            }\n        } else {\n            node.value = value\n            move(node)\n        }\n    }\n\n    private fun add(node: Node<K, V>) {\n        node.prev = head\n        node.next = head.next\n        head.next!!.prev = node\n        head.next = node\n    }\n\n    private fun remove(node: Node<K, V>) {\n        val prev = node.prev!!\n        val next = node.next!!\n        prev.next = next\n        next.prev = prev\n    }\n\n    private fun move(node: Node<K, V>) {\n        remove(node)\n        add(node)\n    }\n\n    private fun delete(): Node<K, V> {\n        val node = tail.prev!!\n        remove(node)\n        return node\n    }\n}\n```\n\n而在实际使用中，我们可以使用LinkedHashMap实现，其内部就是使用双向链表，我们只需稍作修改便能使用。\n在LinkedHashMap的构造参数`(initialCapacity:Int, loadFactor:Float,accessOrder:Boolean)`中,`initialCapacity`是HashMap的初始大小，`loadFactor`则是装载因子，`accessOrder=false`表示基于插入顺序，`accessOrder=true`表示基于访问顺序。\n实现LRU的关键方法：\n\n```kotlin\noverride fun removeEldestEntry(eldest: MutableMap.MutableEntry<K, V>?): Boolean {\n    return size > capacity\n}\n```\n\n以上表示当LinkedHashMap大小超过我们设定的大小时，移除链表首部的节点\n\n```kotlin\nclass LruChche<K, V>(private val capacity: Int = 8) {\n    private var hashMap: LinkedHashMap<K, V> = object : LinkedHashMap<K, V>\n    (capacity / 0.75.toInt() + 1, 0.75f, true) {\n        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<K, V>?): Boolean {\n            return size > capacity\n        }\n    }\n\n    fun get(key: K): V? = hashMap[key]\n    fun put(key: K, value: V) {\n        hashMap[key] = value\n    }\n\n}\n```\n\n## 结语\n\n第一次听说LRU算法是在现代操作系统这本书中，但引起我深究的是Glide这个库在自定义Model的时候，便有了一探究竟的想法，故整理资料写下这些文字，一面是为了加深自己的影响，另一面也希望我所说的能让大家更简单的去理解LRU，一起学习。";
+          document.getElementById('content').innerHTML = marked.parse(md);
+        
+          
+        
+        </script>
+        
+        
+        <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/highlight.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/dart.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/go.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/java.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/kotlin.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/rust.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/shell.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/typescript.min.js"></script>
+        
+        <script>hljs.highlightAll();</script>
+      </article>
+      <nav>
+        
+        <a id="avatar-container" href="/">
+          <img
+            id="avatar"
+            title="lingyin"
+            src="https://avatars.githubusercontent.com/u/13548822"
+          />
+        </a>
+        <p>岁月总是历久弥新，需要细细品尝。</p>
+        <p>
+          欢迎来到<a href="https://github.com/microtears"> lingyin </a>的开发者日志,
+          这里是我的一些奇思妙想。
+        </p>
+        <p>
+          它使用
+          <a href="https://dart.dev/"> Dart </a>编写的一个专用于这个网站的静态网站生成器生成。
+        </p>
+        <div id="nav-break"></div>
+        <p id="copyright">© 2019-2025 <a href="/">lingyin</a>.</p>
+      </nav>
+    </div>
+    <footer>
+      <p id="run-time"></span>
+      <p id="build-time">Build time: 2025/10/10 10:4:35</span>
+      <script>
+        function updateTime() {
+          const date1 = "2019/07/17 00:00:00";
+          const date2 = new Date();
+          const date3 = date2.getTime() - new Date(date1).getTime();
+          const days = Math.floor(date3 / (24 * 3600 * 1000));
+          const leave1 = date3 % (24 * 3600 * 1000);
+          const hours = Math.floor(leave1 / (3600 * 1000));
+          const leave2 = leave1 % (3600 * 1000);
+          const minutes = Math.floor(leave2 / (60 * 1000));
+          const leave3 = leave2 % (60 * 1000);
+          const seconds = Math.round(leave3 / 1000);
+          const element = document.getElementById("run-time");
+          element.innerHTML =
+            "Run   time: " + days + "d " + hours + "h " + minutes + "m " + seconds + "s";
+        }
+
+        setInterval(updateTime, 1000);
+      </script>
+    </footer>
+  </main>
+</body>
+</html>
