@@ -1,105 +1,115 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="岁月总是历久弥新，需要细细品尝。">
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <meta name="description" content="岁月总是历久弥新，需要细细品尝。">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/styles/a11y-light.min.css" />
+          <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+          <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" />
+          <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" />
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/styles/a11y-light.min.css" />
 
-  <link rel="stylesheet" href="/article/style/main.css" />
+          <link rel="stylesheet" href="/article/style/main.css" />
 
-  <title>2019 Android library 怎么快速上传 Jcenter</title>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TQQBL084VX" />
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-    gtag("js", new Date());
+          <title>2019 Android library 怎么快速上传 Jcenter</title>
+          <!-- Google tag (gtag.js) -->
+          <script async src="https://www.googletagmanager.com/gtag/js?id=G-TQQBL084VX" />
+          <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+              dataLayer.push(arguments);
+            }
+            gtag("js", new Date());
 
-    gtag("config", "G-TQQBL084VX");
-  </script>
-</head>
-<body>
-  <main>
-    <div class="wrap">
-      <article>
-        
-        <div id="content"></div>
-        
-        <script type="module">
-          import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
-        
-          const md = "\n# 2019 Android library 怎么快速上传 Jcenter\n\n## Library 的两种结构\n\n当我们写下自己的组件库时，结构可能如下面两种方式：\n\n![_](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcf267ef65cf75~tplv-t2oaga2asx-image.image)\n\n当我们的库比较简单时采用第一种方式就足够了，但是当库比较复杂时，第二种拆分为多个组件的方式能够跟好的组织与提供服务。下面会介绍这两种结构的项目如何快速上传 Jcenter。\n\n## 注册 Bintray\n\n第一步首先是注册 Bintray Open Source 账户，注册地址是\n[Create Your JFrog Bintray Account](https://bintray.com/signup/oss)\n[https://bintray.com/signup/oss](https://bintray.com/signup/oss)，\n请注意不要去 Bintray 主页注册为企业账户，否则删除账户需要在 3 个月后试用时长过期后才可以申请。\n\n注册页面预览：\n\n![_](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dceac6e0197081~tplv-t2oaga2asx-image.image)\n\n## 建立 Maven 仓库\n\n账号建立并成功登录之后,你们看到的页面可能和下图类似：\n\n![_](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dceb2e3ca5ca1a~tplv-t2oaga2asx-image.image)\n\n不同之处可能是 Owned Repositories 部分是空的。\n接下来就是建立自己的 maven 仓库了。\n点击 Owned Repositories 区域的 Add New Repository，\n重点在于 Type 需要选择 Maven 项，其他部分根据自己的实际情况填写。\n\n![screencapture-bintray-swordsoul-2019-10-15-17_18_24.png](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dceb8ee2caf9b0~tplv-t2oaga2asx-image.image)\n\n当创建成功之后，回自动进入的新的仓库页面，预览如下：\n\n![screencapture-bintray-beta-2019-10-15-17_24_04.png](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcebc5b386bd27~tplv-t2oaga2asx-image.image)\n\n## 对单 Module Library 进行上传\n\n既然仓库以及建立好了接下来就是对 library 将上传到刚刚建立的 maven 仓库了。\n\n### 修改 Project build.gradle\n\n首先在 project 下的 build.gradle 脚本添加必要的依赖：\n\n```groovy\nbuildscript {\n    dependencies {\n        ...\n        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'\n        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'\n        ...\n    }\n}\nallprojects {\n    //如果是kotlin项目,请添加此项,纯Java项目请忽略\n    tasks.withType(Javadoc).all { enabled = false }\n}\n```\n\n### 建立 bintrayv1.gradle 文件\n\n然后在 project 目录下新建 bintrayv1.gradle 文件，内容如下：\n\n```groovy\napply plugin: 'com.jfrog.bintray'\n\nversion = libraryVersion\n\nif (project.hasProperty(\"android\")) { // Android libraries\n    task sourcesJar(type: Jar) {\n        classifier = 'sources'\n        from android.sourceSets.main.java.srcDirs\n    }\n\n    task javadoc(type: Javadoc) {\n        source = android.sourceSets.main.java.srcDirs\n        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))\n    }\n} else { // Java libraries\n    task sourcesJar(type: Jar, dependsOn: classes) {\n        classifier = 'sources'\n        from sourceSets.main.allSource\n    }\n}\n\ntask javadocJar(type: Jar, dependsOn: javadoc) {\n    classifier = 'javadoc'\n    from javadoc.destinationDir\n}\n\nartifacts {\n    archives javadocJar\n    archives sourcesJar\n}\n\n// Bintray\nProperties properties = new Properties()\nproperties.load(project.rootProject.file('local.properties').newDataInputStream())\n\nbintray {\n    user = properties.getProperty(\"bintray.user\")\n    key = properties.getProperty(\"bintray.apikey\")\n\n    configurations = ['archives']\n    pkg {\n        repo = bintrayRepo\n        name = bintrayName\n        desc = libraryDescription\n        websiteUrl = siteUrl\n        vcsUrl = gitUrl\n        licenses = allLicenses\n        publish = true\n        publicDownloadNumbers = true\n        version {\n            desc = libraryDescription\n            gpg {\n                sign = true //Determines whether to GPG sign the files. The default is false\n                passphrase = properties.getProperty(\"bintray.gpg.password\")\n                //Optional. The passphrase for GPG signing'\n            }\n        }\n    }\n}\n```\n\n### 建立 installv1.gradle 文件\n\n之后在 project 目录下再新建 installv1.gradle 文件，内容如下：\n\n```groovy\napply plugin: 'com.github.dcendents.android-maven'\n\ngroup = publishedGroupId                               // Maven Group ID for the artifact\n\ninstall {\n    repositories.mavenInstaller {\n        // This generates POM.xml with proper parameters\n        pom {\n            project {\n                packaging 'aar'\n                groupId publishedGroupId\n                artifactId artifact\n\n                // Add your description here\n                name libraryName\n                description libraryDescription\n                url siteUrl\n\n                // Set your license\n                licenses {\n                    license {\n                        name licenseName\n                        url licenseUrl\n                    }\n                }\n                developers {\n                    developer {\n                        id developerId\n                        name developerName\n                        email developerEmail\n                    }\n                }\n                scm {\n                    connection gitUrl\n                    developerConnection gitUrl\n                    url siteUrl\n\n                }\n            }\n        }\n    }\n}\n```\n\n这里解释一下为什么要新建这两个文件，这两个文件是 Bintray 为了方便上传 library 所编写的脚本，源文件位于 github，为了避免 gradle 同步过程中由网络引发的错误，所以直接将其内置与项目中。源地址分别是：\n\n- [installv1.gradle](https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle)\n- [bintrayv1.gradle](https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle)\n\n若嫌麻烦，也可在后续引用到改文件的地方直接填入 http 链接，不必新建为本地文件。\n\n### 填写 Publish 信息\n\n在需要上传的 module 下建立 publish.gradle 文件，填写内容如下：\n\n```groovy\next {\n    // 此处填写刚才建立的maven仓库的仓库名称\n    bintrayRepo = 'YourRepositoryName'\n    // library的group id\n    publishedGroupId = 'com.xxx.libraryName'\n    // library网站地址\n    siteUrl = ''\n    // library仓库地址\n    gitUrl = ''\n\n    // 注册时候的bintray username\n    developerId = ''\n    // 开发者名称\n    developerName = ''\n    // 开发者邮箱\n    developerEmail = ''\n\n    // 开源许可证（这里是Apache 2.0）\n    licenseName = 'The Apache Software License, Version 2.0'\n    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'\n    allLicenses = [\"Apache-2.0\"]\n\n    // library artifact（单个module一般就填写library name）\n    artifact = 'libraryName'\n    libraryName = ''\n    libraryVersion = ''\n    libraryDescription = ''\n    // bintrayName 是你在网页Repository页面能看到的名称\n    bintrayName = 'libraryName-' + artifact\n}\n\napply from: '../installv1.gradle'\napply from: '../bintrayv1.gradle'\n```\n\n### 修改 Module build.gradle 文件\n\n只需要在需要上传的 module 目录下的 build.gradle 文件的最后添加以下代码：\n\n```groovy\napply from: 'publish.gradle'\n```\n\n### 编辑 local.properties 文件\n\n在 bintray 个人页面右上角头像处，点击 Edit Profile 进入个人信息编辑页面后，点击左下角的 API Key，\n会提示输入密码，输入密码后点击 Copy To Clipboard 就可以得到你自己的 bintray api key。\n\n![_](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcee4ce83e0a1e~tplv-t2oaga2asx-image.image)\n\n然后修改 project 目录下的 local.properties 文件，在末尾添加下面的内容。\n\n```txt\nbintray.user=你的bintray username\nbintray.apikey=刚才复制的bintray api key\n```\n\n在获取到 bintray api key 之后就可以进行上传了。\n\n## 对多 Module Library 进行上传\n\n如果只是单 Module 可以跳过此部分。\n\n由于多 Module library 对于每个 module 而言，同属与同一个 library，所以 publish 信息中大部分信息相同，所以便把这些相同的信息提取出来。\n\n### 建立 publish_info.gradle 文件\n\n我们选择把相同的信息提取到 Project 目录下到 publish_info.gradle 文件中，内容如下：\n\n```groovy\next {\n    // 此处填写刚才建立的maven仓库的仓库名称\n    bintrayRepo = 'YourRepositoryName'\n    // library的group id\n    publishedGroupId = 'com.xxx.libraryName'\n    // library网站地址\n    siteUrl = ''\n    // library仓库地址\n    gitUrl = ''\n\n    // 注册时候的bintray username\n    developerId = ''\n    // 开发者名称\n    developerName = ''\n    // 开发者邮箱\n    developerEmail = ''\n\n    // 开源许可证（这里是Apache 2.0）\n    licenseName = 'The Apache Software License, Version 2.0'\n    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'\n    allLicenses = [\"Apache-2.0\"]\n}\n```\n\n### 填写 publish 信息\n\n在每个 module 目录下建立 publish.gradle 文件，内容如下：\n\n```groovy\next {\n    // library artifact（单个module一般就填写library name）\n    artifact = 'libraryName'\n    libraryName = ''\n    libraryVersion = ''\n    libraryDescription = ''\n    // bintrayName 是你在网页Repository页面能看到的名称\n    bintrayName = 'libraryName-' + artifact\n}\n\napply from: '../publish_info.gradle'\napply from: '../installv1.gradle'\napply from: '../bintrayv1.gradle'\n```\n\n其余步骤均与单个 module 上传部分相同。\n\n## 上传\n\n上传有两种方式：\n\n- 命令行：\n  打开终端，在 project 目录下运行如下命令即可（modelName 改为自己需要上传的 module 名称）：\n\n  ```shell\n  ./gradlew moduleName:bU\n  ```\n\n- IDE 可视化：\n\n  选择侧边栏中的 gradle，然后导航至需要上传的 module 下，打开 Tasks/publishing/bintrayUpload，双击执行任务即可。\n\n  ![_](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcefb6e09133de~tplv-t2oaga2asx-image.image)\n\n上传成功后截图：\n\n![_](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcef836da74ddf~tplv-t2oaga2asx-image.image)\n\n![_](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcef9a828b9f93~tplv-t2oaga2asx-image.image)\n\n![_](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcefa529e4fd61~tplv-t2oaga2asx-image.image)\n\n## 添加至 Jcenter\n\n新版 Bintray 网站改版之后 Add to Jcenter 被放置在了 Actions 按钮下。\n\n![_](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcefea0053a2bb~tplv-t2oaga2asx-image.image)\n\n点击 Add to Jcenter 按钮后，此时会弹出如下弹窗：\n在填写相关信息后，点击 Send，等待申请通过后，你的仓库便会被同步到 Jcenter。\n\n![_](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcf022c151d563~tplv-t2oaga2asx-image.image)\n\n当申请通过后，你会在网站的 Inbox 收到如下信息：\n\n![_](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcf04d55f720e7~tplv-t2oaga2asx-image.image)\n\n这表明你的 library 已经被同步至 Jcenter，接下来便可以在其他的 Android 项目里进行远程引用的，需要注意的是在每次 library 更新后，并不会马上被同步至 Jcenter，而是需要等待一段时间。\n\n## 删除 Library/Repository\n\n当不小心把信息填写错误后，我们可能需要删除错误的仓库和库。删除的方式如下：\n\n进入 Repository/Library 主页，在右上角的 Actions 选择 Edit，然后选择右上角的 Delete 按钮，最后等待删除成功提示即可。\n";
-          document.getElementById('content').innerHTML = marked.parse(md);
-        
+            gtag("config", "G-TQQBL084VX");
+          </script>
+        </head>
+        <body>
+          <main>
+            <div class="wrap">
+              <article>
+                
           
-        
-        </script>
-        
-        
-        <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/highlight.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/dart.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/go.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/java.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/kotlin.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/rust.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/shell.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/typescript.min.js"></script>
-        
-        <script>hljs.highlightAll();</script>
-      </article>
-      <nav>
-        
-        <a id="avatar-container" href="/">
-          <img
-            id="avatar"
-            title="lingyin"
-            src="https://avatars.githubusercontent.com/u/13548822"
-          />
-        </a>
-        <p>岁月总是历久弥新，需要细细品尝。</p>
-        <p>
-          欢迎来到<a href="https://github.com/microtears"> lingyin </a>的开发者日志,
-          这里是我的一些奇思妙想。
-        </p>
-        <p>
-          它使用
-          <a href="https://dart.dev/"> Dart </a>编写的一个专用于这个网站的静态网站生成器生成。
-        </p>
-        <div id="nav-break"></div>
-        <p id="copyright">© 2019-2025 <a href="/">lingyin</a>.</p>
-      </nav>
-    </div>
-    <footer>
-      <p id="run-time"></span>
-      <p id="build-time">Build time: 2025/10/10 10:4:35</span>
-      <script>
-        function updateTime() {
-          const date1 = "2019/07/17 00:00:00";
-          const date2 = new Date();
-          const date3 = date2.getTime() - new Date(date1).getTime();
-          const days = Math.floor(date3 / (24 * 3600 * 1000));
-          const leave1 = date3 % (24 * 3600 * 1000);
-          const hours = Math.floor(leave1 / (3600 * 1000));
-          const leave2 = leave1 % (3600 * 1000);
-          const minutes = Math.floor(leave2 / (60 * 1000));
-          const leave3 = leave2 % (60 * 1000);
-          const seconds = Math.round(leave3 / 1000);
-          const element = document.getElementById("run-time");
-          element.innerHTML =
-            "Run   time: " + days + "d " + hours + "h " + minutes + "m " + seconds + "s";
-        }
 
-        setInterval(updateTime, 1000);
-      </script>
-    </footer>
-  </main>
-</body>
-</html>
+          <div id="content"></div>
+
+          <script type="module">
+            import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
+
+            const md = "\n# 2019 Android library 怎么快速上传 Jcenter\n\n## Library 的两种结构\n\n当我们写下自己的组件库时，结构可能如下面两种方式：\n\n![_](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcf267ef65cf75~tplv-t2oaga2asx-image.image)\n\n当我们的库比较简单时采用第一种方式就足够了，但是当库比较复杂时，第二种拆分为多个组件的方式能够跟好的组织与提供服务。下面会介绍这两种结构的项目如何快速上传 Jcenter。\n\n## 注册 Bintray\n\n第一步首先是注册 Bintray Open Source 账户，注册地址是\n[Create Your JFrog Bintray Account](https://bintray.com/signup/oss)\n[https://bintray.com/signup/oss](https://bintray.com/signup/oss)，\n请注意不要去 Bintray 主页注册为企业账户，否则删除账户需要在 3 个月后试用时长过期后才可以申请。\n\n注册页面预览：\n\n![_](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dceac6e0197081~tplv-t2oaga2asx-image.image)\n\n## 建立 Maven 仓库\n\n账号建立并成功登录之后,你们看到的页面可能和下图类似：\n\n![_](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dceb2e3ca5ca1a~tplv-t2oaga2asx-image.image)\n\n不同之处可能是 Owned Repositories 部分是空的。\n接下来就是建立自己的 maven 仓库了。\n点击 Owned Repositories 区域的 Add New Repository，\n重点在于 Type 需要选择 Maven 项，其他部分根据自己的实际情况填写。\n\n![screencapture-bintray-swordsoul-2019-10-15-17_18_24.png](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dceb8ee2caf9b0~tplv-t2oaga2asx-image.image)\n\n当创建成功之后，回自动进入的新的仓库页面，预览如下：\n\n![screencapture-bintray-beta-2019-10-15-17_24_04.png](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcebc5b386bd27~tplv-t2oaga2asx-image.image)\n\n## 对单 Module Library 进行上传\n\n既然仓库以及建立好了接下来就是对 library 将上传到刚刚建立的 maven 仓库了。\n\n### 修改 Project build.gradle\n\n首先在 project 下的 build.gradle 脚本添加必要的依赖：\n\n```groovy\nbuildscript {\n    dependencies {\n        ...\n        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'\n        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'\n        ...\n    }\n}\nallprojects {\n    //如果是kotlin项目,请添加此项,纯Java项目请忽略\n    tasks.withType(Javadoc).all { enabled = false }\n}\n```\n\n### 建立 bintrayv1.gradle 文件\n\n然后在 project 目录下新建 bintrayv1.gradle 文件，内容如下：\n\n```groovy\napply plugin: 'com.jfrog.bintray'\n\nversion = libraryVersion\n\nif (project.hasProperty(\"android\")) { // Android libraries\n    task sourcesJar(type: Jar) {\n        classifier = 'sources'\n        from android.sourceSets.main.java.srcDirs\n    }\n\n    task javadoc(type: Javadoc) {\n        source = android.sourceSets.main.java.srcDirs\n        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))\n    }\n} else { // Java libraries\n    task sourcesJar(type: Jar, dependsOn: classes) {\n        classifier = 'sources'\n        from sourceSets.main.allSource\n    }\n}\n\ntask javadocJar(type: Jar, dependsOn: javadoc) {\n    classifier = 'javadoc'\n    from javadoc.destinationDir\n}\n\nartifacts {\n    archives javadocJar\n    archives sourcesJar\n}\n\n// Bintray\nProperties properties = new Properties()\nproperties.load(project.rootProject.file('local.properties').newDataInputStream())\n\nbintray {\n    user = properties.getProperty(\"bintray.user\")\n    key = properties.getProperty(\"bintray.apikey\")\n\n    configurations = ['archives']\n    pkg {\n        repo = bintrayRepo\n        name = bintrayName\n        desc = libraryDescription\n        websiteUrl = siteUrl\n        vcsUrl = gitUrl\n        licenses = allLicenses\n        publish = true\n        publicDownloadNumbers = true\n        version {\n            desc = libraryDescription\n            gpg {\n                sign = true //Determines whether to GPG sign the files. The default is false\n                passphrase = properties.getProperty(\"bintray.gpg.password\")\n                //Optional. The passphrase for GPG signing'\n            }\n        }\n    }\n}\n```\n\n### 建立 installv1.gradle 文件\n\n之后在 project 目录下再新建 installv1.gradle 文件，内容如下：\n\n```groovy\napply plugin: 'com.github.dcendents.android-maven'\n\ngroup = publishedGroupId                               // Maven Group ID for the artifact\n\ninstall {\n    repositories.mavenInstaller {\n        // This generates POM.xml with proper parameters\n        pom {\n            project {\n                packaging 'aar'\n                groupId publishedGroupId\n                artifactId artifact\n\n                // Add your description here\n                name libraryName\n                description libraryDescription\n                url siteUrl\n\n                // Set your license\n                licenses {\n                    license {\n                        name licenseName\n                        url licenseUrl\n                    }\n                }\n                developers {\n                    developer {\n                        id developerId\n                        name developerName\n                        email developerEmail\n                    }\n                }\n                scm {\n                    connection gitUrl\n                    developerConnection gitUrl\n                    url siteUrl\n\n                }\n            }\n        }\n    }\n}\n```\n\n这里解释一下为什么要新建这两个文件，这两个文件是 Bintray 为了方便上传 library 所编写的脚本，源文件位于 github，为了避免 gradle 同步过程中由网络引发的错误，所以直接将其内置与项目中。源地址分别是：\n\n- [installv1.gradle](https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle)\n- [bintrayv1.gradle](https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle)\n\n若嫌麻烦，也可在后续引用到改文件的地方直接填入 http 链接，不必新建为本地文件。\n\n### 填写 Publish 信息\n\n在需要上传的 module 下建立 publish.gradle 文件，填写内容如下：\n\n```groovy\next {\n    // 此处填写刚才建立的maven仓库的仓库名称\n    bintrayRepo = 'YourRepositoryName'\n    // library的group id\n    publishedGroupId = 'com.xxx.libraryName'\n    // library网站地址\n    siteUrl = ''\n    // library仓库地址\n    gitUrl = ''\n\n    // 注册时候的bintray username\n    developerId = ''\n    // 开发者名称\n    developerName = ''\n    // 开发者邮箱\n    developerEmail = ''\n\n    // 开源许可证（这里是Apache 2.0）\n    licenseName = 'The Apache Software License, Version 2.0'\n    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'\n    allLicenses = [\"Apache-2.0\"]\n\n    // library artifact（单个module一般就填写library name）\n    artifact = 'libraryName'\n    libraryName = ''\n    libraryVersion = ''\n    libraryDescription = ''\n    // bintrayName 是你在网页Repository页面能看到的名称\n    bintrayName = 'libraryName-' + artifact\n}\n\napply from: '../installv1.gradle'\napply from: '../bintrayv1.gradle'\n```\n\n### 修改 Module build.gradle 文件\n\n只需要在需要上传的 module 目录下的 build.gradle 文件的最后添加以下代码：\n\n```groovy\napply from: 'publish.gradle'\n```\n\n### 编辑 local.properties 文件\n\n在 bintray 个人页面右上角头像处，点击 Edit Profile 进入个人信息编辑页面后，点击左下角的 API Key，\n会提示输入密码，输入密码后点击 Copy To Clipboard 就可以得到你自己的 bintray api key。\n\n![_](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcee4ce83e0a1e~tplv-t2oaga2asx-image.image)\n\n然后修改 project 目录下的 local.properties 文件，在末尾添加下面的内容。\n\n```txt\nbintray.user=你的bintray username\nbintray.apikey=刚才复制的bintray api key\n```\n\n在获取到 bintray api key 之后就可以进行上传了。\n\n## 对多 Module Library 进行上传\n\n如果只是单 Module 可以跳过此部分。\n\n由于多 Module library 对于每个 module 而言，同属与同一个 library，所以 publish 信息中大部分信息相同，所以便把这些相同的信息提取出来。\n\n### 建立 publish_info.gradle 文件\n\n我们选择把相同的信息提取到 Project 目录下到 publish_info.gradle 文件中，内容如下：\n\n```groovy\next {\n    // 此处填写刚才建立的maven仓库的仓库名称\n    bintrayRepo = 'YourRepositoryName'\n    // library的group id\n    publishedGroupId = 'com.xxx.libraryName'\n    // library网站地址\n    siteUrl = ''\n    // library仓库地址\n    gitUrl = ''\n\n    // 注册时候的bintray username\n    developerId = ''\n    // 开发者名称\n    developerName = ''\n    // 开发者邮箱\n    developerEmail = ''\n\n    // 开源许可证（这里是Apache 2.0）\n    licenseName = 'The Apache Software License, Version 2.0'\n    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'\n    allLicenses = [\"Apache-2.0\"]\n}\n```\n\n### 填写 publish 信息\n\n在每个 module 目录下建立 publish.gradle 文件，内容如下：\n\n```groovy\next {\n    // library artifact（单个module一般就填写library name）\n    artifact = 'libraryName'\n    libraryName = ''\n    libraryVersion = ''\n    libraryDescription = ''\n    // bintrayName 是你在网页Repository页面能看到的名称\n    bintrayName = 'libraryName-' + artifact\n}\n\napply from: '../publish_info.gradle'\napply from: '../installv1.gradle'\napply from: '../bintrayv1.gradle'\n```\n\n其余步骤均与单个 module 上传部分相同。\n\n## 上传\n\n上传有两种方式：\n\n- 命令行：\n  打开终端，在 project 目录下运行如下命令即可（modelName 改为自己需要上传的 module 名称）：\n\n  ```shell\n  ./gradlew moduleName:bU\n  ```\n\n- IDE 可视化：\n\n  选择侧边栏中的 gradle，然后导航至需要上传的 module 下，打开 Tasks/publishing/bintrayUpload，双击执行任务即可。\n\n  ![_](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcefb6e09133de~tplv-t2oaga2asx-image.image)\n\n上传成功后截图：\n\n![_](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcef836da74ddf~tplv-t2oaga2asx-image.image)\n\n![_](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcef9a828b9f93~tplv-t2oaga2asx-image.image)\n\n![_](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcefa529e4fd61~tplv-t2oaga2asx-image.image)\n\n## 添加至 Jcenter\n\n新版 Bintray 网站改版之后 Add to Jcenter 被放置在了 Actions 按钮下。\n\n![_](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcefea0053a2bb~tplv-t2oaga2asx-image.image)\n\n点击 Add to Jcenter 按钮后，此时会弹出如下弹窗：\n在填写相关信息后，点击 Send，等待申请通过后，你的仓库便会被同步到 Jcenter。\n\n![_](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcf022c151d563~tplv-t2oaga2asx-image.image)\n\n当申请通过后，你会在网站的 Inbox 收到如下信息：\n\n![_](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/15/16dcf04d55f720e7~tplv-t2oaga2asx-image.image)\n\n这表明你的 library 已经被同步至 Jcenter，接下来便可以在其他的 Android 项目里进行远程引用的，需要注意的是在每次 library 更新后，并不会马上被同步至 Jcenter，而是需要等待一段时间。\n\n## 删除 Library/Repository\n\n当不小心把信息填写错误后，我们可能需要删除错误的仓库和库。删除的方式如下：\n\n进入 Repository/Library 主页，在右上角的 Actions 选择 Edit，然后选择右上角的 Delete 按钮，最后等待删除成功提示即可。\n";
+            document.getElementById('content').innerHTML = marked.parse(md);
+
+            
+
+          </script>
+
+          
+          <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/highlight.min.js"></script>
+          <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/dart.min.js"></script>
+          <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/go.min.js"></script>
+          <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/java.min.js"></script>
+          <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/kotlin.min.js"></script>
+          <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/rust.min.js"></script>
+          <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/shell.min.js"></script>
+          <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/typescript.min.js"></script>
+          
+          <script>hljs.highlightAll();</script>
+          
+
+
+          
+
+      
+              </article>
+              <nav>
+                
+<a id="avatar-container" href="/">
+  <img
+    id="avatar"
+    title="lingyin"
+    src="https://avatars.githubusercontent.com/u/13548822"
+  />
+</a>
+<p>岁月总是历久弥新，需要细细品尝。</p>
+<p>
+  欢迎来到<a href="https://github.com/microtears"> lingyin </a>的开发者日志,
+  这里是我的一些奇思妙想。
+</p>
+<p>
+  它使用
+  <a href="https://dart.dev/"> Dart </a>编写的一个专用于这个网站的静态网站生成器生成。
+  </p>
+  <div id="nav-break"></div>
+  <p id="copyright">© 2019-2025 <a href="/">lingyin</a>.
+</p>
+
+              </nav>
+            </div>
+            <footer>
+              <p id="run-time"></span>
+              <p id="build-time">Build time: 2025/10/10 18:21:30</span>
+              <script>
+                function updateTime() {
+                  const date1 = "2019/07/17 00:00:00";
+                  const date2 = new Date();
+                  const date3 = date2.getTime() - new Date(date1).getTime();
+                  const days = Math.floor(date3 / (24 * 3600 * 1000));
+                  const leave1 = date3 % (24 * 3600 * 1000);
+                  const hours = Math.floor(leave1 / (3600 * 1000));
+                  const leave2 = leave1 % (3600 * 1000);
+                  const minutes = Math.floor(leave2 / (60 * 1000));
+                  const leave3 = leave2 % (60 * 1000);
+                  const seconds = Math.round(leave3 / 1000);
+                  const element = document.getElementById("run-time");
+                  element.innerHTML =
+                    "Run   time: " + days + "d " + hours + "h " + minutes + "m " + seconds + "s";
+                }
+
+                setInterval(updateTime, 1000);
+              </script>
+            </footer>
+          </main>
+        </body>
+        </html>

@@ -1,118 +1,125 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="岁月总是历久弥新，需要细细品尝。">
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <meta name="description" content="岁月总是历久弥新，需要细细品尝。">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/styles/a11y-light.min.css" />
+          <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+          <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" />
+          <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" />
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/styles/a11y-light.min.css" />
 
-  <link rel="stylesheet" href="/article/style/main.css" />
+          <link rel="stylesheet" href="/article/style/main.css" />
 
-  <title>Git 使用记录</title>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TQQBL084VX" />
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-    gtag("js", new Date());
+          <title>Git 使用记录</title>
+          <!-- Google tag (gtag.js) -->
+          <script async src="https://www.googletagmanager.com/gtag/js?id=G-TQQBL084VX" />
+          <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+              dataLayer.push(arguments);
+            }
+            gtag("js", new Date());
 
-    gtag("config", "G-TQQBL084VX");
-  </script>
-</head>
-<body>
-  <main>
-    <div class="wrap">
-      <article>
-        
-        <div id="content"></div>
-        
-        <script type="module">
-          import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
-        
-          const md = "| Command                                       | Function                    |\n| --------------------------------------------- | --------------------------- |\n| git init                                      | 创建版本库                       |\n| git clone [PATH]                              | 克隆仓库                        |\n| git add [NAME]                                | 添加到暂存区                      |\n| git commit -m [MESSAGE]                       | 提交暂存区                       |\n| git push [ORIGN] [MASTER]                     | 推送本地分支到远程分支                 |\n| git push -u [ORIGN] [MASTER]                  | 推送本地分支到远程分支并关联              |\n| git remote                                    | 显示远程库                       |\n| git remote -v                                 | 显示远程库（详细信息）                 |\n| git remoter add [ORIGN] [SERVER]              | 连接到远程仓库                     |\n| git checkout [BRANCH]                         | 切换分支                        |\n| git checkout -b [BRANCH]                      | 创建并切换分支                     |\n| git checkout -b [BRANCH] [REMOTE]             | 创建并切换远程仓库分支的本地分支            |\n| git checkout -- [FILENAME]                    | 用HEAD中的最新内容替换工作区文件/撤销修改     |\n| git branch                                    | 查看分支                        |\n| git branch [BRANCH]                           | 创建分支                        |\n| git branch -d [BRANCH]                        | 删除分支                        |\n| git branch -D [BRANCH]                        | 强制删除分支                      |\n| git branch --set-upstream-to=[ORGIN] [BRANCH] | 链接远程分支与本地分支                 |\n| git pull                                      | 更新本地仓库至最新（fetch+merge）      |\n| git merge  [BRANCH]                           | 合并其他分支到当前分支                 |\n| git merge --no-ff -m [MESSAGE] [BRANCH]       | 合并其他分支到当前分支（禁用Fast forward） |\n| git reset HEAD [FILENAME]                     | 将暂存区的修改撤回                   |\n| git log                                       | 查看提交日志                      |\n| git log --graph                               | 分支合并图                       |\n| git reflog                                    | 查看命令日志                      |\n| git reset --hard HEAD^/HEAD^^                 | 回退到上一个/上上个版本                |\n| git reset --hard [COMMITID]                   | 回退到指定版本                     |\n| git status                                    | 查看工作区                       |\n| git rm [FILE]                                 | 删除文件（包括本地）                  |\n| git rm --cached [FILE]                        | 删除文件（暂存区）                   |\n| git rm -r [PATH]                              | 删除文件夹（包括本地）                 |\n| git rm -r  --cached [PATH]                    | 删除文件夹（暂存区）                  |\n| git stash                                     | 保存当前工作区                     |\n| git stash list                                | 查看保存的工作区                    |\n| git stash apply                               | 恢复工作区                       |\n| git stash drop                                | 删除保存的工作区                    |\n| git stash pop                                 | 恢复并删除工作区                    |\n| git stash apply [STASH]                       | 恢复指定工作区                     |\n| git rebase                                    |                             |\n| git config --global color.ui true             | 开启彩色模式                      |\n| git config --global user.name [NAME]          | 你的名字                        |\n| git config --global user.email [EMAIL]        | 你的email                     |\n| git check-ignore                              | 检查gitignore                 |\n| git config --global alias.[ALIAS] [COMMAND]   | 配置别名                        |\n\n```mermaid\ngraph LR;\nfork((Fork))-->ch((Change));\nch((Change))-->pr((Pull Request));\nclass fork,ch,pr CN;\nclassDef CN  fill:#f9ffff,stroke:#333,stroke-width:8px;\n```\n";
-          document.getElementById('content').innerHTML = marked.parse(md);
-        
+            gtag("config", "G-TQQBL084VX");
+          </script>
+        </head>
+        <body>
+          <main>
+            <div class="wrap">
+              <article>
+                
           
-        
-        </script>
-        
-        
-        <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/highlight.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/dart.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/go.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/java.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/kotlin.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/rust.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/shell.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/typescript.min.js"></script>
-        
-        <script>hljs.highlightAll();</script>
-        
-        
-        
-        <script type="module">
-          import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
-          mermaid.initialize({
-            startOnLoad: false,
-            theme: "base",
-          });
-          await mermaid.run({
-            querySelector: ".language-mermaid",
-          });
-        </script>
-      </article>
-      <nav>
-        
-        <a id="avatar-container" href="/">
-          <img
-            id="avatar"
-            title="lingyin"
-            src="https://avatars.githubusercontent.com/u/13548822"
-          />
-        </a>
-        <p>岁月总是历久弥新，需要细细品尝。</p>
-        <p>
-          欢迎来到<a href="https://github.com/microtears"> lingyin </a>的开发者日志,
-          这里是我的一些奇思妙想。
-        </p>
-        <p>
-          它使用
-          <a href="https://dart.dev/"> Dart </a>编写的一个专用于这个网站的静态网站生成器生成。
-        </p>
-        <div id="nav-break"></div>
-        <p id="copyright">© 2019-2025 <a href="/">lingyin</a>.</p>
-      </nav>
-    </div>
-    <footer>
-      <p id="run-time"></span>
-      <p id="build-time">Build time: 2025/10/10 10:4:35</span>
-      <script>
-        function updateTime() {
-          const date1 = "2019/07/17 00:00:00";
-          const date2 = new Date();
-          const date3 = date2.getTime() - new Date(date1).getTime();
-          const days = Math.floor(date3 / (24 * 3600 * 1000));
-          const leave1 = date3 % (24 * 3600 * 1000);
-          const hours = Math.floor(leave1 / (3600 * 1000));
-          const leave2 = leave1 % (3600 * 1000);
-          const minutes = Math.floor(leave2 / (60 * 1000));
-          const leave3 = leave2 % (60 * 1000);
-          const seconds = Math.round(leave3 / 1000);
-          const element = document.getElementById("run-time");
-          element.innerHTML =
-            "Run   time: " + days + "d " + hours + "h " + minutes + "m " + seconds + "s";
-        }
 
-        setInterval(updateTime, 1000);
-      </script>
-    </footer>
-  </main>
-</body>
-</html>
+          <div id="content"></div>
+
+          <script type="module">
+            import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
+
+            const md = "| Command                                       | Function                    |\n| --------------------------------------------- | --------------------------- |\n| git init                                      | 创建版本库                       |\n| git clone [PATH]                              | 克隆仓库                        |\n| git add [NAME]                                | 添加到暂存区                      |\n| git commit -m [MESSAGE]                       | 提交暂存区                       |\n| git push [ORIGN] [MASTER]                     | 推送本地分支到远程分支                 |\n| git push -u [ORIGN] [MASTER]                  | 推送本地分支到远程分支并关联              |\n| git remote                                    | 显示远程库                       |\n| git remote -v                                 | 显示远程库（详细信息）                 |\n| git remoter add [ORIGN] [SERVER]              | 连接到远程仓库                     |\n| git checkout [BRANCH]                         | 切换分支                        |\n| git checkout -b [BRANCH]                      | 创建并切换分支                     |\n| git checkout -b [BRANCH] [REMOTE]             | 创建并切换远程仓库分支的本地分支            |\n| git checkout -- [FILENAME]                    | 用HEAD中的最新内容替换工作区文件/撤销修改     |\n| git branch                                    | 查看分支                        |\n| git branch [BRANCH]                           | 创建分支                        |\n| git branch -d [BRANCH]                        | 删除分支                        |\n| git branch -D [BRANCH]                        | 强制删除分支                      |\n| git branch --set-upstream-to=[ORGIN] [BRANCH] | 链接远程分支与本地分支                 |\n| git pull                                      | 更新本地仓库至最新（fetch+merge）      |\n| git merge  [BRANCH]                           | 合并其他分支到当前分支                 |\n| git merge --no-ff -m [MESSAGE] [BRANCH]       | 合并其他分支到当前分支（禁用Fast forward） |\n| git reset HEAD [FILENAME]                     | 将暂存区的修改撤回                   |\n| git log                                       | 查看提交日志                      |\n| git log --graph                               | 分支合并图                       |\n| git reflog                                    | 查看命令日志                      |\n| git reset --hard HEAD^/HEAD^^                 | 回退到上一个/上上个版本                |\n| git reset --hard [COMMITID]                   | 回退到指定版本                     |\n| git status                                    | 查看工作区                       |\n| git rm [FILE]                                 | 删除文件（包括本地）                  |\n| git rm --cached [FILE]                        | 删除文件（暂存区）                   |\n| git rm -r [PATH]                              | 删除文件夹（包括本地）                 |\n| git rm -r  --cached [PATH]                    | 删除文件夹（暂存区）                  |\n| git stash                                     | 保存当前工作区                     |\n| git stash list                                | 查看保存的工作区                    |\n| git stash apply                               | 恢复工作区                       |\n| git stash drop                                | 删除保存的工作区                    |\n| git stash pop                                 | 恢复并删除工作区                    |\n| git stash apply [STASH]                       | 恢复指定工作区                     |\n| git rebase                                    |                             |\n| git config --global color.ui true             | 开启彩色模式                      |\n| git config --global user.name [NAME]          | 你的名字                        |\n| git config --global user.email [EMAIL]        | 你的email                     |\n| git check-ignore                              | 检查gitignore                 |\n| git config --global alias.[ALIAS] [COMMAND]   | 配置别名                        |\n\n```mermaid\ngraph LR;\nfork((Fork))-->ch((Change));\nch((Change))-->pr((Pull Request));\nclass fork,ch,pr CN;\nclassDef CN  fill:#f9ffff,stroke:#333,stroke-width:8px;\n```\n";
+            document.getElementById('content').innerHTML = marked.parse(md);
+
+            
+
+          </script>
+
+          
+          <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/highlight.min.js"></script>
+          <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/dart.min.js"></script>
+          <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/go.min.js"></script>
+          <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/java.min.js"></script>
+          <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/kotlin.min.js"></script>
+          <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/rust.min.js"></script>
+          <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/shell.min.js"></script>
+          <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/typescript.min.js"></script>
+          
+          <script>hljs.highlightAll();</script>
+          
+
+
+          
+          <script type="module">
+            import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+            mermaid.initialize({
+              startOnLoad: false,
+              theme: "base",
+            });
+            await mermaid.run({
+              querySelector: ".language-mermaid",
+            });
+          </script>
+          
+      
+              </article>
+              <nav>
+                
+<a id="avatar-container" href="/">
+  <img
+    id="avatar"
+    title="lingyin"
+    src="https://avatars.githubusercontent.com/u/13548822"
+  />
+</a>
+<p>岁月总是历久弥新，需要细细品尝。</p>
+<p>
+  欢迎来到<a href="https://github.com/microtears"> lingyin </a>的开发者日志,
+  这里是我的一些奇思妙想。
+</p>
+<p>
+  它使用
+  <a href="https://dart.dev/"> Dart </a>编写的一个专用于这个网站的静态网站生成器生成。
+  </p>
+  <div id="nav-break"></div>
+  <p id="copyright">© 2019-2025 <a href="/">lingyin</a>.
+</p>
+
+              </nav>
+            </div>
+            <footer>
+              <p id="run-time"></span>
+              <p id="build-time">Build time: 2025/10/10 18:21:30</span>
+              <script>
+                function updateTime() {
+                  const date1 = "2019/07/17 00:00:00";
+                  const date2 = new Date();
+                  const date3 = date2.getTime() - new Date(date1).getTime();
+                  const days = Math.floor(date3 / (24 * 3600 * 1000));
+                  const leave1 = date3 % (24 * 3600 * 1000);
+                  const hours = Math.floor(leave1 / (3600 * 1000));
+                  const leave2 = leave1 % (3600 * 1000);
+                  const minutes = Math.floor(leave2 / (60 * 1000));
+                  const leave3 = leave2 % (60 * 1000);
+                  const seconds = Math.round(leave3 / 1000);
+                  const element = document.getElementById("run-time");
+                  element.innerHTML =
+                    "Run   time: " + days + "d " + hours + "h " + minutes + "m " + seconds + "s";
+                }
+
+                setInterval(updateTime, 1000);
+              </script>
+            </footer>
+          </main>
+        </body>
+        </html>
