@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  
+  
+  
+  
+
+  <meta name="description"
+    content="岁月总是历久弥新，需要细细品尝。" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" />
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/styles/a11y-light.min.css" />
+
+  <link rel="stylesheet" href="/main.css" />
+  
+
+  <title>在Activity和多个Fragment之间共享资源</title>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TQQBL084VX" />
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+
+    gtag("config", "G-TQQBL084VX");
+  </script>
+</head>
+
+<body>
+  <main>
+    <div class="wrap">
+      <article>
+        
+<div id="content">
+  <p>Android Studio 默认生成的代码一般是这样的：</p>
+<pre data-lang="kotlin" class="language-kotlin "><code class="language-kotlin" data-lang="kotlin">package com.messy.lingplayer.playui
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProviders
+import com.messy.lingplayer.R
+import com.messy.lingplayer.SharedViewModel
+
+class PlayUiFragment : Fragment() {
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.play_ui_fragment, container, false)
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        viewModel = ViewModelProviders.of(this).get(SharedViewModel::class.java)
+        &#x2F;&#x2F; TODO: Use the ViewModel
+    }
+
+    private lateinit var viewModel: SharedViewModel
+
+    companion object {
+        fun newInstance() = PlayUiFragment()
+    }
+
+}
+
+</code></pre>
+<p>关键在于这一句</p>
+<pre data-lang="kotlin" class="language-kotlin "><code class="language-kotlin" data-lang="kotlin">viewModel = ViewModelProviders.of(this).get(SharedViewModel::class.java)
+</code></pre>
+<p>其中 ViewModelProviders.of(this)表示将 viewModel 绑定到这个 Fragment 的生命周期（这里的 this 便表示当前的 Fragment 对象）我们可以将 this 改为 activity，即将 viewModel 绑定到 Fangment 所在的 Activity 的生命周期上，即</p>
+<pre data-lang="kotlin" class="language-kotlin "><code class="language-kotlin" data-lang="kotlin">viewModel = ViewModelProviders.of(activity!!).get(SharedViewModel::class.java)
+</code></pre>
+<p>然后再相应的 Activity 中绑定 SharedViewModel：</p>
+<pre data-lang="kotlin" class="language-kotlin "><code class="language-kotlin" data-lang="kotlin">
+ override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.activity_main)
+    viewModel = ViewModelProviders.of(this).get(SharedViewModel::class.java)
+    initMediaBrowser()
+    initView()
+  }
+</code></pre>
+<p>那么便可在 Activity 的整个生命周期之内和多个 Fragment 共享资源</p>
+<h2 id="yuan-li">原理</h2>
+<blockquote>
+<p>ViewModel 的生命周期依赖于对应的 Activity 或 Fragment 的生命周期。通常会在 Activity 第一次 onCreate()时创建 ViewModel，ViewModel 的生命周期一直持续到 Activity 最终销毁或 Frament 最终 detached，期间由于屏幕旋转等配置变化引起的 Activity 销毁重建并不会导致 ViewModel 重建。借用官方示意图来解释一下：</p>
+</blockquote>
+<p><img src="https://s1.ax1x.com/2018/10/18/iwUH3T.png" alt="1" /></p>
+<p>这样就可以避免在 Activity 直接利用接口进行回调</p>
+
+</div>
+
+      </article>
+      <nav>
+        <a id="avatar-container" href="/">
+  <img id="avatar" title="lingyin" src="https://avatars.githubusercontent.com/u/13548822" />
+</a>
+<p>岁月总是历久弥新，需要细细品尝。</p>
+<p>
+  欢迎来到<a href="https://github.com/microtears"> lingyin </a>的开发者日志,
+  这里是我的一些奇思妙想。
+</p>
+<p>
+  它使用
+  <a href="https://www.getzola.org/"> Zola </a>生成。
+</p>
+<div id="nav-break"></div>
+<p id="copyright">© 2019-2025 <a href="/">lingyin</a>.
+</p>
+      </nav>
+    </div>
+    <footer>
+      <p id="run-time" />
+<p id="build-time">Build time: 2025-10-15</span>
+  <script>
+    function updateTime() {
+      const date1 = "2019/07/17 00:00:00";
+      const date2 = new Date();
+      const date3 = date2.getTime() - new Date(date1).getTime();
+      const days = Math.floor(date3 / (24 * 3600 * 1000));
+      const leave1 = date3 % (24 * 3600 * 1000);
+      const hours = Math.floor(leave1 / (3600 * 1000));
+      const leave2 = leave1 % (3600 * 1000);
+      const minutes = Math.floor(leave2 / (60 * 1000));
+      const leave3 = leave2 % (60 * 1000);
+      const seconds = Math.round(leave3 / 1000);
+      const element = document.getElementById("run-time");
+      element.innerHTML =
+        "Run   time: " + days + "d " + hours + "h " + minutes + "m " + seconds + "s";
+    }
+
+    setInterval(updateTime, 1000);
+  </script>
+    </footer>
+    
+  </main>
+  
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/highlight.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/dart.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/go.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/java.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/kotlin.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/rust.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/shell.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/typescript.min.js"></script>
+
+<script>hljs.highlightAll();</script>
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  
+  
+  
+  
+
+  <meta name="description"
+    content="岁月总是历久弥新，需要细细品尝。" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" />
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/styles/a11y-light.min.css" />
+
+  <link rel="stylesheet" href="/main.css" />
+  
+
+  <title>避免Widget build(BuildContext context)带来的副作用</title>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TQQBL084VX" />
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+
+    gtag("config", "G-TQQBL084VX");
+  </script>
+</head>
+
+<body>
+  <main>
+    <div class="wrap">
+      <article>
+        
+<div id="content">
+  <h1 id="bi-mian-widget-build-buildcontext-context-dai-lai-de-fu-zuo-yong">避免 Widget build(BuildContext context)带来的副作用</h1>
+<p>Flutter 是一个响应式 UI 框架，当需要展示界面的时候，框架通过 build 方法生成一帧的画面，当画面频繁变化时，flutter 会重复调用 build 方法来生成每一帧。所以不合适的函数调用或者当 build 和一些 Widget（例如：<code>FutureBuilder</code>,<code>StreamBuilder</code>）合用时，可能会产生一些副作用。</p>
+<p>以下是会产生副作用的示例：</p>
+<pre data-lang="dart" class="language-dart "><code class="language-dart" data-lang="dart">import &#x27;random_color.dart&#x27; as color;
+
+class MyHomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.white,
+      child: FutureBuilder(
+          future: color.randomColors(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              final colors = snapshot.data;
+              return Column(
+                children: &lt;Widget&gt;[
+                  Expanded(flex: 4, child: Container(color: colors[0])),
+                  Expanded(flex: 3, child: Container(color: colors[1])),
+                  Expanded(flex: 2, child: Container(color: colors[2])),
+                  Expanded(flex: 2, child: Container(color: colors[3])),
+                ],
+              );
+            } else {
+              return Container();
+            }
+          }),
+    );
+  }
+}
+</code></pre>
+<p>其中<code>randomColor</code>实现如下：</p>
+<pre data-lang="dart" class="language-dart "><code class="language-dart" data-lang="dart">Future&lt;List&lt;Color&gt;&gt; randomColors() async {
+  await loadData();
+  return randomColorsSync();
+}
+
+var functionCallCount = 0;
+
+List&lt;Color&gt; randomColorsSync() {
+  assert(data.isNotEmpty);
+  final code = data[Random().nextInt(data.length)];
+  functionCallCount++;
+  print(&quot;Function call count: $functionCallCount&quot;);
+  return [
+    code.substring(0, 6),
+    code.substring(6, 12),
+    code.substring(12, 18),
+    code.substring(18, 24),
+  ].map((e) =&gt; hexColor(&quot;#$e&quot;)).toList();
+}
+</code></pre>
+<p>为了便于分析，我在<code>randomColorSync</code>函数内部添加了统计函数调用计数的代码，用于将调用次数显示在控制台上。</p>
+<p>除此之外，我们创建了一个辅助 Widget：<code>HomeWrapWidget</code>来手动触发 Widget 重建：</p>
+<pre data-lang="dart" class="language-dart "><code class="language-dart" data-lang="dart">class HomeWrapWidget extends StatefulWidget {
+  @override
+  _HomeWrapWidgetState createState() =&gt; _HomeWrapWidgetState();
+}
+
+class _HomeWrapWidgetState extends State&lt;HomeWrapWidget&gt; {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: MyHomePage(),
+      floatingActionButton: Builder(
+        builder: (context) =&gt; FloatingActionButton(
+          onPressed: () =&gt; _rebuild(context),
+          child: Icon(Icons.tag_faces),
+        ),
+      ),
+    );
+  }
+
+  void _rebuild(BuildContext context) {
+    setState(() {});
+  }
+}
+</code></pre>
+<p>最终的界面如下：</p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/9/4/16cfc99d31115b5a~tplv-t2oaga2asx-image.image" alt=""
+border="0" width="320" /></p>
+<p>这是启动后的控制台日志：</p>
+<pre><code>I&#x2F;flutter ( 4259): Function call count: 1
+</code></pre>
+<p>当我们重复点击悬浮按钮时，这个时候的控制台日志为：</p>
+<pre><code>I&#x2F;flutter ( 4259): Function call count: 2
+I&#x2F;flutter ( 4259): Function call count: 3
+I&#x2F;flutter ( 4259): Function call count: 4
+I&#x2F;flutter ( 4259): Function call count: 5
+I&#x2F;flutter ( 4259): Function call count: 6
+···
+</code></pre>
+<p>每次按下按钮后，界面的配色都发生了变化，重新获取了新的配色方案。</p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/9/4/16cfc99d3156c879~tplv-t2oaga2asx-image.image" alt=""
+border="0" width="320" /></p>
+<p>但是这并不是我们想要的效果，使用 FutureBuilder 的初衷时为了方便将 Future 数据映射为 UI,但是当我们更新界面其他部分时，却导致 FutureBuilder 再次获取了一遍数据，这种不符合直觉的结果在某些时候可能会产生一些错误。在示例部分我们使用了随机配色配合 FutureBuilder 构建 UI，所以当错误发生的时候，我们很明显可以观察到，但是如果将<code>randomColor</code>函数替换为一个 http 请求函数，当你请求同一个网址，返回相同的资源的时候，错误发生后，仅从界面是观察不到相应的变化的。</p>
+<p>当我们更新界面其他部分的时候，却导致了对返回 Future 数据的资源的反复请求，尤其在发生路由页面动画的时候，会触发整个页面的 Widget 树重建，按照流畅应用 60FPS 的要求计算，对于 http 请求每秒会发送 60 次，算上动画时长，多设备多用户，对用户流量，对服务器都是极大的负担，同时每次请求返回不同的 Future 对象，还会导致 FutureBuilder 重复调用 builder 方法，这就是我在标题里提到的副作用。</p>
+<p>对于这些副作用，解决方案有以下 3 种：</p>
+<ol>
+<li>
+<p>在 initState 方法里获取 Future 对象并缓存</p>
+<p>由于<code>initState</code>方法在整个 StatefulWidget 的生命周期中只会调用一次，所以对于 Future、Stream，可以在该方法中将需要用到的返回结果缓存下来，供后续使用。如果调用的方法需要传递<code>BuildContext</code>对象，也可以在<code>didChangeDependencies</code>方法中缓存调用结果。<code>didChangeDependencies</code>方法会在 Element 依赖发生改变的时候被调用。</p>
+<p>code：</p>
+<pre data-lang="dart" class="language-dart "><code class="language-dart" data-lang="dart">class _MyHomePage2State extends State&lt;MyHomePage2&gt; {
+  Future&lt;List&lt;Color&gt;&gt; colorsFuture;
+
+  @override
+  void initState() {
+    colorsFuture = color.randomColors();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.white,
+      child: FutureBuilder(
+          future: colorsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              final colors = snapshot.data;
+              return Column(
+                children: &lt;Widget&gt;[
+                  Expanded(flex: 4, child: Container(color: colors[0])),
+                  Expanded(flex: 3, child: Container(color: colors[1])),
+                  Expanded(flex: 2, child: Container(color: colors[2])),
+                  Expanded(flex: 2, child: Container(color: colors[3])),
+                ],
+              );
+            } else {
+              return Container();
+            }
+          }),
+    );
+  }
+}
+</code></pre>
+</li>
+<li>
+<p>使用 AsyncMemoizer</p>
+<p>正如它的类名，<code>AsyncMemoizer</code>实质上就是一个内存缓存，<code>runOnce</code>方法保证只运行一次函数，并在之后使用缓存的异步结果。</p>
+<p>code：</p>
+<pre data-lang="dart" class="language-dart "><code class="language-dart" data-lang="dart">import &#x27;package:async&#x2F;async.dart&#x27; show AsyncMemoizer;
+
+ class MyHomePage3 extends StatefulWidget {
+   @override
+   _MyHomePage3State createState() =&gt; _MyHomePage3State();
+ }
+
+ class _MyHomePage3State extends State&lt;MyHomePage3&gt; {
+   final _memoizer = AsyncMemoizer&lt;List&lt;Color&gt;&gt;();
+
+   @override
+   Widget build(BuildContext context) {
+     return Container(
+       color: Colors.white,
+       child: FutureBuilder(
+           future: _memoizer.runOnce(color.randomColors),
+           builder: (context, snapshot) {
+             if (snapshot.hasData) {
+               final colors = snapshot.data;
+               return Column(
+                 children: &lt;Widget&gt;[
+                   Expanded(flex: 4, child: Container(color: colors[0])),
+                   Expanded(flex: 3, child: Container(color: colors[1])),
+                   Expanded(flex: 2, child: Container(color: colors[2])),
+                   Expanded(flex: 2, child: Container(color: colors[3])),
+                 ],
+               );
+             } else {
+               return Container();
+             }
+           }),
+     );
+   }
+ }
+</code></pre>
+</li>
+<li>
+<p>由外部管理 Future</p>
+<p>这次不在 Widget 内部缓存 Future 结果，而是由外部管理，保证只获取一次，返回相同的 Future 对象</p>
+<p>code：</p>
+<pre data-lang="dart" class="language-dart "><code class="language-dart" data-lang="dart">var myColors = color.randomColors();
+
+class MyHomePage4 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+        future: myColors,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return ColorListWidget(colors: snapshot.data);
+          } else {
+            return Container();
+          }
+        });
+  }
+}
+
+class ColorListWidget extends StatelessWidget {
+  final List&lt;Color&gt; colors;
+
+  const ColorListWidget({Key key, @required this.colors}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: &lt;Widget&gt;[
+        buildColorTile(flex: 4, color: colors[0]),
+        buildColorTile(flex: 3, color: colors[1]),
+        buildColorTile(flex: 2, color: colors[2]),
+        buildColorTile(flex: 2, color: colors[3]),
+      ],
+    );
+  }
+
+  Widget buildColorTile({int flex = 1, Color color}) {
+    return Expanded(
+      flex: flex,
+      child: Container(
+        color: color,
+        child: Stack(
+          children: &lt;Widget&gt;[
+            Positioned(
+              left: 0,
+              bottom: 0,
+              child: Text(
+                &quot;#${color.value.toRadixString(16).padLeft(8, &#x27;0&#x27;).substring(2).toUpperCase()}&quot;,
+                style: TextStyle(
+                  color: ThemeData.estimateBrightnessForColor(color) ==
+                          Brightness.light
+                      ? Colors.black.withOpacity(0.9)
+                      : Colors.white.withOpacity(0.9),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+</code></pre>
+</li>
+</ol>
+<p>最终效果：</p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/9/4/16cfc99d5082be91~tplv-t2oaga2asx-image.image" alt=""
+border="0" width="320" /></p>
+<p><a href="https://github.com/microtears/hello_flutter">Github repository 地址</a></p>
+
+</div>
+
+      </article>
+      <nav>
+        <a id="avatar-container" href="/">
+  <img id="avatar" title="lingyin" src="https://avatars.githubusercontent.com/u/13548822" />
+</a>
+<p>岁月总是历久弥新，需要细细品尝。</p>
+<p>
+  欢迎来到<a href="https://github.com/microtears"> lingyin </a>的开发者日志,
+  这里是我的一些奇思妙想。
+</p>
+<p>
+  它使用
+  <a href="https://www.getzola.org/"> Zola </a>生成。
+</p>
+<div id="nav-break"></div>
+<p id="copyright">© 2019-2025 <a href="/">lingyin</a>.
+</p>
+      </nav>
+    </div>
+    <footer>
+      <p id="run-time" />
+<p id="build-time">Build time: 2025-10-15</span>
+  <script>
+    function updateTime() {
+      const date1 = "2019/07/17 00:00:00";
+      const date2 = new Date();
+      const date3 = date2.getTime() - new Date(date1).getTime();
+      const days = Math.floor(date3 / (24 * 3600 * 1000));
+      const leave1 = date3 % (24 * 3600 * 1000);
+      const hours = Math.floor(leave1 / (3600 * 1000));
+      const leave2 = leave1 % (3600 * 1000);
+      const minutes = Math.floor(leave2 / (60 * 1000));
+      const leave3 = leave2 % (60 * 1000);
+      const seconds = Math.round(leave3 / 1000);
+      const element = document.getElementById("run-time");
+      element.innerHTML =
+        "Run   time: " + days + "d " + hours + "h " + minutes + "m " + seconds + "s";
+    }
+
+    setInterval(updateTime, 1000);
+  </script>
+    </footer>
+    
+  </main>
+  
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/highlight.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/dart.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/go.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/java.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/kotlin.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/rust.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/shell.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/typescript.min.js"></script>
+
+<script>hljs.highlightAll();</script>
+
+
+
+</body>
+
+</html>

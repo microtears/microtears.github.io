@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  
+  
+  
+  
+
+  <meta name="description"
+    content="岁月总是历久弥新，需要细细品尝。" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" />
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/styles/a11y-light.min.css" />
+
+  <link rel="stylesheet" href="/main.css" />
+  
+
+  <title>Dart Future</title>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TQQBL084VX" />
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+
+    gtag("config", "G-TQQBL084VX");
+  </script>
+</head>
+
+<body>
+  <main>
+    <div class="wrap">
+      <article>
+        
+<div id="content">
+  <h1 id="future">Future</h1>
+<p>A <code>_Future</code> has the following states:</p>
+<ul>
+<li>
+<p>Incomplete: Maybe be completed, holds listeners.</p>
+</li>
+<li>
+<p>Pending complete: Holds listeners</p>
+<ul>
+<li>Incomplete and Pending both allow adding listeners to the object.</li>
+</ul>
+</li>
+<li>
+<p>Chained: Holds a future whose result will be this future's result.</p>
+</li>
+<li>
+<p>Value: Is complete, holds value.</p>
+</li>
+<li>
+<p>Error: Is complete, holds <code>AsyncError</code>
+The checks <code>_mayAddListener</code> (incomplete or pending complete),
+<code>_isChained</code> and <code>_isComplete</code> (value or error) exhausts all the states.
+These are represented by the following bits in the <code>_state</code> field
+along with a flag to allow unhandled errors.
+<code>_Future</code> states have the following transitions:
+When completing with a non-native <code>Future</code> or starting an async complete.</p>
+</li>
+<li>
+<p>incomplete -&gt; pending complete
+If a pending complete fails <em>synchronously</em> because of a mal-implemented
+<code>Future.then</code>.</p>
+</li>
+<li>
+<p>pending complete -&gt; incomplete.
+When completing with a native <code>_Future</code>.</p>
+</li>
+<li>
+<p>incomplete -&gt; chained</p>
+<ul>
+<li>listeners in <code>_resultOrListeners</code> are moved to the chain source future.</li>
+<li>chain source future is stored in <code>_resultOrListeners</code>.
+When completing synchronously with a value or error.</li>
+</ul>
+</li>
+<li>
+<p>incomplete -&gt; completed (aka: value or error)</p>
+<ul>
+<li>listeners in <code>_resultOrListeners</code> are extracted, and notified of the
+result.
+When a delayed async complete happens, or a non-native future completes
+with the needed value.</li>
+</ul>
+</li>
+<li>
+<p>pending complete -&gt; completed</p>
+<ul>
+<li>listeners in <code>_resultOrListeners</code> are extracted, and notified of the
+result.
+When a chained future recognizes that the future it's chained to
+has completed with an error or value. (May never happen, new
+listeners on the chained future are forwarded to the chain target future.)</li>
+</ul>
+</li>
+<li>
+<p>chained -&gt; completed</p>
+<ul>
+<li>The result (value or error) and state of the completed chain source
+future is copied into this future.
+Public operations checks that the current state is one that allows the
+requested operation. There is no transition between "pending complete"
+and "chained", because such a transition is never needed,
+and no transition out of "completed".</li>
+</ul>
+</li>
+</ul>
+
+</div>
+
+      </article>
+      <nav>
+        <a id="avatar-container" href="/">
+  <img id="avatar" title="lingyin" src="https://avatars.githubusercontent.com/u/13548822" />
+</a>
+<p>岁月总是历久弥新，需要细细品尝。</p>
+<p>
+  欢迎来到<a href="https://github.com/microtears"> lingyin </a>的开发者日志,
+  这里是我的一些奇思妙想。
+</p>
+<p>
+  它使用
+  <a href="https://www.getzola.org/"> Zola </a>生成。
+</p>
+<div id="nav-break"></div>
+<p id="copyright">© 2019-2025 <a href="/">lingyin</a>.
+</p>
+      </nav>
+    </div>
+    <footer>
+      <p id="run-time" />
+<p id="build-time">Build time: 2025-10-15</span>
+  <script>
+    function updateTime() {
+      const date1 = "2019/07/17 00:00:00";
+      const date2 = new Date();
+      const date3 = date2.getTime() - new Date(date1).getTime();
+      const days = Math.floor(date3 / (24 * 3600 * 1000));
+      const leave1 = date3 % (24 * 3600 * 1000);
+      const hours = Math.floor(leave1 / (3600 * 1000));
+      const leave2 = leave1 % (3600 * 1000);
+      const minutes = Math.floor(leave2 / (60 * 1000));
+      const leave3 = leave2 % (60 * 1000);
+      const seconds = Math.round(leave3 / 1000);
+      const element = document.getElementById("run-time");
+      element.innerHTML =
+        "Run   time: " + days + "d " + hours + "h " + minutes + "m " + seconds + "s";
+    }
+
+    setInterval(updateTime, 1000);
+  </script>
+    </footer>
+    
+  </main>
+  
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/highlight.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/dart.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/go.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/java.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/kotlin.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/rust.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/shell.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/typescript.min.js"></script>
+
+<script>hljs.highlightAll();</script>
+
+
+
+</body>
+
+</html>

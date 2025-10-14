@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  
+  
+  
+  
+
+  <meta name="description"
+    content="岁月总是历久弥新，需要细细品尝。" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" />
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/styles/a11y-light.min.css" />
+
+  <link rel="stylesheet" href="/main.css" />
+  
+
+  <title>LRU算法</title>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TQQBL084VX" />
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+
+    gtag("config", "G-TQQBL084VX");
+  </script>
+</head>
+
+<body>
+  <main>
+    <div class="wrap">
+      <article>
+        
+<div id="content">
+  <p>LRU(Least Recently Used)即最近最少使用，是一种缓存算法（页面置换算法）。我们知道，缓存通常是具有固定大小的，他应该只保存那些常常被用到的数据，而数据如何更新则是通过缓存算法实现，LRU算法就是一种简单，常用的缓存算法。</p>
+<h2 id="yuan-li">原理</h2>
+<p>LRU算法是核心思想是：如果一个数据在最近一段时间都没有被用到，那么它在将来被使用到的可能性也很小。故当缓存空间已满的情况下，我们需要淘汰掉最久没有被访问到的数据。理想的LRU算法读写是时间复杂度应该都为O(1)。</p>
+<h2 id="shi-xian">实现</h2>
+<p>为了达到理想的性能，我们需要一种既可以按访问顺序排序，又可以在常数时间随机访问的数据结构。这里可以采用HashMap和双向链表实现。HashMap可以存储Key，可以在常数时间里读写Key，而Value用来指向双向链表的节点，为了在常数时间里移除一个节点我们还需要Head节点和Tril节点。</p>
+<ol>
+<li>put(key,value)
+首先在HashMap中查找Key如果存在，说明数据已在缓存中，我们只需要更新节点的值，并将节点放到链表头部即可。如果不存在说明数据不在缓存中，则需要构造节点，并将其放置在头部。在这个过程中，如果发现缓存已满，则需要淘汰掉链表尾部的数据并在HashMap中移除相应的Key。</li>
+<li>get(key)
+通过HashMap查找对应的节点，将其移动至头部并返回。</li>
+</ol>
+<p>代码实现如下：</p>
+<pre data-lang="kotlin" class="language-kotlin "><code class="language-kotlin" data-lang="kotlin">class LruCache&lt;K, V&gt;() {
+    private data class Node&lt;K, V&gt;(
+            var key: K? = null,
+            var value: V? = null,
+            var prev: Node&lt;K, V&gt;? = null,
+            var next: Node&lt;K, V&gt;? = null
+    )
+
+    private val hashMap: HashMap&lt;K, Node&lt;K, V&gt;&gt; = hashMapOf()
+    private var count = 0
+    private var capacity = 8
+    private val head: Node&lt;K, V&gt; = Node()
+    private val tail: Node&lt;K, V&gt; = Node()
+
+    init {
+        head.next = tail
+        tail.prev = head
+    }
+
+    constructor(capacity: Int) : this() {
+        this.capacity = capacity
+    }
+
+    fun get(key: K): V? {
+        val node = hashMap[key] ?: return null
+        move(node)
+        return node.value
+    }
+
+    fun put(key: K, value: V) {
+        val node = hashMap[key]
+        if (node == null) {
+            val newNode = Node(key, value)
+            add(newNode)
+            hashMap[key] = newNode
+            ++count
+            if (count &gt; capacity) {
+                val deleteNode = delete()
+                hashMap.remove(deleteNode.key)
+                --count
+            }
+        } else {
+            node.value = value
+            move(node)
+        }
+    }
+
+    private fun add(node: Node&lt;K, V&gt;) {
+        node.prev = head
+        node.next = head.next
+        head.next!!.prev = node
+        head.next = node
+    }
+
+    private fun remove(node: Node&lt;K, V&gt;) {
+        val prev = node.prev!!
+        val next = node.next!!
+        prev.next = next
+        next.prev = prev
+    }
+
+    private fun move(node: Node&lt;K, V&gt;) {
+        remove(node)
+        add(node)
+    }
+
+    private fun delete(): Node&lt;K, V&gt; {
+        val node = tail.prev!!
+        remove(node)
+        return node
+    }
+}
+</code></pre>
+<p>而在实际使用中，我们可以使用LinkedHashMap实现，其内部就是使用双向链表，我们只需稍作修改便能使用。
+在LinkedHashMap的构造参数<code>(initialCapacity:Int, loadFactor:Float,accessOrder:Boolean)</code>中,<code>initialCapacity</code>是HashMap的初始大小，<code>loadFactor</code>则是装载因子，<code>accessOrder=false</code>表示基于插入顺序，<code>accessOrder=true</code>表示基于访问顺序。
+实现LRU的关键方法：</p>
+<pre data-lang="kotlin" class="language-kotlin "><code class="language-kotlin" data-lang="kotlin">override fun removeEldestEntry(eldest: MutableMap.MutableEntry&lt;K, V&gt;?): Boolean {
+    return size &gt; capacity
+}
+</code></pre>
+<p>以上表示当LinkedHashMap大小超过我们设定的大小时，移除链表首部的节点</p>
+<pre data-lang="kotlin" class="language-kotlin "><code class="language-kotlin" data-lang="kotlin">class LruChche&lt;K, V&gt;(private val capacity: Int = 8) {
+    private var hashMap: LinkedHashMap&lt;K, V&gt; = object : LinkedHashMap&lt;K, V&gt;
+    (capacity &#x2F; 0.75.toInt() + 1, 0.75f, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry&lt;K, V&gt;?): Boolean {
+            return size &gt; capacity
+        }
+    }
+
+    fun get(key: K): V? = hashMap[key]
+    fun put(key: K, value: V) {
+        hashMap[key] = value
+    }
+
+}
+</code></pre>
+<h2 id="jie-yu">结语</h2>
+<p>第一次听说LRU算法是在现代操作系统这本书中，但引起我深究的是Glide这个库在自定义Model的时候，便有了一探究竟的想法，故整理资料写下这些文字，一面是为了加深自己的影响，另一面也希望我所说的能让大家更简单的去理解LRU，一起学习。</p>
+
+</div>
+
+      </article>
+      <nav>
+        <a id="avatar-container" href="/">
+  <img id="avatar" title="lingyin" src="https://avatars.githubusercontent.com/u/13548822" />
+</a>
+<p>岁月总是历久弥新，需要细细品尝。</p>
+<p>
+  欢迎来到<a href="https://github.com/microtears"> lingyin </a>的开发者日志,
+  这里是我的一些奇思妙想。
+</p>
+<p>
+  它使用
+  <a href="https://www.getzola.org/"> Zola </a>生成。
+</p>
+<div id="nav-break"></div>
+<p id="copyright">© 2019-2025 <a href="/">lingyin</a>.
+</p>
+      </nav>
+    </div>
+    <footer>
+      <p id="run-time" />
+<p id="build-time">Build time: 2025-10-15</span>
+  <script>
+    function updateTime() {
+      const date1 = "2019/07/17 00:00:00";
+      const date2 = new Date();
+      const date3 = date2.getTime() - new Date(date1).getTime();
+      const days = Math.floor(date3 / (24 * 3600 * 1000));
+      const leave1 = date3 % (24 * 3600 * 1000);
+      const hours = Math.floor(leave1 / (3600 * 1000));
+      const leave2 = leave1 % (3600 * 1000);
+      const minutes = Math.floor(leave2 / (60 * 1000));
+      const leave3 = leave2 % (60 * 1000);
+      const seconds = Math.round(leave3 / 1000);
+      const element = document.getElementById("run-time");
+      element.innerHTML =
+        "Run   time: " + days + "d " + hours + "h " + minutes + "m " + seconds + "s";
+    }
+
+    setInterval(updateTime, 1000);
+  </script>
+    </footer>
+    
+  </main>
+  
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/highlight.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/dart.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/go.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/java.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/kotlin.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/rust.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/shell.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/typescript.min.js"></script>
+
+<script>hljs.highlightAll();</script>
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  
+  
+  
+  
+
+  <meta name="description"
+    content="岁月总是历久弥新，需要细细品尝。" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" />
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/styles/a11y-light.min.css" />
+
+  <link rel="stylesheet" href="/main.css" />
+  
+
+  <title>Flutter在平台方法调用中异步返回结果</title>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TQQBL084VX" />
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+
+    gtag("config", "G-TQQBL084VX");
+  </script>
+</head>
+
+<body>
+  <main>
+    <div class="wrap">
+      <article>
+        
+<div id="content">
+  <h1 id="flutter-zai-ping-tai-fang-fa-diao-yong-zhong-yi-bu-fan-hui-jie-guo">Flutter 在平台方法调用中异步返回结果</h1>
+<p>asynchronous_method_channel 是一个在 Flutter 和 Native 之间异步调用方法时，支持异步返回结果的插件。</p>
+<p>在利用 Flutter 编写跨平台应用时，一些功能需要调用 Native 方法才能实现，可以利用 Flutter 为我们提供的 MethodChannel 实现。对与 Flutter 来说，所有的 Native 方法调用都是异步返回的，但是对于 Native 来说，对于来自 Flutter 的方法调用，我们要返回的结果却不能异步返回，如果我们尝试在执行异步操作之后调用<code>result.success(something)</code>，执行时会得到<code>java.lang.IllegalStateException: Reply already submitted</code>的错误信息。所以 AsynchronousMethodChannel 是对 MethodChannel 的一次封装，为其添加了异步返回方法调用结果的功能。因为对于 Flutter，和 Native 的通信即方法调用必须在平台主线程，但我们又知道应该尽量避免在主线程进行耗时操作，所以需要有一个措施来支持平台方法调用时异步返回结果，即编写本库的目的。</p>
+<h2 id="guan-yu-asynchronous-method-channel">关于 asynchronous_method_channel</h2>
+<p><a href="https://pub.dev/packages/asynchronous_method_channel">Package</a>: https://pub.dev/packages/asynchronous_method_channel</p>
+<p><a href="https://github.com/microtears/asynchronous-method-channel/tree/master/example">Example</a>: https://github.com/microtears/asynchronous-method-channel/tree/master/example</p>
+<p><a href="https://github.com/microtears/asynchronous-method-channel">Repository</a>: https://github.com/microtears/asynchronous-method-channel</p>
+<p><a href="https://pub.dev/documentation/asynchronous_method_channel/latest/">Documentation</a>: https://pub.dev/documentation/asynchronous_method_channel/latest/</p>
+<p><a href="https://github.com/microtears/asynchronous-method-channel/issues">View/report issues</a>: https://github.com/microtears/asynchronous-method-channel/issues</p>
+<h2 id="flutter-pei-zhi">Flutter 配置</h2>
+<ul>
+<li>version: v1.9.1+hotfix.6</li>
+<li>channel: master</li>
+</ul>
+<h2 id="zai-android-shang-tong-guo-asynchronousmethodchannel-he-kotlin-bian-xie-cha-jian">在 Android 上通过 AsynchronousMethodChannel 和 kotlin 编写插件</h2>
+<p>下面是一个利用 kotlin 协程执行异步任务并返回结果的示例。</p>
+<p>在正式开始之前，需要我们了解的一件事是：Flutter 应用程序中 Android 模块的 gradle 不会自动导入我们需要的 Java 包，您必须手动添加以下代码。</p>
+<pre data-lang="kotlin" class="language-kotlin "><code class="language-kotlin" data-lang="kotlin">import io.flutter.plugins.asynchronous_method_channel.AsynchronousMethodChannel
+</code></pre>
+<pre data-lang="kotlin" class="language-kotlin "><code class="language-kotlin" data-lang="kotlin">class MainActivity: FlutterActivity() , AsynchronousMethodChannel.MethodCallHandler {
+    companion object{
+        const val CHANNEL=&quot;AsynchronousMethodChannelExample&quot;
+    }
+    private var parentJob = Job()
+    private val coroutineContext: CoroutineContext
+        get() = parentJob + Dispatchers.Main
+    private val scope = CoroutineScope(coroutineContext)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        GeneratedPluginRegistrant.registerWith(this)
+        AsynchronousMethodChannel(flutterView, CHANNEL).setMethodCallHandler(this)
+    }
+
+
+    override fun onMethodCall(call: MethodCall, result: AsynchronousMethodChannel.Result) {
+        when (call.method) {
+            &quot;getBatteryLevel&quot; -&gt; {
+                result.success(null)
+                scope.launch(Dispatchers.IO){
+                    &#x2F;&#x2F; Do something
+                    &#x2F;&#x2F; Perform asynchronous time-consuming tasks
+
+                    &#x2F;&#x2F; Just return results after 2 seconds
+                    delay(2000)
+
+                    &#x2F;&#x2F; The method in AsynchronousMethodChannel.Result must be called on the main thread of the platform
+                    scope.launch(Dispatchers.Main){
+                        result.successAsynchronous(getBatteryLevel().toString())
+                    }
+                }
+            }
+            else -&gt; result.notImplemented()
+        }
+    }
+
+    private fun getBatteryLevel(): Int {
+        val batteryLevel: Int
+        batteryLevel = if (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.LOLLIPOP) {
+            val batteryManager = getSystemService(Context.BATTERY_SERVICE) as BatteryManager
+            batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
+        } else {
+            val intent = ContextWrapper(applicationContext).registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+            intent!!.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) * 100 &#x2F; intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
+        }
+        return batteryLevel
+    }
+
+    override fun onDestroy() {
+        &#x2F;&#x2F; cancel all asynchronous jobs
+        scope.cancel()
+        super.onDestroy()
+    }
+}
+</code></pre>
+<h2 id="zai-flutter-shang-tong-guo-asynchronousmethodchannel-he-dart-bian-xie-cha-jian">在 Flutter 上通过 AsynchronousMethodChannel 和 dart 编写插件</h2>
+<p>下面是一个在 Flutter 应用程序中使用 AsynchronousMethodChannel 的示例。</p>
+<pre data-lang="dart" class="language-dart "><code class="language-dart" data-lang="dart">class _MyAppState extends State&lt;MyApp&gt; {
+  static final platform =
+      AsynchronousMethodChannel(&#x27;AsynchronousMethodChannelExample&#x27;);
+  String _batteryLevel = &#x27;Unknown&#x27;;
+  String _timeInfo = &quot;&quot;;
+  static const style = TextStyle(
+    fontSize: 16,
+    fontFamily: &quot;monospace&quot;,
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    initPlatformState();
+  }
+
+  &#x2F;&#x2F; Platform messages are asynchronous, so we initialize in an async method.
+  Future&lt;void&gt; initPlatformState() async {
+    String batteryLevel;
+    &#x2F;&#x2F; Platform messages may fail, so we use a try&#x2F;catch PlatformException.
+    try {
+      final sb = StringBuffer();
+      final startAt = DateTime.now();
+      sb.writeln(&quot;[start] [$startAt]&quot;);
+      batteryLevel =
+          await platform.invokeAsynchronousMethod(&quot;getBatteryLevel&quot;);
+      final endAt = DateTime.now();
+      sb.writeln(&quot;[end  ] [$endAt]&quot;);
+      sb.writeln(&quot;[tag  ] [hours:minutes:seconds:us]&quot;);
+      sb.writeln(&quot;[total] [${endAt.difference(startAt)}]&quot;);
+      _timeInfo = sb.toString();
+    } on PlatformException {
+      batteryLevel = &#x27;Failed to get platform version.&#x27;;
+    }
+
+    &#x2F;&#x2F; If the widget was removed from the tree while the asynchronous platform
+    &#x2F;&#x2F; message was in flight, we want to discard the reply rather than calling
+    &#x2F;&#x2F; setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {
+      _batteryLevel = batteryLevel;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text(&#x27;AsynchronousMethodChannel example app&#x27;),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: &lt;Widget&gt;[
+              Text(&#x27;Battery level: $_batteryLevel\n&#x27;, style: style),
+              Text(_timeInfo, style: style),
+              Center(
+                child: FlatButton(
+                  onPressed: initPlatformState,
+                  child: Text(&quot;Get battery level&quot;),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+</code></pre>
+<h2 id="jie-tu">截图</h2>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/31/16e1d8c357a37f57~tplv-t2oaga2asx-image.image" alt="example" /></p>
+<h2 id="zai-ce-shi-shi-shi-yong-asynchronousmethodchannel">在测试时使用 AsynchronousMethodChannel</h2>
+<pre data-lang="dart" class="language-dart "><code class="language-dart" data-lang="dart">void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  final AsynchronousMethodChannel channel =
+      AsynchronousMethodChannel(&#x27;asynchronous_method_channel&#x27;);
+
+  setUp(() {
+    channel.setMockAsynchronousMethodCallHandler(
+        (MethodCall methodCall, MockResult result) async {
+      switch (methodCall.method) {
+        case &quot;asynchronousMethod&quot;:
+          &#x2F;&#x2F; Delay 30 milliseconds to return results
+          Future.delayed(Duration(milliseconds: 30),
+              () =&gt; result.success(methodCall.arguments));
+          break;
+        case &quot;syncMethod&quot;:
+          return &quot;ok&quot;;
+          break;
+        case &quot;getBatteryLevel&quot;:
+          result.success(&quot;100&quot;);
+          break;
+      }
+      return null;
+    });
+  });
+
+  tearDown(() {
+    channel.setMockAsynchronousMethodCallHandler(null);
+  });
+
+  test(&#x27;testMethod&#x27;, () async {
+    expect(
+      await channel.invokeAsynchronousMethod(
+        &quot;asynchronousMethod&quot;,
+        {&quot;arg&quot;: &quot;arg1&quot;},
+      ),
+      {&quot;arg&quot;: &quot;arg1&quot;},
+    );
+    expect(
+      await channel.invokeMethod(&quot;syncMethod&quot;),
+      &quot;ok&quot;,
+    );
+    expect(
+      await channel.invokeAsynchronousMethod(&quot;getBatteryLevel&quot;),
+      &quot;100&quot;,
+    );
+  });
+}
+</code></pre>
+<h2 id="zai-ios-shang-shi-yong-asynchronousmethodchannel">在 IOS 上使用 AsynchronousMethodChannel</h2>
+<p>预计在下一个版本发布。</p>
+<h2 id="guan-yu-geng-duo">关于更多</h2>
+<p>请参阅<a href="https://github.com/microtears/asynchronous-method-channel/tree/master/example">示例</a>。</p>
+
+</div>
+
+      </article>
+      <nav>
+        <a id="avatar-container" href="/">
+  <img id="avatar" title="lingyin" src="https://avatars.githubusercontent.com/u/13548822" />
+</a>
+<p>岁月总是历久弥新，需要细细品尝。</p>
+<p>
+  欢迎来到<a href="https://github.com/microtears"> lingyin </a>的开发者日志,
+  这里是我的一些奇思妙想。
+</p>
+<p>
+  它使用
+  <a href="https://www.getzola.org/"> Zola </a>生成。
+</p>
+<div id="nav-break"></div>
+<p id="copyright">© 2019-2025 <a href="/">lingyin</a>.
+</p>
+      </nav>
+    </div>
+    <footer>
+      <p id="run-time" />
+<p id="build-time">Build time: 2025-10-15</span>
+  <script>
+    function updateTime() {
+      const date1 = "2019/07/17 00:00:00";
+      const date2 = new Date();
+      const date3 = date2.getTime() - new Date(date1).getTime();
+      const days = Math.floor(date3 / (24 * 3600 * 1000));
+      const leave1 = date3 % (24 * 3600 * 1000);
+      const hours = Math.floor(leave1 / (3600 * 1000));
+      const leave2 = leave1 % (3600 * 1000);
+      const minutes = Math.floor(leave2 / (60 * 1000));
+      const leave3 = leave2 % (60 * 1000);
+      const seconds = Math.round(leave3 / 1000);
+      const element = document.getElementById("run-time");
+      element.innerHTML =
+        "Run   time: " + days + "d " + hours + "h " + minutes + "m " + seconds + "s";
+    }
+
+    setInterval(updateTime, 1000);
+  </script>
+    </footer>
+    
+  </main>
+  
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/highlight.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/dart.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/go.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/java.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/kotlin.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/rust.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/shell.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/typescript.min.js"></script>
+
+<script>hljs.highlightAll();</script>
+
+
+
+</body>
+
+</html>

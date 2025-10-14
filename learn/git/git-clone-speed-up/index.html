@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  
+  
+  
+  
+
+  <meta name="description"
+    content="岁月总是历久弥新，需要细细品尝。" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" />
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/styles/a11y-light.min.css" />
+
+  <link rel="stylesheet" href="/main.css" />
+  
+
+  <title>Git Clone Speed Up</title>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TQQBL084VX" />
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+
+    gtag("config", "G-TQQBL084VX");
+  </script>
+</head>
+
+<body>
+  <main>
+    <div class="wrap">
+      <article>
+        
+<div id="content">
+  <h2 id="1-git-clone-with-tree-zero">1. Git Clone with tree:zero</h2>
+<pre data-lang="shell" class="language-shell "><code class="language-shell" data-lang="shell">time git clone --filter=tree:0  https:&#x2F;&#x2F;github.com&#x2F;dart-lang&#x2F;sdk.git
+正克隆到 &#x27;sdk&#x27;...
+remote: Enumerating objects: 126124, done.
+remote: Counting objects: 100% (18&#x2F;18), done.
+remote: Compressing objects: 100% (17&#x2F;17), done.
+remote: Total 126124 (delta 1), reused 11 (delta 1), pack-reused 126106 (from 3)
+接收对象中: 100% (126124&#x2F;126124), 41.03 MiB | 10.03 MiB&#x2F;s, 完成.
+处理 delta 中: 100% (9170&#x2F;9170), 完成.
+remote: Enumerating objects: 2731, done.
+remote: Counting objects: 100% (896&#x2F;896), done.
+remote: Compressing objects: 100% (876&#x2F;876), done.
+remote: Total 2731 (delta 29), reused 21 (delta 17), pack-reused 1835 (from 3)
+接收对象中: 100% (2731&#x2F;2731), 1.37 MiB | 2.88 MiB&#x2F;s, 完成.
+处理 delta 中: 100% (49&#x2F;49), 完成.
+remote: Enumerating objects: 41929, done.
+remote: Counting objects: 100% (22429&#x2F;22429), done.
+remote: Compressing objects: 100% (14922&#x2F;14922), done.
+remote: Total 41929 (delta 10062), reused 7456 (delta 7456), pack-reused 19500 (from 3)
+接收对象中: 100% (41929&#x2F;41929), 40.57 MiB | 11.23 MiB&#x2F;s, 完成.
+处理 delta 中: 100% (17137&#x2F;17137), 完成.
+正在更新文件: 100% (51796&#x2F;51796), 完成.
+
+________________________________________________________
+Executed in   30.82 secs    fish           external
+   usr time    6.87 secs    0.26 millis    6.87 secs
+   sys time    7.52 secs    1.48 millis    7.52 secs
+
+</code></pre>
+<h2 id="2-git-clone-with-blon-none">2. Git Clone with blon:none</h2>
+<pre data-lang="shell" class="language-shell "><code class="language-shell" data-lang="shell">time git clone --filter=blob:none  https:&#x2F;&#x2F;github.com&#x2F;dart-lang&#x2F;sdk.git sdk2
+正克隆到 &#x27;sdk2&#x27;...
+remote: Enumerating objects: 982942, done.
+remote: Counting objects: 100% (290&#x2F;290), done.
+remote: Compressing objects: 100% (81&#x2F;81), done.
+remote: Total 982942 (delta 223), reused 226 (delta 204), pack-reused 982652 (from 3)
+接收对象中: 100% (982942&#x2F;982942), 209.93 MiB | 3.68 MiB&#x2F;s, 完成.
+处理 delta 中: 100% (722689&#x2F;722689), 完成.
+remote: Enumerating objects: 41930, done.
+remote: Counting objects: 100% (22473&#x2F;22473), done.
+remote: Compressing objects: 100% (14953&#x2F;14953), done.
+remote: Total 41930 (delta 10075), reused 7478 (delta 7469), pack-reused 19457 (from 3)
+接收对象中: 100% (41930&#x2F;41930), 40.57 MiB | 5.49 MiB&#x2F;s, 完成.
+处理 delta 中: 100% (17131&#x2F;17131), 完成.
+正在更新文件: 100% (51797&#x2F;51797), 完成.
+
+________________________________________________________
+Executed in   89.53 secs    fish           external
+   usr time   23.27 secs  167.00 micros   23.27 secs
+   sys time   13.07 secs  770.00 micros   13.07 secs
+</code></pre>
+<h2 id="3-git-clone-with-depth-1">3. Git Clone with depth:1</h2>
+<pre data-lang="shell" class="language-shell "><code class="language-shell" data-lang="shell">time git clone --depth=1 --single-branch --branch=main  https:&#x2F;&#x2F;github.com&#x2F;dart-lang&#x2F;sdk.git sdk4
+正克隆到 &#x27;sdk4&#x27;...
+remote: Enumerating objects: 44662, done.
+remote: Counting objects: 100% (44662&#x2F;44662), done.
+remote: Compressing objects: 100% (28829&#x2F;28829), done.
+remote: Total 44662 (delta 17247), reused 28726 (delta 14562), pack-reused 0 (from 0)
+接收对象中: 100% (44662&#x2F;44662), 41.86 MiB | 8.91 MiB&#x2F;s, 完成.
+处理 delta 中: 100% (17247&#x2F;17247), 完成.
+正在更新文件: 100% (51797&#x2F;51797), 完成.
+
+________________________________________________________
+Executed in   16.99 secs    fish           external
+   usr time    2.70 secs  184.00 micros    2.70 secs
+   sys time    4.50 secs  910.00 micros    4.50 secs
+</code></pre>
+<h2 id="links">Links</h2>
+<ul>
+<li><a href="https://github.blog/open-source/git/get-up-to-speed-with-partial-clone-and-shallow-clone/">Get up to speed with partial clone and shallow clone</a></li>
+</ul>
+
+</div>
+
+      </article>
+      <nav>
+        <a id="avatar-container" href="/">
+  <img id="avatar" title="lingyin" src="https://avatars.githubusercontent.com/u/13548822" />
+</a>
+<p>岁月总是历久弥新，需要细细品尝。</p>
+<p>
+  欢迎来到<a href="https://github.com/microtears"> lingyin </a>的开发者日志,
+  这里是我的一些奇思妙想。
+</p>
+<p>
+  它使用
+  <a href="https://www.getzola.org/"> Zola </a>生成。
+</p>
+<div id="nav-break"></div>
+<p id="copyright">© 2019-2025 <a href="/">lingyin</a>.
+</p>
+      </nav>
+    </div>
+    <footer>
+      <p id="run-time" />
+<p id="build-time">Build time: 2025-10-15</span>
+  <script>
+    function updateTime() {
+      const date1 = "2019/07/17 00:00:00";
+      const date2 = new Date();
+      const date3 = date2.getTime() - new Date(date1).getTime();
+      const days = Math.floor(date3 / (24 * 3600 * 1000));
+      const leave1 = date3 % (24 * 3600 * 1000);
+      const hours = Math.floor(leave1 / (3600 * 1000));
+      const leave2 = leave1 % (3600 * 1000);
+      const minutes = Math.floor(leave2 / (60 * 1000));
+      const leave3 = leave2 % (60 * 1000);
+      const seconds = Math.round(leave3 / 1000);
+      const element = document.getElementById("run-time");
+      element.innerHTML =
+        "Run   time: " + days + "d " + hours + "h " + minutes + "m " + seconds + "s";
+    }
+
+    setInterval(updateTime, 1000);
+  </script>
+    </footer>
+    
+  </main>
+  
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/highlight.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/dart.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/go.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/java.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/kotlin.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/rust.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/shell.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/typescript.min.js"></script>
+
+<script>hljs.highlightAll();</script>
+
+
+
+</body>
+
+</html>

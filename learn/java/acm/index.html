@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  
+  
+  
+  
+
+  <meta name="description"
+    content="岁月总是历久弥新，需要细细品尝。" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" />
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/styles/a11y-light.min.css" />
+
+  <link rel="stylesheet" href="/main.css" />
+  
+
+  <title>简单记录</title>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TQQBL084VX" />
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+
+    gtag("config", "G-TQQBL084VX");
+  </script>
+</head>
+
+<body>
+  <main>
+    <div class="wrap">
+      <article>
+        
+<div id="content">
+  <h2 id="ji-ben-ji-shu-fang-fa">基本计数方法</h2>
+<ol>
+<li>容斥原理</li>
+</ol>
+<ul>
+<li>$|A∪B∪C|=|A|+|B|+|C|+|B|-|A∩B|-|B∩C|-|C∩A|+|A∩B∩C|$</li>
+</ul>
+<ol start="2">
+<li>排列问题</li>
+</ol>
+<ul>
+<li>全排列
+$P（n,k)=n(n-1)(n-2)...(n-k+1)=n!/(n-k)!$</li>
+<li>组合数
+$C（n,k)=P(n,k)/P(k,k)=n!/((n-k)!k!)$
+<ul>
+<li>性质 1：
+$C(n,0)=C(n,n)=1$</li>
+<li>性质 2：
+$C(n,k)=C(n,n-k)$</li>
+<li>性质 3：
+$C(n,k)+C(n,k+1)=C(n+1,k+1)$</li>
+<li>性质 4：
+$C(n,k+1)=C(n,k)*(n-k)/(k+1)$</li>
+</ul>
+</li>
+</ul>
+<ol start="3">
+<li>递推关系</li>
+</ol>
+<ul>
+<li>斐波那契（Fibonacci）数列
+$f(n)=f(n-1)+f(n-2),f(1)=f(2)=1$</li>
+<li>卡特兰（Catalan）数列
+$f(n)=f(2)f(n-1)+f(3)f(n-2)+...+f(n-1)f(2),f(2)=f(3)=1,[f(k)f(n-k-1)]$</li>
+</ul>
+<h2 id="shu-lun">数论</h2>
+<p>一. 基本概念</p>
+<ol>
+<li>素数</li>
+</ol>
+<pre data-lang="C++" class="language-C++ "><code class="language-C++" data-lang="C++">&#x2F;&#x2F;筛素数
+const int maxn=10000000+10;
+const int maxp=700000;
+int vis[maxn];
+int prime[maxp];
+void sieve(int n){
+	int m=(int)sqrt(n+0.5);
+	memset(vis,0,sizeof(vis));
+	for(int i=2;i&lt;=m;i++) if(!vis[i])&#x2F;&#x2F;0为素数
+		for(int j=i*i;j&lt;=n;j+=i) vis[j]=1;
+}
+&#x2F;&#x2F;生成素数表
+int gen_prime(int n){
+	sieve(n);
+	int c=0;
+	for(int i=2;i&lt;=n;i++) if(!vis[i])
+		prime[c++]=i;
+	return c;
+}
+</code></pre>
+<ol start="2">
+<li>欧几里得算法</li>
+</ol>
+<pre data-lang="C++" class="language-C++ "><code class="language-C++" data-lang="C++">typedef long long ll;
+ll gcd(ll a,ll b){
+	return b==0?a:gcd(b,a%b);
+}
+void gcd(ll a,ll b,ll &amp;d,ll &amp;x,ll &amp;y){
+	if(!b){d=a;x=1;y=0;}
+	else{gcd(b,a%b,d,y,x);y-=x*(a&#x2F;b);}
+}
+</code></pre>
+<ol start="3">
+<li>模算数</li>
+</ol>
+<pre data-lang="C++" class="language-C++ "><code class="language-C++" data-lang="C++">&#x2F;&#x2F;返回ab mod n 要求0&lt;=a,b&lt;n
+ll mul_mod(ll a,ll b,ll n){
+	return a*b%n;
+}
+&#x2F;&#x2F;返回a^p mod n,要求0&lt;=a&lt;n
+ll pow_mod(ll a,ll p,ll n){
+	if(p==0) return 1;
+	ll r=pow_mod(a,p&#x2F;2,n);
+	r=r*r%n;
+	if(p%2==1) r=r*a%n;
+	return r;
+}
+</code></pre>
+<ol start="4">
+<li>欧拉phi函数（phi（x）表示等于不超过x且和x互素的整数个数）
+$φ(x)=n(1-1/p1)(1-1/p2)...(1-1/pk)$</li>
+</ol>
+<pre data-lang="C++" class="language-C++ "><code class="language-C++" data-lang="C++">&#x2F;&#x2F;计算欧拉phi函数
+int euler_phi(int n){
+	int m=(int)sqrt(n+0.5);
+	int ans=n;
+	for(int i=2;i&lt;=m;i++) if(n%i==0){
+		ans=ans&#x2F;i*(i-1);
+		while(n%i==0) n&#x2F;=i;
+	}
+	if(n&gt;1) ans=ans&#x2F;n*(n-1);
+}
+&#x2F;&#x2F;用类似筛法的方法计算phi（1），phi（2），...，phi（n）
+int phi[maxn];
+void phi_table(int n){
+	for(int i=2;i&lt;=n;i++) phi[i]=0;
+	phi[1]=1;
+	for(int i=2;i&lt;=n;i++) if(!phi[i])
+		for(int j=i;j&lt;=n;j+=i){
+			if(!phi[j]) phi[j]=j;
+			phi[j]=phi[j]&#x2F;i*(i-1);
+		}
+}
+</code></pre>
+<ol start="5">
+<li>剩余系</li>
+</ol>
+<pre data-lang="C++" class="language-C++ "><code class="language-C++" data-lang="C++">&#x2F;&#x2F;计算模n下a的逆 如果不存在逆，返回-1
+ll inv(ll a,ll n){
+	ll d,x,y;
+	gcd(a,n,d,x,y);
+	return d==1?(x+n)%n:-1;
+}
+</code></pre>
+<h2 id="qi-ta">其他</h2>
+<ul>
+<li>模拟，贪心，二分，三分，动态规划，容斥原理</li>
+<li>四舍五入：$floor(pos + 0.5) OR (x+s-1)/s$</li>
+<li>错排公式：$D(n)=(n-1)(D(n-2)+D(n-1))$</li>
+<li>判断凹凸多边形：$p1(x1,y1),p2(x2,y2),p3(x3,y3)$
+$s(p1,p2,p3)=(x1-x3)<em>(y2-y3)-(x2-x3)</em>(y1-y3)$
+如果s&gt;0则说明这3个点时是按照逆时针的顺序，如果是s&lt;0则说明连接这3个点是按照顺时针的顺序。</li>
+<li>三角形面积:
+$|a×b|=|a||b|sin(θ)$
+$S=1/2|a×b|$
+$p1(x1,y1),p2(x2,y2),p3(x3,y3)$
+$v1(x2-x1,y2-y1),v2(x3-x2,y3-y2)$
+$v1(x1,y1),v2(x2,y2)$
+$a×b=(x1y2-x2y1)$</li>
+</ul>
+<h2 id="mo-ban">模板</h2>
+<ol>
+<li>尺取法，滑动窗口</li>
+</ol>
+<pre data-lang="C++" class="language-C++ "><code class="language-C++" data-lang="C++">set&lt;int&gt; s;
+while (r&lt;n){
+	while (r&lt;n&amp;&amp;!s.count(a[r]))
+		s.insert(a[r++]);
+	m=max(m,r-l);
+	s.erase(a[l++]);
+}
+</code></pre>
+<ol start="2">
+<li>归并排序，统计逆序对</li>
+</ol>
+<pre data-lang="C++" class="language-C++ "><code class="language-C++" data-lang="C++">exp1：
+int A[maxn], T[maxn];
+__int64 cnt=0,n;
+void merge(int *arr,int *tmp,int l, int mid,int r){
+	int i=l, j=mid+1, k=l;
+	while (i&lt;=mid&amp;&amp;j&lt;=r){
+		if (arr[i]&lt;=arr[j]) tmp[k++]=arr[i++];
+		else{tmp[k++]=arr[j++];cnt+=mid-i+1;}
+	}
+	while (i!=mid+1) tmp[k++]=arr[i++];
+	while (j!=r+1) tmp[k++]=arr[j++];
+	for (i=l;i&lt;=r; i++) arr[i]=tmp[i];
+}
+void mergesort(int *arr, int *tmp, int l, int r){
+	if (l&lt;r){
+		int mid=(l+r)&#x2F;2;
+		mergesort(arr,tmp,l,mid);
+		mergesort(arr,tmp,mid+1,r);
+		merge(arr,tmp,l,mid,r);
+	}
+}
+exp2:
+void mergesort(int *A,int *T,int x,int y){
+	if(y-x&gt;1){
+		int m=(x+y)&#x2F;2;
+		mergesort(A,T,x,m);
+		mergesort(A,T,m,y);
+		int i=x,j=m,k=i;
+		while(i&lt;m||j&lt;y){
+			if(j&gt;=y||(i&lt;m&amp;&amp;a[i]&lt;=a[j])) T[k++]=A[i++];
+			else {T[k++]=A[j++];cnt=m-p;}
+		}
+		for(k=0;k&lt;y;k++) A[k]=T[k];
+	}
+}
+</code></pre>
+<ol start="3">
+<li>快速幂</li>
+</ol>
+<pre data-lang="C++" class="language-C++ "><code class="language-C++" data-lang="C++">int pow(int a,int b){
+	int r=1,base=b;
+	while(b){
+		if(b&amp;1) r*=base;
+		base*=base;
+		b&gt;&gt;=1;
+	}
+	return r;
+}
+</code></pre>
+<ol start="4">
+<li>GCD/LCM</li>
+</ol>
+<pre data-lang="C++" class="language-C++ "><code class="language-C++" data-lang="C++">int gcd(int a,int b){
+	if(a==0) return b;
+	else if(b==0) return a;
+	else if(a%2==0&amp;&amp;b%2==0) return 2*gcd(a&gt;&gt;1,b&gt;&gt;1);
+	else if(a%2==0) return gcd(a&gt;&gt;1,b);
+	else if(b&amp;2==0) return gcd(a,b&gt;&gt;1);
+	else return gcd(abs(a-b),min(a,b));
+}
+int gcd(int a,int b){
+	return b==0？a：gcd(b,a%b)；
+}
+int lcm(int a,int b){
+	return a&#x2F;gcd(a,b)*b;
+}
+</code></pre>
+<ol start="5">
+<li>分解质因数，约数个数定理</li>
+</ol>
+<pre data-lang="C++" class="language-C++ "><code class="language-C++" data-lang="C++">int apx(ll n){
+	ll m=(int)sqrt(n+0.5);
+	int sum=1;
+	for (ll i=2;i&lt;=m;++i){
+		int p=0;
+		while (n%i==0) {p++;n&#x2F;=i;}
+		if (p&gt;0) sum*=(p+1);
+	}
+	if (t&gt;1) sum*=2;
+	return sum;
+}
+</code></pre>
+<ol start="6">
+<li>快速排序</li>
+</ol>
+<pre data-lang="C++" class="language-C++ "><code class="language-C++" data-lang="C++">void quicksort(int *A,int x,int y){
+	if(x&lt;y){
+		int i=x,j=y,k=A[x];
+		while(i&lt;j){
+			while(i&lt;j&amp;&amp;A[j]&gt;=k) j--;
+			if(i&lt;j) A[i++]=A[j];
+			while(i&lt;j&amp;&amp;A[i]&lt;=k) i++;
+			if(i&lt;j) A[j--]=A[i];
+			a[i]=k;
+		}
+		quicksort(A,x,i-1);
+		quicksort(A,j+1,y);
+	}
+}
+</code></pre>
+<ol start="7">
+<li>找最长递增子序列（LIS）</li>
+</ol>
+<pre data-lang="C++" class="language-C++ "><code class="language-C++" data-lang="C++">PII v[5050];
+int a[5050];
+&#x2F;&#x2F;input
+sort(v, v + d);
+FORi(i, 0, d+1) a[i] = inf;
+&#x2F;&#x2F;找最长递增子序列（LIS）
+FORi(i, 0, d) *lower_bound(a, a + d + 1, v[i].second) = v[i].second;&#x2F;&#x2F;upper_lound为最长不下降子序列
+cout &lt;&lt; distance(a,lower_bound(a, a + d + 1, inf)) &lt;&lt; endl;
+</code></pre>
+<ol start="8">
+<li>
+<p>斯特灵公式 (Stirling's approximation)</p>
+<p>$n! \approx \sqrt{2\pi n}, \left(\frac{n}{e}\right)^{n}.$</p>
+</li>
+</ol>
+<pre data-lang="C++" class="language-C++ "><code class="language-C++" data-lang="C++">len=(n*log(n)-n+0.5*log(2*n*PI))&#x2F;(log(10))+1;
+</code></pre>
+<ol start="9">
+<li>回文子串 Manacher 算法</li>
+</ol>
+<pre data-lang="C++" class="language-C++ "><code class="language-C++" data-lang="C++">char s[110200], sn[220400];
+int p[220400];
+int Manacher()
+{
+	int len=strlen(s);
+	sn[0] = &#x27;$&#x27;;
+	sn[1] = &#x27;#&#x27;;
+	int j = 2;
+	for (int i = 0; i &lt; len; i++)
+	{
+		sn[j++] = s[i];
+		sn[j++] = &#x27;#&#x27;;
+	}
+	sn[j] = &#x27;\0&#x27;;
+	int mxlen = -1, mid, mx = 0;
+	for (int i = 1; i &lt; j; i++)
+	{
+		p[i] = i &lt; mx ? min(p[2 * mid - i], mx - i) : 1;
+		while (sn[i - p[i]] == sn[i + p[i]]) p[i]++;
+		if (mx &lt; i + p[i]) { mid = i; mx = i + p[i]; }
+		mxlen = max(mxlen, p[i] - 1);
+	}
+	return mxlen;
+}
+</code></pre>
+
+</div>
+
+      </article>
+      <nav>
+        <a id="avatar-container" href="/">
+  <img id="avatar" title="lingyin" src="https://avatars.githubusercontent.com/u/13548822" />
+</a>
+<p>岁月总是历久弥新，需要细细品尝。</p>
+<p>
+  欢迎来到<a href="https://github.com/microtears"> lingyin </a>的开发者日志,
+  这里是我的一些奇思妙想。
+</p>
+<p>
+  它使用
+  <a href="https://www.getzola.org/"> Zola </a>生成。
+</p>
+<div id="nav-break"></div>
+<p id="copyright">© 2019-2025 <a href="/">lingyin</a>.
+</p>
+      </nav>
+    </div>
+    <footer>
+      <p id="run-time" />
+<p id="build-time">Build time: 2025-10-15</span>
+  <script>
+    function updateTime() {
+      const date1 = "2019/07/17 00:00:00";
+      const date2 = new Date();
+      const date3 = date2.getTime() - new Date(date1).getTime();
+      const days = Math.floor(date3 / (24 * 3600 * 1000));
+      const leave1 = date3 % (24 * 3600 * 1000);
+      const hours = Math.floor(leave1 / (3600 * 1000));
+      const leave2 = leave1 % (3600 * 1000);
+      const minutes = Math.floor(leave2 / (60 * 1000));
+      const leave3 = leave2 % (60 * 1000);
+      const seconds = Math.round(leave3 / 1000);
+      const element = document.getElementById("run-time");
+      element.innerHTML =
+        "Run   time: " + days + "d " + hours + "h " + minutes + "m " + seconds + "s";
+    }
+
+    setInterval(updateTime, 1000);
+  </script>
+    </footer>
+    
+  </main>
+  
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/highlight.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/dart.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/go.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/java.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/kotlin.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/rust.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/shell.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/typescript.min.js"></script>
+
+<script>hljs.highlightAll();</script>
+
+
+
+</body>
+
+</html>
