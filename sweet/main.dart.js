@@ -17800,7 +17800,7 @@ $ijM:1}
 A.a2j.prototype={
 $1(a){var s=A.c2().b
 s=s==null?null:s.canvasKitBaseUrl
-return(s==null?"https://www.gstatic.com/flutter-canvaskit/060c2cc550a0b0d37aa48d40b5f1bb8984b7439a/":s)+a},
+return(s==null?"https://www.gstatic.com/flutter-canvaskit/d7ec7e8064d93a8d8bdd418103ec48cfafbc4841/":s)+a},
 $S:112}
 A.A2.prototype={
 gp(a){var s=this.a
