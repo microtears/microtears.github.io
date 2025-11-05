@@ -25,7 +25,7 @@
   <link rel="stylesheet" href="/main.css" />
   
   <title>2019 Android library 怎么快速上传 Jcenter</title>
-  <script src="/theme.js" defer></script>
+  <script src="/main.js" defer></script>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-TQQBL084VX" />
   <script>
@@ -346,32 +346,11 @@ apply from: &#x27;..&#x2F;bintrayv1.gradle&#x27;
         </nav>
       </div>
       <footer>
-        
-<p id="build-time">Build time: 2025-11-03
+        <p id="build-time">Build time:
+  2025-11-05
 </p>
-<p id="run-time">Run   time: 0000d 00h 00m 00s</p>
+<p id="run-time">Run&nbsp;&nbsp; time: 0000d 00h 00m 00s</p>
 
-
-
-<script>
-  function updateTime() {
-    const date1 = "2019/07/17 00:00:00";
-    const date2 = new Date();
-    const date3 = date2.getTime() - new Date(date1).getTime();
-    const days = Math.floor(date3 / (24 * 3600 * 1000));
-    const leave1 = date3 % (24 * 3600 * 1000);
-    const hours = Math.floor(leave1 / (3600 * 1000));
-    const leave2 = leave1 % (3600 * 1000);
-    const minutes = Math.floor(leave2 / (60 * 1000));
-    const leave3 = leave2 % (60 * 1000);
-    const seconds = Math.round(leave3 / 1000);
-    const element = document.getElementById("run-time");
-    element.innerHTML =
-      "Run   time: " + days + "d " + hours.toString().padStart(2, '0') + "h " + minutes.toString().padStart(2, '0') + "m " + seconds.toString().padStart(2, '0') + "s";
-  }
-
-  setInterval(updateTime, 1000);
-</script>
       </footer>
       
     </main>
