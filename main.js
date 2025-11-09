@@ -42,7 +42,7 @@ function initRunTime() {
     const element = document.getElementById("run-time");
     if (element) {
       element.innerHTML =
-        "Run   time: " + days + "d " + hours.toString().padStart(2, '0') + "h " + minutes.toString().padStart(2, '0') + "m " + seconds.toString().padStart(2, '0') + "s";
+        "Run   time: " + days + "d      " + hours.toString().padStart(2, '0') + ":" + minutes.toString().padStart(2, '0') + ":" + seconds.toString().padStart(2, '0');
     } else if (intervalId) {
       clearInterval(intervalId);
       intervalId = null;
@@ -88,6 +88,6 @@ function initTheme() {
   setTheme(e.matches);
 }
 
-initTheme();
+// initTheme();
 initRunTime();
 initBuildTime();
