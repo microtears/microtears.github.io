@@ -9,7 +9,6 @@ const RESOURCES = {"flutter.js": "24bc71911b75b5f8135c949e27a2984e",
 "index.html": "2cb0ad1b5e81dff729a463d237effd8a",
 "/": "2cb0ad1b5e81dff729a463d237effd8a",
 "main.dart.js_2.part.js": "b9e644ed7563e8c5fe33541c4c781d4f",
-"m.html": "986863be46d5821031bd2076ca17417f",
 "assets/shaders/stretch_effect.frag": "40d68efbbf360632f614c731219e95f0",
 "assets/shaders/ink_sparkle.frag": "ecc85a2e95f5e9f53123dcaf8cb9b6ce",
 "assets/AssetManifest.bin.json": "16a1c5610980c452e4d3963fb723d695",
@@ -33,6 +32,7 @@ const RESOURCES = {"flutter.js": "24bc71911b75b5f8135c949e27a2984e",
 "main.dart.wasm": "08e0b0ab3c39dd5f311e838a2c54c9c1",
 "flutter_bootstrap.js": "d47dbb41bd8d1978c9682a2dfcb853ed",
 "version.json": "a5d7a99a9cef97b485025c4b07ffb877",
+"playground.html": "986863be46d5821031bd2076ca17417f",
 "main.dart.js": "965b1acb156037b0fbc233472f949fde"};
 // The application shell files that are downloaded before a service worker can
 // start.
