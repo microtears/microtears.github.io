@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base href="/sweet/" />
+
+  <meta charset="UTF-8" />
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
+  <title>Sweet</title>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TQQBL084VX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+
+    gtag("config", "G-TQQBL084VX");
+  </script>
+  <style>
+    /* 为flex布局设置基础样式 */
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    #main {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      display: flex;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="main"></div>
+  <script src="flutter.js"></script>
+  <script src="flutter_bootstrap.js"></script>
+  <script>
+    _flutter.loader.load({
+      onEntrypointLoaded: async function (engineInitializer) {
+        const appRunner = await engineInitializer.initializeEngine({
+          multiViewEnabled: true,
+        });
+        const app = await appRunner.runApp();
+        app.addView({ hostElement: document.querySelector("#main") });
+      }
+    });
+  </script>
+
+</body>
+
+</html>
