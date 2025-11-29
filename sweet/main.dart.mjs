@@ -384,7 +384,6 @@ class CompiledApp {
       _1178: x0 => x0.current(),
       _1192: x0 => x0.hostElement,
       _1193: x0 => x0.viewConstraints,
-      _1194: x0 => x0.initialData,
       _1196: x0 => x0.maxHeight,
       _1197: x0 => x0.maxWidth,
       _1198: x0 => x0.minHeight,
