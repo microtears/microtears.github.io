@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  
+  <meta name="description"
+    content="岁月总是历久弥新，需要细细品尝。" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+    rel="stylesheet">
+  <!-- Google Fonts -->
+
+  <!-- Highlight.js theme (swapped dynamically for dark mode) -->
+  <link id="hljs-theme" rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/styles/a11y-light.min.css" />
+  <link rel="stylesheet" href="/main.css" />
+  
+  <title>🔥🔥🔥让AI帮你画架构图，附 Prompts</title>
+  <script src="/main.js" defer></script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TQQBL084VX" />
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+
+    gtag("config", "G-TQQBL084VX");
+  </script>
+</head>
+
+<body>
+  <div id="container-main">
+    <main>
+      <div class="wrap">
+        <article>
+          
+<div id="content">
+  <h2 id="workflow">Workflow</h2>
+<h2 id="1-ti-qu-chu-he-xin-jia-gou">1. 提取出核心架构</h2>
+<h2 id="task-extract-architecture-diagram-to-json">Task: Extract Architecture Diagram to JSON</h2>
+<p>Please carefully analyze the current project. Based on your deep research, generate a detailed architecture diagram.</p>
+<h3 id="expected-json-structure">Expected JSON Structure</h3>
+<pre data-lang="json" class="language-json "><code class="language-json" data-lang="json">{
+  &quot;diagram&quot;: {
+    &quot;title&quot;: &quot;string&quot;,
+    &quot;layers&quot;: [
+      {
+        &quot;id&quot;: &quot;string&quot;,
+        &quot;name&quot;: &quot;string&quot;,
+        &quot;level&quot;: number,
+        &quot;components&quot;: [
+          {
+            &quot;id&quot;: &quot;string&quot;,
+            &quot;name&quot;: &quot;string&quot;,
+            &quot;type&quot;: &quot;string&quot;,
+            &quot;module&quot;: &quot;string (optional)&quot;,
+            &quot;provider&quot;: &quot;string (optional)&quot;,
+            &quot;dependencies&quot;: [&quot;string array (optional)&quot;],
+            &quot;contains&quot;: [&#x2F;* nested components - MAX 3-4 LEVELS *&#x2F;]
+          }
+        ]
+      }
+    ],
+    &quot;relationships&quot;: [
+      {
+        &quot;from&quot;: &quot;component-id&quot;,
+        &quot;to&quot;: &quot;component-id&quot;,
+        &quot;type&quot;: &quot;calls | uses | depends-on | integrates-with | supports&quot;
+      }
+    ]
+  }
+}
+</code></pre>
+<h3 id="extraction-rules">Extraction Rules</h3>
+<ol>
+<li>
+<p><strong>Identify Layers (Horizontal Sections)</strong></p>
+<ul>
+<li>Look for dashed boxes that group components horizontally</li>
+<li>Each layer has a name (usually on the left with an icon)</li>
+<li>Assign level: 1 (top) → 2 (middle) → 3 (bottom)</li>
+</ul>
+</li>
+<li>
+<p><strong>Extract Components</strong></p>
+<ul>
+<li>Component name: Bold text inside boxes</li>
+<li>Component type: Text in parentheses below name (e.g., "ui-module", "framework")</li>
+<li>For nested components (like Tools containing multiple tools), use the <code>contains</code> array</li>
+<li><strong>IMPORTANT: Maximum nesting depth is 3-4 levels</strong></li>
+<li>Generate kebab-case IDs from component names</li>
+</ul>
+</li>
+<li>
+<p><strong>Nesting Structure Guidelines</strong></p>
+<ul>
+<li>Level 1: Layer (e.g., "Console UI", "Agentic System")</li>
+<li>Level 2: Major component (e.g., "Components", "Tools")</li>
+<li>Level 3: Sub-component (e.g., "File System Toolset", "Text Editor Tool")</li>
+<li>Level 4 (if needed): Detailed sub-item (e.g., specific tool functions)</li>
+<li><strong>Stop at level 4 - do not nest deeper</strong></li>
+</ul>
+</li>
+<li>
+<p><strong>Identify Relationships</strong></p>
+<ul>
+<li>Arrows between components indicate relationships</li>
+<li>Bidirectional arrows (↔) = "integrates-with"</li>
+<li>Downward arrows (↓) = "depends-on"</li>
+<li>Arrows pointing to specific components = "calls" or "uses"</li>
+</ul>
+</li>
+<li>
+<p><strong>Special Cases</strong></p>
+<ul>
+<li>If a component contains a list of items (like "Tools" containing "File System Toolset", "Text Editor Tool", etc.), put them in the <code>contains</code> array</li>
+<li>Keep the exact naming from the diagram</li>
+<li>For module names in parentheses, add them as a <code>module</code> field</li>
+<li>If you encounter deeper nesting in the diagram, flatten it to maximum 4 levels</li>
+</ul>
+</li>
+</ol>
+<h3 id="example-nesting">Example Nesting</h3>
+<pre data-lang="json" class="language-json "><code class="language-json" data-lang="json">{
+  &quot;layers&quot;: [                           &#x2F;&#x2F; Level 1
+    {
+      &quot;components&quot;: [                   &#x2F;&#x2F; Level 2
+        {
+          &quot;id&quot;: &quot;tools&quot;,
+          &quot;name&quot;: &quot;Tools&quot;,
+          &quot;contains&quot;: [                 &#x2F;&#x2F; Level 3
+            {
+              &quot;id&quot;: &quot;filesystem-tool&quot;,
+              &quot;name&quot;: &quot;File System Toolset&quot;,
+              &quot;contains&quot;: [             &#x2F;&#x2F; Level 4 (MAX)
+                {
+                  &quot;id&quot;: &quot;read-file&quot;,
+                  &quot;name&quot;: &quot;Read File&quot;
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+</code></pre>
+<h3 id="output">Output</h3>
+<p>Please provide:</p>
+<ol>
+<li>The complete JSON structure (respecting max 3-4 level nesting)</li>
+<li>Reference documents are under <code>doc</code> folder and README.md if exists</li>
+<li>A brief summary of:
+<ul>
+<li>Layer count</li>
+<li>Component count</li>
+<li>Maximum nesting depth used</li>
+<li>Relationship count</li>
+</ul>
+</li>
+<li>If you had to flatten any structure, mention what was simplified</li>
+</ol>
+<h2 id="2-shen-cha-bing-xiu-gai">2. 审查并修改</h2>
+<p>一次性列出所有修改 OR 渐进式修改</p>
+<h2 id="3-jian-jin-shi-xiu-gai">3. 渐进式修改</h2>
+<h2 id="generate-architecture-diagram-prompts">Generate Architecture Diagram Prompts</h2>
+<p>Generate a modern but minimalist style Architecture Diagram for DeerCode.</p>
+<pre data-lang="json" class="language-json "><code class="language-json" data-lang="json">{
+  &quot;name&quot;: &quot;DeerCode&quot;,
+  &quot;description&quot;: &quot;DeerCode Architecture&quot;,
+  &quot;layers&quot;: [
+    {
+      &quot;name&quot;: &quot;Console UI&quot;,
+      &quot;type&quot;: &quot;presentation&quot;,
+      &quot;components&quot;: [
+        {
+          &quot;name&quot;: &quot;App&quot;,
+          &quot;type&quot;: &quot;ui-module&quot;
+        },
+        {
+          &quot;name&quot;: &quot;Theme&quot;,
+          &quot;type&quot;: &quot;ui-module&quot;
+        },
+        {
+          &quot;name&quot;: &quot;Components&quot;,
+          &quot;type&quot;: &quot;ui-module&quot;
+        }
+      ]
+    },
+    {
+      &quot;name&quot;: &quot;Agentic System&quot;,
+      &quot;type&quot;: &quot;core&quot;,
+      &quot;components&quot;: [
+        {
+          &quot;name&quot;: &quot;Coding Agent&quot;,
+          &quot;type&quot;: &quot;agent&quot;,
+          &quot;icon&quot;: &quot;robot&quot;
+        },
+        {
+          &quot;name&quot;: &quot;Prompt Template&quot;,
+          &quot;type&quot;: &quot;template&quot;,
+          &quot;icon&quot;: &quot;template&quot;
+        },
+        {
+          &quot;name&quot;: &quot;Models&quot;,
+          &quot;type&quot;: &quot;model-layer&quot;,
+          &quot;models&quot;: [
+            {
+              &quot;name&quot;: &quot;Doubao Seed 1.6&quot;,
+              &quot;provider&quot;: &quot;bytedance&quot;
+            }
+          ]
+        },
+        {
+          &quot;name&quot;: &quot;Tools&quot;,
+          &quot;type&quot;: &quot;tool-layer&quot;,
+          &quot;tools&quot;: [
+            {
+              &quot;name&quot;: &quot;File System Toolset&quot;,
+              &quot;category&quot;: &quot;filesystem&quot;
+            },
+            {
+              &quot;name&quot;: &quot;Text Editor Tool&quot;,
+              &quot;category&quot;: &quot;editor&quot;
+            },
+            {
+              &quot;name&quot;: &quot;Bash Tool&quot;,
+              &quot;category&quot;: &quot;command&quot;
+            },
+            {
+              &quot;name&quot;: &quot;To-do List Tool&quot;,
+              &quot;category&quot;: &quot;task&quot;
+            },
+            {
+              &quot;name&quot;: &quot;MCP Tool Loader&quot;,
+              &quot;category&quot;: &quot;extension&quot;
+            }
+          ]
+        }
+      ]
+    },
+    {
+      &quot;name&quot;: &quot;Infrastructure&quot;,
+      &quot;type&quot;: &quot;foundation&quot;,
+      &quot;components&quot;: [
+        {
+          &quot;name&quot;: &quot;LangChain&quot;,
+          &quot;type&quot;: &quot;framework&quot;
+        },
+        {
+          &quot;name&quot;: &quot;LangGraph&quot;,
+          &quot;type&quot;: &quot;framework&quot;
+        },
+        {
+          &quot;name&quot;: &quot;Textual UI&quot;,
+          &quot;type&quot;: &quot;ui-framework&quot;
+        },
+        {
+          &quot;name&quot;: &quot;Rich UI&quot;,
+          &quot;type&quot;: &quot;ui-framework&quot;
+        },
+        {
+          &quot;name&quot;: &quot;Config&quot;,
+          &quot;type&quot;: &quot;configuration&quot;
+        }
+      ]
+    }
+  ]
+}
+</code></pre>
+<h2 id="4-chang-shi-bu-tong-feng-ge">4. 尝试不同风格</h2>
+<p>你可以修改 Prompt 中的关键词，比如将“minimalist style and professional”替换为任何你想要的风格，中英文混合也可以：</p>
+<h3 id="bonus-step-feng-ge-qian-yi">Bonus Step. 风格迁移</h3>
+<p>如果你在手边已经找到了喜欢的参考图，那么恭喜你，你可以做风格迁移了！
+风格迁移的方式非常简单，新起一个对话，只需要同时将上述 Prompt 和你喜欢的图片发给 AI 工具，并且说：</p>
+<p>Generate architecture diagram, try your best to keep the style consistency of [image 1]:</p>
+<pre data-lang="json" class="language-json "><code class="language-json" data-lang="json">&#x2F;&#x2F; 你的架构 JSON 表达式
+</code></pre>
+<h2 id="wo-men-xue-xi-dao-de">我们学习到的</h2>
+<ul>
+<li>
+<p>用 JSON 来写 Prompt</p>
+</li>
+<li>
+<p>架构即代码</p>
+</li>
+<li>
+<p>内容与样式分离</p>
+</li>
+<li>
+<p>自动化：可编程的架构图</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python"># 自动化脚本示例
+import json
+
+# 从代码仓库提取架构
+architecture = extract_from_repo(&quot;.&#x2F;src&quot;)
+
+# 应用团队标准样式
+style = load_style(&quot;company-standard.json&quot;)
+
+# 批量生成
+for format in [&quot;16:9&quot;, &quot;4:3&quot;, &quot;1:1&quot;]:
+    generate_diagram(architecture, style, format)
+</code></pre>
+</li>
+</ul>
+
+</div>
+
+        </article>
+        <nav>
+          <a id="avatar-container" href="/">
+  <img id="avatar" title="lingyin" src="https://avatars.githubusercontent.com/u/13548822" />
+</a>
+<p>岁月总是历久弥新，需要细细品尝。</p>
+<p>
+  欢迎来到<a href="https://github.com/microtears"> lingyin </a>的开发者日志,
+  这里是我的一些奇思妙想。
+</p>
+<p>
+  它使用
+  <a href="https://www.getzola.org/"> Zola </a>生成。
+</p>
+<div id="nav-break"></div>
+<p id="copyright">© 2019-2025 <a href="/">lingyin</a>.
+</p>
+          
+        </nav>
+      </div>
+      <footer>
+        <p id="run-time">Run&nbsp;&nbsp; time: 0000d &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;00:00:00</p>
+<p id="build-time">Build time: 0000-00-00 00:00:00</p>
+
+      </footer>
+      
+    </main>
+  </div>
+  
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/highlight.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/dart.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/go.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/java.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/kotlin.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/rust.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/shell.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/languages/typescript.min.js"></script>
+
+<script>hljs.highlightAll();</script>
+
+
+
+</body>
+
+</html>

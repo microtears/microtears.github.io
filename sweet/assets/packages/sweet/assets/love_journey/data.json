@@ -1,0 +1,29 @@
+{
+  "partner_one_img": "https://raw.githubusercontent.com/microtears/microtears.github.io/refs/heads/assets/.assets/images/boy.jpg",
+  "partner_two_img": "https://raw.githubusercontent.com/microtears/microtears.github.io/refs/heads/assets/.assets/images/girl.jpg",
+  "memories": [
+    {
+      "id": "first_trip",
+      "title": "First Trip",
+      "date": "0000-00-00",
+      "image_url": "https://raw.githubusercontent.com/microtears/microtears.github.io/refs/heads/assets/.assets/images/lijiang.webp",
+      "is_favorite": true
+    },
+    {
+      "id": "just_us",
+      "title": "Just Us",
+      "date": "0000-00-00",
+      "image_url": "https://raw.githubusercontent.com/microtears/microtears.github.io/refs/heads/assets/.assets/images/lijiang.webp",
+      "is_favorite": true
+    }
+  ],
+  "timeline": [
+    {
+      "id": "first_date",
+      "title": "First Date",
+      "date": "0000-00-00",
+      "description": "We are finally on our first date! Excited to spend time together and get to know each other better.",
+      "image_url": "https://raw.githubusercontent.com/microtears/microtears.github.io/refs/heads/assets/.assets/images/lijiang.webp"
+    }
+  ]
+}
