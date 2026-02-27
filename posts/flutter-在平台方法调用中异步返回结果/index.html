@@ -1,0 +1,193 @@
+<!doctype html><html lang=en-us dir=ltr><head><meta charset=utf-8><meta name=viewport content="width=device-width"><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/codex-src/iA-Fonts@master/iA%20Writer%20Mono/Webfonts/index.css><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/codex-src/iA-Fonts@master/iA%20Writer%20Duo/Webfonts/index.css><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/codex-src/iA-Fonts@master/iA%20Writer%20Quattro/Webfonts/index.css><link rel=icon type=image/ico href=https://microtears.github.io/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://microtears.github.io/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://microtears.github.io/favicon-32x32.png><link rel=icon type=image/png sizes=192x192 href=https://microtears.github.io/android-chrome-192x192.png><link rel=apple-touch-icon sizes=180x180 href=https://microtears.github.io/apple-touch-icon.png><meta name=description content><title>Flutter 在平台方法调用中异步返回结果 | The Developer Log of lingyin</title><link rel=canonical href=https://microtears.github.io/posts/flutter-%E5%9C%A8%E5%B9%B3%E5%8F%B0%E6%96%B9%E6%B3%95%E8%B0%83%E7%94%A8%E4%B8%AD%E5%BC%82%E6%AD%A5%E8%BF%94%E5%9B%9E%E7%BB%93%E6%9E%9C/><meta property="og:url" content="https://microtears.github.io/posts/flutter-%E5%9C%A8%E5%B9%B3%E5%8F%B0%E6%96%B9%E6%B3%95%E8%B0%83%E7%94%A8%E4%B8%AD%E5%BC%82%E6%AD%A5%E8%BF%94%E5%9B%9E%E7%BB%93%E6%9E%9C/"><meta property="og:site_name" content="The Developer Log of lingyin"><meta property="og:title" content="Flutter 在平台方法调用中异步返回结果"><meta property="og:description" content="Flutter 在平台方法调用中异步返回结果 # asynchronous_method_channel 是一个在 Flutter 和 Native 之间异步调用方法时，支持异步返回结果的插件。
+在利用 Flutter 编写跨平台应用时，一些功能需要调用 Native 方法才能实现，可以利用 Flutter 为我们提供的 MethodChannel 实现。对与 Flutter 来说，所有的 Native 方法调用都是异步返回的，但是对于 Native 来说，对于来自 Flutter 的方法调用，我们要返回的结果却不能异步返回，如果我们尝试在执行异步操作之后调用result.success(something)，执行时会得到java.lang.IllegalStateException: Reply already submitted的错误信息。所以 AsynchronousMethodChannel 是对 MethodChannel 的一次封装，为其添加了异步返回方法调用结果的功能。因为对于 Flutter，和 Native 的通信即方法调用必须在平台主线程，但我们又知道应该尽量避免在主线程进行耗时操作，所以需要有一个措施来支持平台方法调用时异步返回结果，即编写本库的目的。
+关于 asynchronous_method_channel # Package: https://pub.dev/packages/asynchronous_method_channel
+Example: https://github.com/microtears/asynchronous-method-channel/tree/master/example
+Repository: https://github.com/microtears/asynchronous-method-channel
+Documentation: https://pub.dev/documentation/asynchronous_method_channel/latest/
+View/report issues: https://github.com/microtears/asynchronous-method-channel/issues
+Flutter 配置 # version: v1.9.1+hotfix.6 channel: master 在 Android 上通过 AsynchronousMethodChannel 和 kotlin 编写插件 # 下面是一个利用 kotlin 协程执行异步任务并返回结果的示例。
+在正式开始之前，需要我们了解的一件事是：Flutter 应用程序中 Android 模块的 gradle 不会自动导入我们需要的 Java 包，您必须手动添加以下代码。"><meta property="og:locale" content="en_us"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2019-10-31T00:00:00+00:00"><meta property="article:modified_time" content="2019-10-31T00:00:00+00:00"><link rel=stylesheet href=/assets/combined.min.d0d6206b72448fa0b536a32c9f88ac0353080eab5af23c561eec13937d64e93e.css media=all><script async src="https://www.googletagmanager.com/gtag/js?id=G-TQQBL084VX"></script><script>var doNotTrack=!1,dnt=navigator.doNotTrack||window.doNotTrack||navigator.msDoNotTrack,doNotTrack=dnt=="1"||dnt=="yes";if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-TQQBL084VX")}</script></head><body><div class=content><header><div class=header><h1 class=header-title><a href=https://microtears.github.io/>The Developer Log of lingyin</a></h1><div class=header-menu><p class=small><a href=/posts>/Posts</a></p><p class=small><a href=/sweet>/Sweet</a></p><p class=small><a href=/posts/the-story-of-your-life/>/Story</a></p><p class=small><a href=/about>/About</a></p></div></div></header><main class=main><div><article><header class=single-intro-container><h1 class=single-title>Flutter 在平台方法调用中异步返回结果</h1><div class=single-subsummary><div><p class=single-date><time datetime=2019-10-31T00:00:00+00:00>October 31, 2019</time></p></div></div></header><div class=single-content><h1 class=heading id=flutter-在平台方法调用中异步返回结果>Flutter 在平台方法调用中异步返回结果
+<a class=anchor href=#flutter-%e5%9c%a8%e5%b9%b3%e5%8f%b0%e6%96%b9%e6%b3%95%e8%b0%83%e7%94%a8%e4%b8%ad%e5%bc%82%e6%ad%a5%e8%bf%94%e5%9b%9e%e7%bb%93%e6%9e%9c>#</a></h1><p>asynchronous_method_channel 是一个在 Flutter 和 Native 之间异步调用方法时，支持异步返回结果的插件。</p><p>在利用 Flutter 编写跨平台应用时，一些功能需要调用 Native 方法才能实现，可以利用 Flutter 为我们提供的 MethodChannel 实现。对与 Flutter 来说，所有的 Native 方法调用都是异步返回的，但是对于 Native 来说，对于来自 Flutter 的方法调用，我们要返回的结果却不能异步返回，如果我们尝试在执行异步操作之后调用<code>result.success(something)</code>，执行时会得到<code>java.lang.IllegalStateException: Reply already submitted</code>的错误信息。所以 AsynchronousMethodChannel 是对 MethodChannel 的一次封装，为其添加了异步返回方法调用结果的功能。因为对于 Flutter，和 Native 的通信即方法调用必须在平台主线程，但我们又知道应该尽量避免在主线程进行耗时操作，所以需要有一个措施来支持平台方法调用时异步返回结果，即编写本库的目的。</p><h2 class=heading id=关于-asynchronous_method_channel>关于 asynchronous_method_channel
+<a class=anchor href=#%e5%85%b3%e4%ba%8e-asynchronous_method_channel>#</a></h2><p><a href=https://pub.dev/packages/asynchronous_method_channel>Package</a>: <a href=https://pub.dev/packages/asynchronous_method_channel>https://pub.dev/packages/asynchronous_method_channel</a></p><p><a href=https://github.com/microtears/asynchronous-method-channel/tree/master/example>Example</a>: <a href=https://github.com/microtears/asynchronous-method-channel/tree/master/example>https://github.com/microtears/asynchronous-method-channel/tree/master/example</a></p><p><a href=https://github.com/microtears/asynchronous-method-channel>Repository</a>: <a href=https://github.com/microtears/asynchronous-method-channel>https://github.com/microtears/asynchronous-method-channel</a></p><p><a href=https://pub.dev/documentation/asynchronous_method_channel/latest/>Documentation</a>: <a href=https://pub.dev/documentation/asynchronous_method_channel/latest/>https://pub.dev/documentation/asynchronous_method_channel/latest/</a></p><p><a href=https://github.com/microtears/asynchronous-method-channel/issues>View/report issues</a>: <a href=https://github.com/microtears/asynchronous-method-channel/issues>https://github.com/microtears/asynchronous-method-channel/issues</a></p><h2 class=heading id=flutter-配置>Flutter 配置
+<a class=anchor href=#flutter-%e9%85%8d%e7%bd%ae>#</a></h2><ul><li>version: v1.9.1+hotfix.6</li><li>channel: master</li></ul><h2 class=heading id=在-android-上通过-asynchronousmethodchannel-和-kotlin-编写插件>在 Android 上通过 AsynchronousMethodChannel 和 kotlin 编写插件
+<a class=anchor href=#%e5%9c%a8-android-%e4%b8%8a%e9%80%9a%e8%bf%87-asynchronousmethodchannel-%e5%92%8c-kotlin-%e7%bc%96%e5%86%99%e6%8f%92%e4%bb%b6>#</a></h2><p>下面是一个利用 kotlin 协程执行异步任务并返回结果的示例。</p><p>在正式开始之前，需要我们了解的一件事是：Flutter 应用程序中 Android 模块的 gradle 不会自动导入我们需要的 Java 包，您必须手动添加以下代码。</p><div class=code-block><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=k>import</span> <span class=nn>io.flutter.plugins.asynchronous_method_channel.AsynchronousMethodChannel</span></span></span></code></pre></div><button class=copy-code-button>copy</button></div><div class=code-block><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=k>class</span> <span class=nc>MainActivity</span><span class=p>:</span> <span class=n>FlutterActivity</span><span class=p>()</span> <span class=p>,</span> <span class=nc>AsynchronousMethodChannel</span><span class=p>.</span><span class=n>MethodCallHandler</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>companion</span> <span class=k>object</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>const</span> <span class=k>val</span> <span class=py>CHANNEL</span><span class=p>=</span><span class=s2>&#34;AsynchronousMethodChannelExample&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>var</span> <span class=py>parentJob</span> <span class=p>=</span> <span class=n>Job</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>val</span> <span class=py>coroutineContext</span><span class=p>:</span> <span class=n>CoroutineContext</span>
+</span></span><span class=line><span class=cl>        <span class=k>get</span><span class=p>()</span> <span class=p>=</span> <span class=n>parentJob</span> <span class=p>+</span> <span class=nc>Dispatchers</span><span class=p>.</span><span class=n>Main</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>val</span> <span class=py>scope</span> <span class=p>=</span> <span class=n>CoroutineScope</span><span class=p>(</span><span class=n>coroutineContext</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>override</span> <span class=k>fun</span> <span class=nf>onCreate</span><span class=p>(</span><span class=n>savedInstanceState</span><span class=p>:</span> <span class=n>Bundle</span><span class=p>?)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>super</span><span class=p>.</span><span class=n>onCreate</span><span class=p>(</span><span class=n>savedInstanceState</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=nc>GeneratedPluginRegistrant</span><span class=p>.</span><span class=n>registerWith</span><span class=p>(</span><span class=k>this</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>AsynchronousMethodChannel</span><span class=p>(</span><span class=n>flutterView</span><span class=p>,</span> <span class=n>CHANNEL</span><span class=p>).</span><span class=n>setMethodCallHandler</span><span class=p>(</span><span class=k>this</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>override</span> <span class=k>fun</span> <span class=nf>onMethodCall</span><span class=p>(</span><span class=n>call</span><span class=p>:</span> <span class=n>MethodCall</span><span class=p>,</span> <span class=n>result</span><span class=p>:</span> <span class=nc>AsynchronousMethodChannel</span><span class=p>.</span><span class=n>Result</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>when</span> <span class=p>(</span><span class=n>call</span><span class=p>.</span><span class=n>method</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;getBatteryLevel&#34;</span> <span class=o>-&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=n>result</span><span class=p>.</span><span class=n>success</span><span class=p>(</span><span class=k>null</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                <span class=n>scope</span><span class=p>.</span><span class=n>launch</span><span class=p>(</span><span class=nc>Dispatchers</span><span class=p>.</span><span class=n>IO</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>                    <span class=c1>// Do something
+</span></span></span><span class=line><span class=cl>                    <span class=c1>// Perform asynchronous time-consuming tasks
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>                    <span class=c1>// Just return results after 2 seconds
+</span></span></span><span class=line><span class=cl>                    <span class=n>delay</span><span class=p>(</span><span class=mi>2000</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>                    <span class=c1>// The method in AsynchronousMethodChannel.Result must be called on the main thread of the platform
+</span></span></span><span class=line><span class=cl>                    <span class=n>scope</span><span class=p>.</span><span class=n>launch</span><span class=p>(</span><span class=nc>Dispatchers</span><span class=p>.</span><span class=n>Main</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>                        <span class=n>result</span><span class=p>.</span><span class=n>successAsynchronous</span><span class=p>(</span><span class=n>getBatteryLevel</span><span class=p>().</span><span class=n>toString</span><span class=p>())</span>
+</span></span><span class=line><span class=cl>                    <span class=p>}</span>
+</span></span><span class=line><span class=cl>                <span class=p>}</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>            <span class=k>else</span> <span class=o>-&gt;</span> <span class=n>result</span><span class=p>.</span><span class=n>notImplemented</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>fun</span> <span class=nf>getBatteryLevel</span><span class=p>():</span> <span class=n>Int</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>batteryLevel</span><span class=p>:</span> <span class=n>Int</span>
+</span></span><span class=line><span class=cl>        <span class=n>batteryLevel</span> <span class=p>=</span> <span class=k>if</span> <span class=p>(</span><span class=nc>Build</span><span class=p>.</span><span class=nc>VERSION</span><span class=p>.</span><span class=n>SDK_INT</span> <span class=o>&gt;=</span> <span class=nc>Build</span><span class=p>.</span><span class=nc>VERSION_CODES</span><span class=p>.</span><span class=n>LOLLIPOP</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>val</span> <span class=py>batteryManager</span> <span class=p>=</span> <span class=n>getSystemService</span><span class=p>(</span><span class=nc>Context</span><span class=p>.</span><span class=n>BATTERY_SERVICE</span><span class=p>)</span> <span class=k>as</span> <span class=n>BatteryManager</span>
+</span></span><span class=line><span class=cl>            <span class=n>batteryManager</span><span class=p>.</span><span class=n>getIntProperty</span><span class=p>(</span><span class=nc>BatteryManager</span><span class=p>.</span><span class=n>BATTERY_PROPERTY_CAPACITY</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>val</span> <span class=py>intent</span> <span class=p>=</span> <span class=n>ContextWrapper</span><span class=p>(</span><span class=n>applicationContext</span><span class=p>).</span><span class=n>registerReceiver</span><span class=p>(</span><span class=k>null</span><span class=p>,</span> <span class=n>IntentFilter</span><span class=p>(</span><span class=nc>Intent</span><span class=p>.</span><span class=n>ACTION_BATTERY_CHANGED</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>            <span class=n>intent</span><span class=o>!!</span><span class=p>.</span><span class=n>getIntExtra</span><span class=p>(</span><span class=nc>BatteryManager</span><span class=p>.</span><span class=n>EXTRA_LEVEL</span><span class=p>,</span> <span class=p>-</span><span class=mi>1</span><span class=p>)</span> <span class=p>*</span> <span class=mi>100</span> <span class=p>/</span> <span class=n>intent</span><span class=p>.</span><span class=n>getIntExtra</span><span class=p>(</span><span class=nc>BatteryManager</span><span class=p>.</span><span class=n>EXTRA_SCALE</span><span class=p>,</span> <span class=p>-</span><span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>batteryLevel</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>override</span> <span class=k>fun</span> <span class=nf>onDestroy</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// cancel all asynchronous jobs
+</span></span></span><span class=line><span class=cl>        <span class=n>scope</span><span class=p>.</span><span class=n>cancel</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=k>super</span><span class=p>.</span><span class=n>onDestroy</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span></span></span></code></pre></div><button class=copy-code-button>copy</button></div><h2 class=heading id=在-flutter-上通过-asynchronousmethodchannel-和-dart-编写插件>在 Flutter 上通过 AsynchronousMethodChannel 和 dart 编写插件
+<a class=anchor href=#%e5%9c%a8-flutter-%e4%b8%8a%e9%80%9a%e8%bf%87-asynchronousmethodchannel-%e5%92%8c-dart-%e7%bc%96%e5%86%99%e6%8f%92%e4%bb%b6>#</a></h2><p>下面是一个在 Flutter 应用程序中使用 AsynchronousMethodChannel 的示例。</p><div class=code-block><div class=highlight><pre tabindex=0 class=chroma><code class=language-dart data-lang=dart><span class=line><span class=cl><span class=kd>class</span> <span class=nc>_MyAppState</span> <span class=kd>extends</span> <span class=n>State</span><span class=o>&lt;</span><span class=n>MyApp</span><span class=o>&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=kd>static</span> <span class=kd>final</span> <span class=n>platform</span> <span class=o>=</span>
+</span></span><span class=line><span class=cl>      <span class=n>AsynchronousMethodChannel</span><span class=p>(</span><span class=s1>&#39;AsynchronousMethodChannelExample&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=kt>String</span> <span class=n>_batteryLevel</span> <span class=o>=</span> <span class=s1>&#39;Unknown&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>  <span class=kt>String</span> <span class=n>_timeInfo</span> <span class=o>=</span> <span class=s2>&#34;&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>  <span class=kd>static</span> <span class=kd>const</span> <span class=n>style</span> <span class=o>=</span> <span class=n>TextStyle</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=nl>fontSize:</span> <span class=m>16</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nl>fontFamily:</span> <span class=s2>&#34;monospace&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=err>@</span><span class=n>override</span>
+</span></span><span class=line><span class=cl>  <span class=kt>void</span> <span class=n>initState</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>super</span><span class=p>.</span><span class=n>initState</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>    <span class=n>initPlatformState</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=c1>// Platform messages are asynchronous, so we initialize in an async method.
+</span></span></span><span class=line><span class=cl>  <span class=n>Future</span><span class=o>&lt;</span><span class=kt>void</span><span class=o>&gt;</span> <span class=n>initPlatformState</span><span class=p>()</span> <span class=kd>async</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=kt>String</span> <span class=n>batteryLevel</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// Platform messages may fail, so we use a try/catch PlatformException.
+</span></span></span><span class=line><span class=cl>    <span class=k>try</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=kd>final</span> <span class=n>sb</span> <span class=o>=</span> <span class=n>StringBuffer</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>      <span class=kd>final</span> <span class=n>startAt</span> <span class=o>=</span> <span class=n>DateTime</span><span class=p>.</span><span class=n>now</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>      <span class=n>sb</span><span class=p>.</span><span class=n>writeln</span><span class=p>(</span><span class=s2>&#34;[start] [</span><span class=si>$</span><span class=n>startAt</span><span class=s2>]&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>      <span class=n>batteryLevel</span> <span class=o>=</span>
+</span></span><span class=line><span class=cl>          <span class=kd>await</span> <span class=n>platform</span><span class=p>.</span><span class=n>invokeAsynchronousMethod</span><span class=p>(</span><span class=s2>&#34;getBatteryLevel&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>      <span class=kd>final</span> <span class=n>endAt</span> <span class=o>=</span> <span class=n>DateTime</span><span class=p>.</span><span class=n>now</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>      <span class=n>sb</span><span class=p>.</span><span class=n>writeln</span><span class=p>(</span><span class=s2>&#34;[end  ] [</span><span class=si>$</span><span class=n>endAt</span><span class=s2>]&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>      <span class=n>sb</span><span class=p>.</span><span class=n>writeln</span><span class=p>(</span><span class=s2>&#34;[tag  ] [hours:minutes:seconds:us]&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>      <span class=n>sb</span><span class=p>.</span><span class=n>writeln</span><span class=p>(</span><span class=s2>&#34;[total] [</span><span class=si>${</span><span class=n>endAt</span><span class=p>.</span><span class=n>difference</span><span class=p>(</span><span class=n>startAt</span><span class=p>)</span><span class=si>}</span><span class=s2>]&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>      <span class=n>_timeInfo</span> <span class=o>=</span> <span class=n>sb</span><span class=p>.</span><span class=n>toString</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span> <span class=n>on</span> <span class=n>PlatformException</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=n>batteryLevel</span> <span class=o>=</span> <span class=s1>&#39;Failed to get platform version.&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>// If the widget was removed from the tree while the asynchronous platform
+</span></span></span><span class=line><span class=cl>    <span class=c1>// message was in flight, we want to discard the reply rather than calling
+</span></span></span><span class=line><span class=cl>    <span class=c1>// setState to update our non-existent appearance.
+</span></span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=n>mounted</span><span class=p>)</span> <span class=k>return</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>setState</span><span class=p>(()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=n>_batteryLevel</span> <span class=o>=</span> <span class=n>batteryLevel</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>});</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=err>@</span><span class=n>override</span>
+</span></span><span class=line><span class=cl>  <span class=n>Widget</span> <span class=n>build</span><span class=p>(</span><span class=n>BuildContext</span> <span class=n>context</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>MaterialApp</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>      <span class=nl>home:</span> <span class=n>Scaffold</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>        <span class=nl>appBar:</span> <span class=n>AppBar</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>          <span class=nl>title:</span> <span class=kd>const</span> <span class=n>Text</span><span class=p>(</span><span class=s1>&#39;AsynchronousMethodChannel example app&#39;</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>        <span class=p>),</span>
+</span></span><span class=line><span class=cl>        <span class=nl>body:</span> <span class=n>Padding</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>          <span class=nl>padding:</span> <span class=kd>const</span> <span class=n>EdgeInsets</span><span class=p>.</span><span class=n>all</span><span class=p>(</span><span class=m>20.0</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>          <span class=nl>child:</span> <span class=n>Column</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>            <span class=nl>crossAxisAlignment:</span> <span class=n>CrossAxisAlignment</span><span class=p>.</span><span class=n>start</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nl>children:</span> <span class=o>&lt;</span><span class=n>Widget</span><span class=o>&gt;</span><span class=p>[</span>
+</span></span><span class=line><span class=cl>              <span class=n>Text</span><span class=p>(</span><span class=s1>&#39;Battery level: </span><span class=si>$</span><span class=n>_batteryLevel</span><span class=se>\n</span><span class=s1>&#39;</span><span class=p>,</span> <span class=nl>style:</span> <span class=n>style</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>              <span class=n>Text</span><span class=p>(</span><span class=n>_timeInfo</span><span class=p>,</span> <span class=nl>style:</span> <span class=n>style</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>              <span class=n>Center</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>                <span class=nl>child:</span> <span class=n>FlatButton</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>                  <span class=nl>onPressed:</span> <span class=n>initPlatformState</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                  <span class=nl>child:</span> <span class=n>Text</span><span class=p>(</span><span class=s2>&#34;Get battery level&#34;</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>                <span class=p>),</span>
+</span></span><span class=line><span class=cl>              <span class=p>),</span>
+</span></span><span class=line><span class=cl>            <span class=p>],</span>
+</span></span><span class=line><span class=cl>          <span class=p>),</span>
+</span></span><span class=line><span class=cl>        <span class=p>),</span>
+</span></span><span class=line><span class=cl>      <span class=p>),</span>
+</span></span><span class=line><span class=cl>    <span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span></span></span></code></pre></div><button class=copy-code-button>copy</button></div><h2 class=heading id=截图>截图
+<a class=anchor href=#%e6%88%aa%e5%9b%be>#</a></h2><p><img alt=example src=https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/10/31/16e1d8c357a37f57~tplv-t2oaga2asx-image.image></p><h2 class=heading id=在测试时使用-asynchronousmethodchannel>在测试时使用 AsynchronousMethodChannel
+<a class=anchor href=#%e5%9c%a8%e6%b5%8b%e8%af%95%e6%97%b6%e4%bd%bf%e7%94%a8-asynchronousmethodchannel>#</a></h2><div class=code-block><div class=highlight><pre tabindex=0 class=chroma><code class=language-dart data-lang=dart><span class=line><span class=cl><span class=kt>void</span> <span class=n>main</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=n>TestWidgetsFlutterBinding</span><span class=p>.</span><span class=n>ensureInitialized</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=kd>final</span> <span class=n>AsynchronousMethodChannel</span> <span class=n>channel</span> <span class=o>=</span>
+</span></span><span class=line><span class=cl>      <span class=n>AsynchronousMethodChannel</span><span class=p>(</span><span class=s1>&#39;asynchronous_method_channel&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=n>setUp</span><span class=p>(()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>channel</span><span class=p>.</span><span class=n>setMockAsynchronousMethodCallHandler</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>        <span class=p>(</span><span class=n>MethodCall</span> <span class=n>methodCall</span><span class=p>,</span> <span class=n>MockResult</span> <span class=n>result</span><span class=p>)</span> <span class=kd>async</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=k>switch</span> <span class=p>(</span><span class=n>methodCall</span><span class=p>.</span><span class=n>method</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>case</span> <span class=s2>&#34;asynchronousMethod&#34;</span><span class=o>:</span>
+</span></span><span class=line><span class=cl>          <span class=c1>// Delay 30 milliseconds to return results
+</span></span></span><span class=line><span class=cl>          <span class=n>Future</span><span class=p>.</span><span class=n>delayed</span><span class=p>(</span><span class=n>Duration</span><span class=p>(</span><span class=nl>milliseconds:</span> <span class=m>30</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>              <span class=p>()</span> <span class=o>=&gt;</span> <span class=n>result</span><span class=p>.</span><span class=n>success</span><span class=p>(</span><span class=n>methodCall</span><span class=p>.</span><span class=n>arguments</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>          <span class=k>break</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=k>case</span> <span class=s2>&#34;syncMethod&#34;</span><span class=o>:</span>
+</span></span><span class=line><span class=cl>          <span class=k>return</span> <span class=s2>&#34;ok&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>          <span class=k>break</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=k>case</span> <span class=s2>&#34;getBatteryLevel&#34;</span><span class=o>:</span>
+</span></span><span class=line><span class=cl>          <span class=n>result</span><span class=p>.</span><span class=n>success</span><span class=p>(</span><span class=s2>&#34;100&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>          <span class=k>break</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>      <span class=p>}</span>
+</span></span><span class=line><span class=cl>      <span class=k>return</span> <span class=kc>null</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>});</span>
+</span></span><span class=line><span class=cl>  <span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=n>tearDown</span><span class=p>(()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>channel</span><span class=p>.</span><span class=n>setMockAsynchronousMethodCallHandler</span><span class=p>(</span><span class=kc>null</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=n>test</span><span class=p>(</span><span class=s1>&#39;testMethod&#39;</span><span class=p>,</span> <span class=p>()</span> <span class=kd>async</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>expect</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>      <span class=kd>await</span> <span class=n>channel</span><span class=p>.</span><span class=n>invokeAsynchronousMethod</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;asynchronousMethod&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span><span class=s2>&#34;arg&#34;</span><span class=o>:</span> <span class=s2>&#34;arg1&#34;</span><span class=p>},</span>
+</span></span><span class=line><span class=cl>      <span class=p>),</span>
+</span></span><span class=line><span class=cl>      <span class=p>{</span><span class=s2>&#34;arg&#34;</span><span class=o>:</span> <span class=s2>&#34;arg1&#34;</span><span class=p>},</span>
+</span></span><span class=line><span class=cl>    <span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=n>expect</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>      <span class=kd>await</span> <span class=n>channel</span><span class=p>.</span><span class=n>invokeMethod</span><span class=p>(</span><span class=s2>&#34;syncMethod&#34;</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>      <span class=s2>&#34;ok&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=n>expect</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>      <span class=kd>await</span> <span class=n>channel</span><span class=p>.</span><span class=n>invokeAsynchronousMethod</span><span class=p>(</span><span class=s2>&#34;getBatteryLevel&#34;</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>      <span class=s2>&#34;100&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=p>});</span>
+</span></span><span class=line><span class=cl><span class=p>}</span></span></span></code></pre></div><button class=copy-code-button>copy</button></div><h2 class=heading id=在-ios-上使用-asynchronousmethodchannel>在 IOS 上使用 AsynchronousMethodChannel
+<a class=anchor href=#%e5%9c%a8-ios-%e4%b8%8a%e4%bd%bf%e7%94%a8-asynchronousmethodchannel>#</a></h2><p>预计在下一个版本发布。</p><h2 class=heading id=关于更多>关于更多
+<a class=anchor href=#%e5%85%b3%e4%ba%8e%e6%9b%b4%e5%a4%9a>#</a></h2><p>请参阅<a href=https://github.com/microtears/asynchronous-method-channel/tree/master/example>示例</a>。</p></div></article><div class=single-pagination><hr><div class=flexnowrap><div class=single-pagination-prev><div class=single-pagination-container-prev><div class=single-pagination-text>←</div><div class=single-pagination-text><a href=/posts/2019-android-library-%E6%80%8E%E4%B9%88%E5%BF%AB%E9%80%9F%E4%B8%8A%E4%BC%A0-jcenter/>2019 Android library 怎么快速上传 Jcenter</a></div></div></div><div class=single-pagination-next><div class=single-pagination-container-next><div class=single-pagination-text><a href=/posts/%E5%80%9F%E5%8A%A9%E6%87%82%E8%BD%A6%E5%B8%9D%E6%8E%A2%E7%B4%A2%E9%B8%BF%E8%92%99%E7%B3%BB%E7%BB%9F%E4%B8%AD%E4%BB%8E-router-%E5%88%87%E6%8D%A2%E5%88%B0-navigation-%E7%9A%84%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91%E4%B9%8B%E9%81%93/>借助懂车帝，探索鸿蒙系统中从 Router 切换到 Navigation 的应用开发之道</a></div><div class=single-pagination-text>→</div></div></div></div><hr></div><div class=back-to-top><a href=#top>back to top</a></div></div></main></div><footer><p>Powered by
+<a href=https://gohugo.io/>Hugo</a>
+and
+<a href=https://github.com/tomfran/typo>tomfran/typo</a></p></footer></body><script defer src=/js/copy-code.js></script></html>

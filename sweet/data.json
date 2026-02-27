@@ -1,0 +1,83 @@
+{
+  "page_title": "Love Anniversary",
+  "header_title": "Love Journey",
+  "together_since": "2020-12-06",
+  "together_since_display": "Dec 6, 2020",
+  "labels": {
+    "together_since": "Together Since",
+    "days_unit": "Days",
+    "hours_unit": "Hours",
+    "minutes_unit": "Minutes",
+    "days_left_unit": "Days Left",
+    "memories_title": "Our Memories",
+    "memories_action": "See All",
+    "timeline_title": "Timeline"
+  },
+  "next_anniversary": {
+    "label": "Next Anniversary",
+    "title": "6th Year Together",
+    "target_date": "2026-12-06"
+  },
+  "partner_one_img": "https://raw.githubusercontent.com/microtears/microtears.github.io/refs/heads/assets/.assets/images/boy.jpg",
+  "partner_one_alt": "Profile picture of partner one",
+  "partner_two_img": "https://raw.githubusercontent.com/microtears/microtears.github.io/refs/heads/assets/.assets/images/girl.jpg",
+  "partner_two_alt": "Profile picture of partner two",
+  "_memories": [
+    {
+      "id": "first_trip",
+      "title": "First Trip",
+      "date": "0000-00-00",
+      "image_url": "https://plus.unsplash.com/premium_photo-1681554599678-c7cdb0cfd8df?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "is_favorite": false,
+      "alt": "Couple standing on a mountain peak at sunset"
+    },
+    {
+      "id": "anniversary",
+      "title": "Anniversary",
+      "date": "0000-00-00",
+      "image_url": "https://plus.unsplash.com/premium_photo-1681554599678-c7cdb0cfd8df?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "is_favorite": true,
+      "alt": "Candlelight dinner table with wine glasses"
+    },
+    {
+      "id": "summer_beach",
+      "title": "Summer Beach",
+      "date": "0000-00-00",
+      "image_url": "https://plus.unsplash.com/premium_photo-1681554599678-c7cdb0cfd8df?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "is_favorite": false,
+      "alt": "Sunny beach day with footprints in the sand"
+    },
+    {
+      "id": "just_us",
+      "title": "Just Us",
+      "date": "0000-00-00",
+      "image_url": "https://plus.unsplash.com/premium_photo-1681554599678-c7cdb0cfd8df?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "is_favorite": false,
+      "alt": "Selfie of the couple smiling in a park"
+    }
+  ],
+  "_timeline": [
+    {
+      "id": "trip_to_paris",
+      "title": "Trip to Paris",
+      "date": "May 20, 2023",
+      "description": "A dreamy trip to Paris with unforgettable views.",
+      "image_url": "https://plus.unsplash.com/premium_photo-1681554599678-c7cdb0cfd8df?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "icon": "flight_takeoff",
+      "icon_bg_class": "bg-primary/20",
+      "icon_text_class": "text-primary",
+      "location": "Paris, France",
+      "alt": "Eiffel tower view from a street"
+    },
+    {
+      "id": "her_birthday",
+      "title": "Her Birthday",
+      "date": "Feb 14, 2023",
+      "description": "Celebrated with cake, laughter, and wishes.",
+      "image_url": "https://plus.unsplash.com/premium_photo-1681554599678-c7cdb0cfd8df?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "icon": "cake",
+      "icon_bg_class": "bg-purple-500/20",
+      "icon_text_class": "text-purple-400"
+    }
+  ]
+}

@@ -1,57 +1,219 @@
 <!DOCTYPE html>
-<html>
+
+<html class="dark" lang="en">
 
 <head>
-  <base href="/sweet/" />
+    <base href="/sweet/">
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Love Anniversary</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f4257b",
+                        "background-light": "#f8f5f7",
+                        "background-dark": "#221017",
+                    },
+                    fontFamily: {
+                        heading: ['Archivo', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'float-delayed': 'float 6s ease-in-out 3s infinite',
+                        'twinkle': 'twinkle 4s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        twinkle: {
+                            '0%, 100%': { opacity: '0.2', transform: 'scale(1)' },
+                            '50%': { opacity: '1', transform: 'scale(1.2)' },
+                        }
+                    },
+                    fontSize: {
+                        xs: ['0.75rem', { lineHeight: '1.5' }],
+                        sm: ['0.875rem', { lineHeight: '1.5' }],
+                        base: ['1rem', { lineHeight: '1.6' }],
+                        lg: ['1.125rem', { lineHeight: '1.6' }],
+                        xl: ['1.25rem', { lineHeight: '1.5' }],
+                        '2xl': ['1.5rem', { lineHeight: '1.4' }],
+                        '3xl': ['1.875rem', { lineHeight: '1.4' }],
+                        '4xl': ['2.25rem', { lineHeight: '1.3' }],
+                        '5xl': ['3rem', { lineHeight: '1.2' }],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        /* Custom scrollbar hiding for clean carousel */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
 
-  <meta charset="UTF-8" />
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
-  <title>Sweet</title>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TQQBL084VX"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-    gtag("js", new Date());
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
 
-    gtag("config", "G-TQQBL084VX");
-  </script>
-  <style>
-    /* 为flex布局设置基础样式 */
-    html,
-    body {
-      margin: 0;
-      height: 100%;
-      overflow: hidden;
-    }
-
-    #main {
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      display: flex;
-    }
-  </style>
+        /* Particle effects */
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(244, 37, 123, 0.4) 0%, rgba(244, 37, 123, 0) 70%);
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
 </head>
 
-<body>
-  <div id="main"></div>
-  <script src="flutter.js"></script>
-  <script src="flutter_bootstrap.js"></script>
-  <script>
-    _flutter.loader.load({
-      onEntrypointLoaded: async function (engineInitializer) {
-        const appRunner = await engineInitializer.initializeEngine({
-          multiViewEnabled: true,
-        });
-        const app = await appRunner.runApp();
-        app.addView({ hostElement: document.querySelector("#main") });
-      }
-    });
-  </script>
-
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white overflow-x-hidden transition-colors duration-300 max-w-6xl mx-auto">
+    <!-- Dynamic Background Layer -->
+    <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <!-- Abstract glowing orbs -->
+        <div
+            class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-primary/20 blur-[100px] rounded-full animate-float">
+        </div>
+        <div
+            class="absolute bottom-[-10%] right-[-10%] w-80 h-80 bg-purple-600/20 blur-[100px] rounded-full animate-float-delayed">
+        </div>
+        <!-- Twinkling Stars (CSS simulated) -->
+        <div
+            class="absolute top-[15%] left-[20%] w-1 h-1 bg-white rounded-full animate-twinkle opacity-60">
+        </div>
+        <div
+            class="absolute top-[25%] right-[15%] w-2 h-2 bg-primary/50 rounded-full animate-twinkle opacity-40 delay-700">
+        </div>
+        <div
+            class="absolute bottom-[30%] left-[10%] w-1.5 h-1.5 bg-white rounded-full animate-twinkle opacity-50 delay-1000">
+        </div>
+    </div>
+    <!-- Main Content Container -->
+    <div class="relative z-10 flex min-h-screen flex-col pb-24">
+        <!-- Top App Bar -->
+        <header
+            class="flex items-center justify-between px-4 md:px-6 py-4 sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/50 backdrop-blur-sm">
+            <a href="/" class="font-heading text-lg font-bold opacity-90">
+                The Developer Log of lingyin
+            </a>
+        </header>
+        <!-- Couple Profile Hero -->
+        <p id="sweet-error" class="hidden px-4 text-sm text-red-500"></p>
+        <section class="flex flex-col items-center justify-center mt-6 animate-float">
+            <div class="relative flex items-center justify-center">
+                <!-- Avatar 1 -->
+                <div id="partner-one"
+                    class="w-24 h-24 rounded-full border-4 border-background-light dark:border-background-dark shadow-xl bg-cover bg-center z-0 translate-x-3">
+                </div>
+                <!-- Connector Heart -->
+                <div
+                    class="z-20 flex items-center justify-center w-10 h-10 bg-primary text-white rounded-full border-4 border-background-light dark:border-background-dark shadow-lg absolute">
+                    <span class="material-symbols-outlined text-[18px] fill-current">favorite</span>
+                </div>
+                <!-- Avatar 2 -->
+                <div id="partner-two"
+                    class="w-24 h-24 rounded-full border-4 border-background-light dark:border-background-dark shadow-xl bg-cover bg-center z-10 -translate-x-3">
+                </div>
+            </div>
+            <p id="together-since"
+                class="mt-4 text-slate-500 dark:text-[#cb90a9] font-medium text-sm tracking-wide uppercase">
+                Loading...</p>
+        </section>
+        <!-- Main Counter -->
+        <section class="flex flex-col items-center justify-center py-6">
+            <h1 id="days-count"
+                class="text-7xl font-extrabold tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-primary to-purple-400 drop-shadow-sm">
+                --</h1>
+            <span id="days-unit"
+                class="text-2xl font-bold text-slate-800 dark:text-white mt-[-8px]">Days</span>
+            <!-- Detail Stats Pill -->
+            <div
+                class="mt-6 flex items-center gap-2 px-4 py-2 bg-white/50 dark:bg-white/5 border border-white/20 backdrop-blur-md rounded-full">
+                <span class="material-symbols-outlined text-primary text-sm">schedule</span>
+                <p id="detail-stats" class="text-sm font-medium text-slate-600 dark:text-slate-300">
+                    --</p>
+            </div>
+        </section>
+        <!-- Countdown Card (Next Milestone) -->
+        <section class="px-4 py-2">
+            <div
+                class="relative w-full overflow-hidden rounded-2xl p-5 bg-gradient-to-r from-primary/20 to-purple-900/40  backdrop-blur-md ">
+                <div class="flex justify-between items-center relative z-10">
+                    <div class="flex flex-col gap-1">
+                        <span id="next-anniversary-label"
+                            class="text-xs uppercase tracking-wider text-primary font-bold">Next
+                            Anniversary</span>
+                        <h3 id="next-anniversary-title" class="text-xl font-bold text-white">2nd
+                            Year Together</h3>
+                    </div>
+                    <div class="flex flex-col items-end">
+                        <span id="next-anniversary-days"
+                            class="text-3xl font-bold text-white">--</span>
+                        <span id="next-anniversary-unit" class="text-xs text-white/70">Days
+                            Left</span>
+                    </div>
+                </div>
+                <!-- Decorative BG Heart -->
+                <span
+                    class="material-symbols-outlined absolute -bottom-4 -right-4 text-[120px] text-white/5 z-0">favorite</span>
+            </div>
+        </section>
+        <!-- Memories Carousel -->
+        <section id="memories-section" class="mt-6">
+            <div id="memories-header" class="flex items-center justify-between px-4 mb-3">
+                <h3 id="memories-title" class="text-lg font-bold text-slate-800 dark:text-white">Our
+                    Memories</h3>
+                <button id="memories-action"
+                    class="text-sm text-primary font-medium hover:text-primary/80 transition">See
+                    All</button>
+            </div>
+            <div id="memories-list"
+                class="flex w-full overflow-x-auto scrollbar-hide px-4 pb-4 gap-4 snap-x snap-mandatory">
+            </div>
+        </section>
+        <!-- Recent Milestones List -->
+        <section id="timeline-section" class="px-4 mt-2">
+            <h3 id="timeline-title" class="text-lg font-bold text-slate-800 dark:text-white mb-3">
+                Timeline</h3>
+            <div id="timeline-list" class="flex flex-col gap-3"></div>
+        </section>
+    </div>
+    <!-- Floating Action Button -->
+    <!--
+    <div class="fixed bottom-6 right-6 z-50">
+        <button
+            class="group flex items-center justify-center w-14 h-14 bg-primary text-white rounded-full shadow-lg shadow-primary/40 hover:scale-105 active:scale-95 transition-all duration-300">
+            <span
+                class="material-symbols-outlined text-2xl group-hover:rotate-90 transition-transform duration-300">add</span>
+        </button>
+    </div>
+    -->
+    <script src="app.js"></script>
 </body>
 
 </html>
