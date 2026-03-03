@@ -46,7 +46,12 @@
 &lt;li&gt;数据：$A \to B(3)$，$A \to C(10)$；$B \to D(8)$，$C \to D(2)$。&lt;/li&gt;
 &lt;li&gt;状态定义：$dp[i]$ 为节点 $i$ 到终点 $D$ 的最短距离。&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre class="mermaid"&gt;graph LR
+&lt;pre class="mermaid"&gt;---
+config:
+ layout: elk
+ look: handDrawn
+---
+graph LR
  A((A)) -- 3 --- B((B))
  A((A)) -- 10 --- C((C))
  B((B)) -- 8 --- D((D))
