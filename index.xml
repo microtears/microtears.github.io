@@ -653,8 +653,7 @@ graph LR
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;tasks&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="na"&gt;withType&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Javadoc&lt;/span&gt;&lt;span class="o"&gt;).&lt;/span&gt;&lt;span class="na"&gt;all&lt;/span&gt; &lt;span class="o"&gt;{&lt;/span&gt; &lt;span class="n"&gt;enabled&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kc"&gt;false&lt;/span&gt; &lt;span class="o"&gt;}&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="o"&gt;}&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="建立-bintrayv1gradle-文件"&gt;建立 bintrayv1.gradle 文件&lt;/h3&gt;
-&lt;p&gt;然后在 project 目录下新建 bintrayv1.gradle 文件，内容如下：&lt;/p&gt;</description></item><item><title>避免 Widget build(BuildContext context)带来的副作用</title><link>https://microtears.github.io/posts/%E9%81%BF%E5%85%8D-widget-buildbuildcontext-context%E5%B8%A6%E6%9D%A5%E7%9A%84%E5%89%AF%E4%BD%9C%E7%94%A8/</link><pubDate>Wed, 04 Sep 2019 00:00:00 +0000</pubDate><guid>https://microtears.github.io/posts/%E9%81%BF%E5%85%8D-widget-buildbuildcontext-context%E5%B8%A6%E6%9D%A5%E7%9A%84%E5%89%AF%E4%BD%9C%E7%94%A8/</guid><description>&lt;h1 id="避免-widget-buildbuildcontext-context带来的副作用"&gt;避免 Widget build(BuildContext context)带来的副作用&lt;/h1&gt;
-&lt;p&gt;Flutter 是一个响应式 UI 框架，当需要展示界面的时候，框架通过 build 方法生成一帧的画面，当画面频繁变化时，flutter 会重复调用 build 方法来生成每一帧。所以不合适的函数调用或者当 build 和一些 Widget（例如：&lt;code&gt;FutureBuilder&lt;/code&gt;,&lt;code&gt;StreamBuilder&lt;/code&gt;）合用时，可能会产生一些副作用。&lt;/p&gt;
+&lt;p&gt;然后在 project 目录下新建 bintrayv1.gradle 文件，内容如下：&lt;/p&gt;</description></item><item><title>避免 Widget build(BuildContext context)带来的副作用</title><link>https://microtears.github.io/posts/%E9%81%BF%E5%85%8D-widget-buildbuildcontext-context%E5%B8%A6%E6%9D%A5%E7%9A%84%E5%89%AF%E4%BD%9C%E7%94%A8/</link><pubDate>Wed, 04 Sep 2019 00:00:00 +0000</pubDate><guid>https://microtears.github.io/posts/%E9%81%BF%E5%85%8D-widget-buildbuildcontext-context%E5%B8%A6%E6%9D%A5%E7%9A%84%E5%89%AF%E4%BD%9C%E7%94%A8/</guid><description>&lt;p&gt;Flutter 是一个响应式 UI 框架，当需要展示界面的时候，框架通过 build 方法生成一帧的画面，当画面频繁变化时，flutter 会重复调用 build 方法来生成每一帧。所以不合适的函数调用或者当 build 和一些 Widget（例如：&lt;code&gt;FutureBuilder&lt;/code&gt;,&lt;code&gt;StreamBuilder&lt;/code&gt;）合用时，可能会产生一些副作用。&lt;/p&gt;
 &lt;p&gt;以下是会产生副作用的示例：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-dart" data-lang="dart"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;random_color.dart&amp;#39;&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;color&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
@@ -704,7 +703,31 @@ graph LR
 &lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;].&lt;/span&gt;&lt;span class="n"&gt;map&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;=&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;hexColor&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;#&lt;/span&gt;&lt;span class="si"&gt;$&lt;/span&gt;&lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;)).&lt;/span&gt;&lt;span class="n"&gt;toList&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;为了便于分析，我在&lt;code&gt;randomColorSync&lt;/code&gt;函数内部添加了统计函数调用计数的代码，用于将调用次数显示在控制台上。&lt;/p&gt;
-&lt;p&gt;除此之外，我们创建了一个辅助 Widget：&lt;code&gt;HomeWrapWidget&lt;/code&gt;来手动触发 Widget 重建：&lt;/p&gt;</description></item><item><title>Keep Alive</title><link>https://microtears.github.io/posts/keep-alive/</link><pubDate>Wed, 17 Jul 2019 00:00:00 +0000</pubDate><guid>https://microtears.github.io/posts/keep-alive/</guid><description>&lt;p&gt;&lt;em&gt;即便选择了放在自己面前的唯一选项&lt;/em&gt;
+&lt;p&gt;除此之外，我们创建了一个辅助 Widget：&lt;code&gt;HomeWrapWidget&lt;/code&gt;来手动触发 Widget 重建：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-dart" data-lang="dart"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kd"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;HomeWrapWidget&lt;/span&gt; &lt;span class="kd"&gt;extends&lt;/span&gt; &lt;span class="n"&gt;StatefulWidget&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="err"&gt;@&lt;/span&gt;&lt;span class="n"&gt;override&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;_HomeWrapWidgetState&lt;/span&gt; &lt;span class="n"&gt;createState&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="o"&gt;=&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;_HomeWrapWidgetState&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kd"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;_HomeWrapWidgetState&lt;/span&gt; &lt;span class="kd"&gt;extends&lt;/span&gt; &lt;span class="n"&gt;State&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;HomeWrapWidget&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="err"&gt;@&lt;/span&gt;&lt;span class="n"&gt;override&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;Widget&lt;/span&gt; &lt;span class="n"&gt;build&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;BuildContext&lt;/span&gt; &lt;span class="n"&gt;context&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;Scaffold&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nl"&gt;body:&lt;/span&gt; &lt;span class="n"&gt;MyHomePage&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nl"&gt;floatingActionButton:&lt;/span&gt; &lt;span class="n"&gt;Builder&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nl"&gt;builder:&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;context&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;=&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;FloatingActionButton&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nl"&gt;onPressed:&lt;/span&gt; &lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="o"&gt;=&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;_rebuild&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;context&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nl"&gt;child:&lt;/span&gt; &lt;span class="n"&gt;Icon&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Icons&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;tag_faces&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;),&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;),&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;_rebuild&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;BuildContext&lt;/span&gt; &lt;span class="n"&gt;context&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;setState&lt;/span&gt;&lt;span class="p"&gt;(()&lt;/span&gt; &lt;span class="p"&gt;{});&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;最终的界面如下：&lt;/p&gt;</description></item><item><title>Keep Alive</title><link>https://microtears.github.io/posts/keep-alive/</link><pubDate>Wed, 17 Jul 2019 00:00:00 +0000</pubDate><guid>https://microtears.github.io/posts/keep-alive/</guid><description>&lt;p&gt;&lt;em&gt;即便选择了放在自己面前的唯一选项&lt;/em&gt;
 &lt;em&gt;那也称不上是自己的选择吧&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;如果说，光只是我们观测世界的一种手段&lt;/em&gt;
 &lt;em&gt;那么，一切变似乎显得合理了。&lt;/em&gt;&lt;/p&gt;</description></item><item><title>The story of your life</title><link>https://microtears.github.io/posts/the-story-of-your-life/</link><pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate><guid>https://microtears.github.io/posts/the-story-of-your-life/</guid><description>&lt;p&gt;那些很真实的梦一定发生过&lt;/p&gt;
@@ -1000,4 +1023,158 @@ graph LR
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;那么便可在 Activity 的整个生命周期之内和多个 Fragment 共享资源&lt;/p&gt;</description></item><item><title/><link>https://microtears.github.io/music/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://microtears.github.io/music/</guid><description>&lt;iframe id="apple-music-playlist" allow="autoplay *; encrypted-media *;" frameborder="0"
  sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
  src="https://embed.music.apple.com/cn/playlist/replay-2025/pl.rp-OLdLU56jBE44?l=en"
- style="width: 100%;height: 450px;"&gt;&lt;/iframe&gt;</description></item></channel></rss>
+ style="width: 100%;height: 450px;"&gt;&lt;/iframe&gt;</description></item><item><title>Counter</title><link>https://microtears.github.io/tool/counter/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://microtears.github.io/tool/counter/</guid><description>&lt;div class="page"&gt;
+ &lt;article class="post"&gt;
+ &lt;div class="post-content"&gt;
+ &lt;p&gt;
+ 这是一个简单的浏览器计数器页面。使用按钮调整数值，并自动保存到本地存储，刷新后仍可保留当前计数。
+ &lt;/p&gt;
+
+ &lt;div class="counter-card"&gt;
+ &lt;div class="counter-value" id="counterValue" aria-live="polite"&gt;0&lt;/div&gt;
+ &lt;div class="counter-buttons"&gt;
+ &lt;button type="button" id="decrementButton" aria-label="减少计数"&gt;-&lt;/button&gt;
+ &lt;button type="button" id="resetButton" aria-label="重置计数"&gt;重置&lt;/button&gt;
+ &lt;button type="button" id="incrementButton" aria-label="增加计数"&gt;+&lt;/button&gt;
+ &lt;/div&gt;
+ &lt;/div&gt;
+
+ &lt;p&gt;支持键盘操作：使用方向键、+/- 以及 R 键修改计数。&lt;/p&gt;
+ &lt;/div&gt;
+ &lt;/article&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+ (() =&gt; {
+ const storageKey = "counter-page-value";
+ const valueEl = document.getElementById("counterValue");
+ const decrementButton = document.getElementById("decrementButton");
+ const resetButton = document.getElementById("resetButton");
+ const incrementButton = document.getElementById("incrementButton");
+
+ const parseValue = (value) =&gt; {
+ const num = Number(value);
+ return Number.isFinite(num) ? num : 0;
+ };
+
+ const loadValue = () =&gt; {
+ try {
+ const stored = window.localStorage.getItem(storageKey);
+ return parseValue(stored);
+ } catch (error) {
+ return 0;
+ }
+ };
+
+ const saveValue = (value) =&gt; {
+ try {
+ window.localStorage.setItem(storageKey, String(value));
+ } catch (error) {
+ // ignore storage errors
+ }
+ };
+
+ let counter = loadValue();
+
+ const render = () =&gt; {
+ valueEl.textContent = String(counter);
+ };
+
+ const update = (next) =&gt; {
+ counter = next;
+ saveValue(counter);
+ render();
+ };
+
+ decrementButton.addEventListener("click", () =&gt; update(counter - 1));
+ incrementButton.addEventListener("click", () =&gt; update(counter + 1));
+ resetButton.addEventListener("click", () =&gt; update(0));
+
+ window.addEventListener("keydown", (event) =&gt; {
+ if (event.target instanceof HTMLButtonElement || event.target instanceof HTMLInputElement) {
+ return;
+ }
+
+ switch (event.key) {
+ case "ArrowUp":
+ case "+":
+ case "=":
+ update(counter + 1);
+ event.preventDefault();
+ break;
+ case "ArrowDown":
+ case "-":
+ update(counter - 1);
+ event.preventDefault();
+ break;
+ case "r":
+ case "R":
+ update(0);
+ event.preventDefault();
+ break;
+ }
+ });
+
+ render();
+ })();
+&lt;/script&gt;
+
+&lt;style&gt;
+ .counter-card {
+ display: flex;
+ flex-direction: column;
+ gap: 1rem;
+ margin-top: 1.4rem;
+ padding: 1.4rem;
+ border: 1px solid #c7c7c7;
+ border-radius: 16px;
+ background: #f8f9ff;
+ }
+
+ .counter-value {
+ font-size: 4rem;
+ font-weight: 700;
+ text-align: center;
+ color: #202124;
+ }
+
+ .counter-buttons {
+ display: grid;
+ grid-template-columns: repeat(3, minmax(0, 1fr));
+ gap: 0.75rem;
+ }
+
+ .counter-buttons button {
+ padding: 1rem 1.1rem;
+ font-size: 1.1rem;
+ font-weight: 600;
+ border: 1px solid #a3c9ff;
+ border-radius: 12px;
+ background: white;
+ color: #222;
+ cursor: pointer;
+ transition:
+ transform 0.15s ease,
+ background-color 0.15s ease;
+ }
+
+ .counter-buttons button:hover,
+ .counter-buttons button:focus-visible {
+ background: #e6f0ff;
+ transform: translateY(-1px);
+ }
+
+ .counter-buttons button:active {
+ transform: translateY(0);
+ }
+
+ @media (max-width: 520px) {
+ .counter-card {
+ padding: 1rem;
+ }
+
+ .counter-value {
+ font-size: 3rem;
+ }
+ }
+&lt;/style&gt;</description></item></channel></rss>

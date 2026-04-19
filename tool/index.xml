@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Tools on The Developer Log of lingyin</title><link>https://microtears.github.io/tool/</link><description>Recent content in Tools on The Developer Log of lingyin</description><generator>Hugo</generator><language>en-us</language><atom:link href="https://microtears.github.io/tool/index.xml" rel="self" type="application/rss+xml"/><item><title>Counter</title><link>https://microtears.github.io/tool/counter/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://microtears.github.io/tool/counter/</guid><description>&lt;div class="page"&gt;
+ &lt;article class="post"&gt;
+ &lt;div class="post-content"&gt;
+ &lt;p&gt;
+ 这是一个简单的浏览器计数器页面。使用按钮调整数值，并自动保存到本地存储，刷新后仍可保留当前计数。
+ &lt;/p&gt;
+
+ &lt;div class="counter-card"&gt;
+ &lt;div class="counter-value" id="counterValue" aria-live="polite"&gt;0&lt;/div&gt;
+ &lt;div class="counter-buttons"&gt;
+ &lt;button type="button" id="decrementButton" aria-label="减少计数"&gt;-&lt;/button&gt;
+ &lt;button type="button" id="resetButton" aria-label="重置计数"&gt;重置&lt;/button&gt;
+ &lt;button type="button" id="incrementButton" aria-label="增加计数"&gt;+&lt;/button&gt;
+ &lt;/div&gt;
+ &lt;/div&gt;
+
+ &lt;p&gt;支持键盘操作：使用方向键、+/- 以及 R 键修改计数。&lt;/p&gt;
+ &lt;/div&gt;
+ &lt;/article&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+ (() =&gt; {
+ const storageKey = "counter-page-value";
+ const valueEl = document.getElementById("counterValue");
+ const decrementButton = document.getElementById("decrementButton");
+ const resetButton = document.getElementById("resetButton");
+ const incrementButton = document.getElementById("incrementButton");
+
+ const parseValue = (value) =&gt; {
+ const num = Number(value);
+ return Number.isFinite(num) ? num : 0;
+ };
+
+ const loadValue = () =&gt; {
+ try {
+ const stored = window.localStorage.getItem(storageKey);
+ return parseValue(stored);
+ } catch (error) {
+ return 0;
+ }
+ };
+
+ const saveValue = (value) =&gt; {
+ try {
+ window.localStorage.setItem(storageKey, String(value));
+ } catch (error) {
+ // ignore storage errors
+ }
+ };
+
+ let counter = loadValue();
+
+ const render = () =&gt; {
+ valueEl.textContent = String(counter);
+ };
+
+ const update = (next) =&gt; {
+ counter = next;
+ saveValue(counter);
+ render();
+ };
+
+ decrementButton.addEventListener("click", () =&gt; update(counter - 1));
+ incrementButton.addEventListener("click", () =&gt; update(counter + 1));
+ resetButton.addEventListener("click", () =&gt; update(0));
+
+ window.addEventListener("keydown", (event) =&gt; {
+ if (event.target instanceof HTMLButtonElement || event.target instanceof HTMLInputElement) {
+ return;
+ }
+
+ switch (event.key) {
+ case "ArrowUp":
+ case "+":
+ case "=":
+ update(counter + 1);
+ event.preventDefault();
+ break;
+ case "ArrowDown":
+ case "-":
+ update(counter - 1);
+ event.preventDefault();
+ break;
+ case "r":
+ case "R":
+ update(0);
+ event.preventDefault();
+ break;
+ }
+ });
+
+ render();
+ })();
+&lt;/script&gt;
+
+&lt;style&gt;
+ .counter-card {
+ display: flex;
+ flex-direction: column;
+ gap: 1rem;
+ margin-top: 1.4rem;
+ padding: 1.4rem;
+ border: 1px solid #c7c7c7;
+ border-radius: 16px;
+ background: #f8f9ff;
+ }
+
+ .counter-value {
+ font-size: 4rem;
+ font-weight: 700;
+ text-align: center;
+ color: #202124;
+ }
+
+ .counter-buttons {
+ display: grid;
+ grid-template-columns: repeat(3, minmax(0, 1fr));
+ gap: 0.75rem;
+ }
+
+ .counter-buttons button {
+ padding: 1rem 1.1rem;
+ font-size: 1.1rem;
+ font-weight: 600;
+ border: 1px solid #a3c9ff;
+ border-radius: 12px;
+ background: white;
+ color: #222;
+ cursor: pointer;
+ transition:
+ transform 0.15s ease,
+ background-color 0.15s ease;
+ }
+
+ .counter-buttons button:hover,
+ .counter-buttons button:focus-visible {
+ background: #e6f0ff;
+ transform: translateY(-1px);
+ }
+
+ .counter-buttons button:active {
+ transform: translateY(0);
+ }
+
+ @media (max-width: 520px) {
+ .counter-card {
+ padding: 1rem;
+ }
+
+ .counter-value {
+ font-size: 3rem;
+ }
+ }
+&lt;/style&gt;</description></item></channel></rss>
