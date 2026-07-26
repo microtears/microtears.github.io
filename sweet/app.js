@@ -78,17 +78,20 @@ const renderMemories = (memories) => {
     frame.className = "w-full aspect-[3/4] rounded-2xl overflow-hidden shadow-lg relative group";
 
     const overlay = document.createElement("div");
-    overlay.className = "absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60 z-10";
+    overlay.className =
+      "absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60 z-10";
 
     const image = document.createElement("div");
-    image.className = "w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110";
+    image.className =
+      "w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110";
     if (item?.image_url) {
       image.style.backgroundImage = `url('${item.image_url}')`;
     }
     image.dataset.alt = item?.alt || item?.title || "";
 
     const favorite = document.createElement("span");
-    favorite.className = "material-symbols-outlined absolute top-2 right-2 text-white z-20 text-sm drop-shadow-md";
+    favorite.className =
+      "material-symbols-outlined absolute top-2 right-2 text-white z-20 text-sm drop-shadow-md";
     favorite.textContent = item?.is_favorite ? "favorite" : "favorite_border";
 
     frame.append(overlay, image, favorite);
@@ -111,7 +114,8 @@ const renderTimeline = (timeline) => {
 
   (timeline || []).forEach((item) => {
     const row = document.createElement("div");
-    row.className = "flex items-center gap-4 p-3 bg-white dark:bg-white/5 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm";
+    row.className =
+      "flex items-center gap-4 p-3 bg-white dark:bg-white/5 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm";
 
     const iconWrap = document.createElement("div");
     const iconBg = item?.icon_bg_class || "bg-primary/20";
