@@ -17,21 +17,21 @@ Note: 2024-12-04
 
 ### 鸿蒙路由方案能力对比
 
-| 业务场景                       | Navigation                            | Router                                 |
-| ------------------------------ | ------------------------------------- | -------------------------------------- |
-| 一多能力                       | 支持，Auto模式自适应单栏跟双栏显示    | 不支持                                 |
-| 跳转指定页面                   | pushPath &amp; pushDestination            | pushUrl &amp; pushNameRoute                |
-| 获取指定页面参数               | 支持                                  | 不支持                                 |
-| 传参类型                       | 传参为对象形式                        | 传参为对象形式，对象中暂不支持方法变量 |
-| 清理指定路由                   | removeByIndexes &amp; removeByName        | 不支持                                 |
-| 自定义转场动画                 | 支持                                  | 支持，动画类型受限                     |
-| geometryTransition共享元素动画 | 支持（NavDestination之间共享）        | 不支持                                 |
-| 页面生命周期监听               | UIObserver.on(&#39;navDestinationUpdate&#39;) | UIObserver.on(&#39;routerPageUpdate&#39;)      |
-| 获取页面栈对象                 | 支持                                  | 不支持                                 |
-| 路由拦截                       | 支持通过setInercption做路由拦截       | 不支持                                 |
-| 路由栈信息查询                 | 支持                                  | getState() &amp; getLength()               |
-| 路由栈move操作                 | moveToTop &amp; moveIndexToTop            | 不支持                                 |
-| 沉浸式页面                     | 支持                                  | 不支持，需通过window配置               |
+| 业务场景 | Navigation | Router |
+| --- | --- | --- |
+| 一多能力 | 支持，Auto模式自适应单栏跟双栏显示 | 不支持 |
+| 跳转指定页面 | pushPath &amp; pushDestination | pushUrl &amp; pushNameRoute |
+| 获取指定页面参数 | 支持 | 不支持 |
+| 传参类型 | 传参为对象形式 | 传参为对象形式，对象中暂不支持方法变量 |
+| 清理指定路由 | removeByIndexes &amp; removeByName | 不支持 |
+| 自定义转场动画 | 支持 | 支持，动画类型受限 |
+| geometryTransition共享元素动画 | 支持（NavDestination之间共享） | 不支持 |
+| 页面生命周期监听 | UIObserver.on(&#39;navDestinationUpdate&#39;) | UIObserver.on(&#39;routerPageUpdate&#39;) |
+| 获取页面栈对象 | 支持 | 不支持 |
+| 路由拦截 | 支持通过setInercption做路由拦截 | 不支持 |
+| 路由栈信息查询 | 支持 | getState() &amp; getLength() |
+| 路由栈move操作 | moveToTop &amp; moveIndexToTop | 不支持 |
+| 沉浸式页面 | 支持 | 不支持，需通过window配置 |
 
 Note:
 
