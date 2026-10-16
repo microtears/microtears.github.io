@@ -109,38 +109,38 @@ I/flutter ( 4259): Function call count: 6
 </span></span><span class=line><span class=cl><span class=p>}</span>
 </span></span></code></pre></div></li><li><p>使用 AsyncMemoizer</p><p>正如它的类名，<code>AsyncMemoizer</code>实质上就是一个内存缓存，<code>runOnce</code>方法保证只运行一次函数，并在之后使用缓存的异步结果。</p><p>code：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-dart data-lang=dart><span class=line><span class=cl><span class=k>import</span> <span class=s1>&#39;package:async/async.dart&#39;</span> <span class=k>show</span> <span class=n>AsyncMemoizer</span><span class=p>;</span>
 </span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl> <span class=kd>class</span> <span class=nc>MyHomePage3</span> <span class=kd>extends</span> <span class=n>StatefulWidget</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>   <span class=err>@</span><span class=n>override</span>
-</span></span><span class=line><span class=cl>   <span class=n>_MyHomePage3State</span> <span class=n>createState</span><span class=p>()</span> <span class=o>=&gt;</span> <span class=n>_MyHomePage3State</span><span class=p>();</span>
-</span></span><span class=line><span class=cl> <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=kd>class</span> <span class=nc>MyHomePage3</span> <span class=kd>extends</span> <span class=n>StatefulWidget</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=err>@</span><span class=n>override</span>
+</span></span><span class=line><span class=cl>  <span class=n>_MyHomePage3State</span> <span class=n>createState</span><span class=p>()</span> <span class=o>=&gt;</span> <span class=n>_MyHomePage3State</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
 </span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl> <span class=kd>class</span> <span class=nc>_MyHomePage3State</span> <span class=kd>extends</span> <span class=n>State</span><span class=o>&lt;</span><span class=n>MyHomePage3</span><span class=o>&gt;</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>   <span class=kd>final</span> <span class=n>_memoizer</span> <span class=o>=</span> <span class=n>AsyncMemoizer</span><span class=o>&lt;</span><span class=n>List</span><span class=o>&lt;</span><span class=n>Color</span><span class=o>&gt;&gt;</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=kd>class</span> <span class=nc>_MyHomePage3State</span> <span class=kd>extends</span> <span class=n>State</span><span class=o>&lt;</span><span class=n>MyHomePage3</span><span class=o>&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=kd>final</span> <span class=n>_memoizer</span> <span class=o>=</span> <span class=n>AsyncMemoizer</span><span class=o>&lt;</span><span class=n>List</span><span class=o>&lt;</span><span class=n>Color</span><span class=o>&gt;&gt;</span><span class=p>();</span>
 </span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>   <span class=err>@</span><span class=n>override</span>
-</span></span><span class=line><span class=cl>   <span class=n>Widget</span> <span class=n>build</span><span class=p>(</span><span class=n>BuildContext</span> <span class=n>context</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>     <span class=k>return</span> <span class=n>Container</span><span class=p>(</span>
-</span></span><span class=line><span class=cl>       <span class=nl>color:</span> <span class=n>Colors</span><span class=p>.</span><span class=n>white</span><span class=p>,</span>
-</span></span><span class=line><span class=cl>       <span class=nl>child:</span> <span class=n>FutureBuilder</span><span class=p>(</span>
-</span></span><span class=line><span class=cl>           <span class=nl>future:</span> <span class=n>_memoizer</span><span class=p>.</span><span class=n>runOnce</span><span class=p>(</span><span class=n>color</span><span class=p>.</span><span class=n>randomColors</span><span class=p>),</span>
-</span></span><span class=line><span class=cl>           <span class=nl>builder:</span> <span class=p>(</span><span class=n>context</span><span class=p>,</span> <span class=n>snapshot</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>             <span class=k>if</span> <span class=p>(</span><span class=n>snapshot</span><span class=p>.</span><span class=n>hasData</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>               <span class=kd>final</span> <span class=n>colors</span> <span class=o>=</span> <span class=n>snapshot</span><span class=p>.</span><span class=n>data</span><span class=p>;</span>
-</span></span><span class=line><span class=cl>               <span class=k>return</span> <span class=n>Column</span><span class=p>(</span>
-</span></span><span class=line><span class=cl>                 <span class=nl>children:</span> <span class=o>&lt;</span><span class=n>Widget</span><span class=o>&gt;</span><span class=p>[</span>
-</span></span><span class=line><span class=cl>                   <span class=n>Expanded</span><span class=p>(</span><span class=nl>flex:</span> <span class=m>4</span><span class=p>,</span> <span class=nl>child:</span> <span class=n>Container</span><span class=p>(</span><span class=nl>color:</span> <span class=n>colors</span><span class=p>[</span><span class=m>0</span><span class=p>])),</span>
-</span></span><span class=line><span class=cl>                   <span class=n>Expanded</span><span class=p>(</span><span class=nl>flex:</span> <span class=m>3</span><span class=p>,</span> <span class=nl>child:</span> <span class=n>Container</span><span class=p>(</span><span class=nl>color:</span> <span class=n>colors</span><span class=p>[</span><span class=m>1</span><span class=p>])),</span>
-</span></span><span class=line><span class=cl>                   <span class=n>Expanded</span><span class=p>(</span><span class=nl>flex:</span> <span class=m>2</span><span class=p>,</span> <span class=nl>child:</span> <span class=n>Container</span><span class=p>(</span><span class=nl>color:</span> <span class=n>colors</span><span class=p>[</span><span class=m>2</span><span class=p>])),</span>
-</span></span><span class=line><span class=cl>                   <span class=n>Expanded</span><span class=p>(</span><span class=nl>flex:</span> <span class=m>2</span><span class=p>,</span> <span class=nl>child:</span> <span class=n>Container</span><span class=p>(</span><span class=nl>color:</span> <span class=n>colors</span><span class=p>[</span><span class=m>3</span><span class=p>])),</span>
-</span></span><span class=line><span class=cl>                 <span class=p>],</span>
-</span></span><span class=line><span class=cl>               <span class=p>);</span>
-</span></span><span class=line><span class=cl>             <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>               <span class=k>return</span> <span class=n>Container</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>             <span class=p>}</span>
-</span></span><span class=line><span class=cl>           <span class=p>}),</span>
-</span></span><span class=line><span class=cl>     <span class=p>);</span>
-</span></span><span class=line><span class=cl>   <span class=p>}</span>
-</span></span><span class=line><span class=cl> <span class=p>}</span>
+</span></span><span class=line><span class=cl>  <span class=err>@</span><span class=n>override</span>
+</span></span><span class=line><span class=cl>  <span class=n>Widget</span> <span class=n>build</span><span class=p>(</span><span class=n>BuildContext</span> <span class=n>context</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>Container</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>      <span class=nl>color:</span> <span class=n>Colors</span><span class=p>.</span><span class=n>white</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nl>child:</span> <span class=n>FutureBuilder</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>          <span class=nl>future:</span> <span class=n>_memoizer</span><span class=p>.</span><span class=n>runOnce</span><span class=p>(</span><span class=n>color</span><span class=p>.</span><span class=n>randomColors</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>          <span class=nl>builder:</span> <span class=p>(</span><span class=n>context</span><span class=p>,</span> <span class=n>snapshot</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=p>(</span><span class=n>snapshot</span><span class=p>.</span><span class=n>hasData</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>              <span class=kd>final</span> <span class=n>colors</span> <span class=o>=</span> <span class=n>snapshot</span><span class=p>.</span><span class=n>data</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>              <span class=k>return</span> <span class=n>Column</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>                <span class=nl>children:</span> <span class=o>&lt;</span><span class=n>Widget</span><span class=o>&gt;</span><span class=p>[</span>
+</span></span><span class=line><span class=cl>                  <span class=n>Expanded</span><span class=p>(</span><span class=nl>flex:</span> <span class=m>4</span><span class=p>,</span> <span class=nl>child:</span> <span class=n>Container</span><span class=p>(</span><span class=nl>color:</span> <span class=n>colors</span><span class=p>[</span><span class=m>0</span><span class=p>])),</span>
+</span></span><span class=line><span class=cl>                  <span class=n>Expanded</span><span class=p>(</span><span class=nl>flex:</span> <span class=m>3</span><span class=p>,</span> <span class=nl>child:</span> <span class=n>Container</span><span class=p>(</span><span class=nl>color:</span> <span class=n>colors</span><span class=p>[</span><span class=m>1</span><span class=p>])),</span>
+</span></span><span class=line><span class=cl>                  <span class=n>Expanded</span><span class=p>(</span><span class=nl>flex:</span> <span class=m>2</span><span class=p>,</span> <span class=nl>child:</span> <span class=n>Container</span><span class=p>(</span><span class=nl>color:</span> <span class=n>colors</span><span class=p>[</span><span class=m>2</span><span class=p>])),</span>
+</span></span><span class=line><span class=cl>                  <span class=n>Expanded</span><span class=p>(</span><span class=nl>flex:</span> <span class=m>2</span><span class=p>,</span> <span class=nl>child:</span> <span class=n>Container</span><span class=p>(</span><span class=nl>color:</span> <span class=n>colors</span><span class=p>[</span><span class=m>3</span><span class=p>])),</span>
+</span></span><span class=line><span class=cl>                <span class=p>],</span>
+</span></span><span class=line><span class=cl>              <span class=p>);</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>              <span class=k>return</span> <span class=n>Container</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>          <span class=p>}),</span>
+</span></span><span class=line><span class=cl>    <span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
 </span></span></code></pre></div></li><li><p>由外部管理 Future</p><p>这次不在 Widget 内部缓存 Future 结果，而是由外部管理，保证只获取一次，返回相同的 Future 对象</p><p>code：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-dart data-lang=dart><span class=line><span class=cl><span class=kd>var</span> <span class=n>myColors</span> <span class=o>=</span> <span class=n>color</span><span class=p>.</span><span class=n>randomColors</span><span class=p>();</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl><span class=kd>class</span> <span class=nc>MyHomePage4</span> <span class=kd>extends</span> <span class=n>StatelessWidget</span> <span class=p>{</span>
